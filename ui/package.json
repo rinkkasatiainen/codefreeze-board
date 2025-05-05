@@ -1,0 +1,7 @@
+{
+  "name": "codefreeze-board",
+  "version": "1.0.0",
+  "description": "UI for the board for codefreeze",
+  "main": "index.js",
+  "license": "MIT"
+}

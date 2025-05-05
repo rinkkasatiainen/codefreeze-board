@@ -1,0 +1,7 @@
+.cfb-board {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    overflow-x: auto;
+    min-height: calc(100vh - 40px);
+} 
