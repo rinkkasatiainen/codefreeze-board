@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- use ATOMIC design for CSS.
+- prefix custom classes with 'cfb-'

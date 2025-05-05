@@ -5,6 +5,7 @@
 /* Molecules */
 @import 'styles/molecules/cfb-card.css';
 @import 'styles/molecules/cfb-column.css';
+@import 'styles/molecules/cfb-navigation.css';
 
 /* Organisms */
 @import 'styles/organisms/cfb-board.css';

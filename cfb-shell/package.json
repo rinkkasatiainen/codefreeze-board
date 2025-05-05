@@ -1,7 +1,25 @@
 {
-  "name": "y",
-  "version": "y",
-  "description": "y",
+  "name": "cfb-shell",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shell for CFB. To be used in index.js to register features and modules.",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint -- src test",
+    "lint:fix": "eslint --fix -- src test",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "@rinkkasatiainen/eslint-config": "^1.0.2",
+    "@stylistic/eslint-plugin-js": "^4.2.0",
+    "chai": "^4.3.0",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-mocha": "^11.0.0",
+    "eslint-plugin-prettier": "^5.4.0",
+    "mocha": "^10.0.0",
+    "prettier": "^3.5.3",
+    "sinon": "^15.0.0"
+  }
 }

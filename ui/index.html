@@ -7,32 +7,40 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header>
+        <nav class="cfb-navigation">
+            <div class="cfb-user">
+                <div class="cfb-user__avatar">EE</div>
+                <span class="cfb-user__name">Evan Example</span>
+            </div>
+        </nav>
+    </header>
     <main>
-        <div class="cfb-board">
-            <div class="cfb-column">
+        <div class="cfb-board" role="region" aria-label="Task board">
+            <section class="cfb-column" role="region" aria-label="To Do column">
                 <h2 class="cfb-column__title">To Do</h2>
-                <div class="cfb-card">Task 1</div>
-                <div class="cfb-card">Task 2</div>
-            </div>
-            <div class="cfb-column">
+                <article class="cfb-card" role="article">Task 1</article>
+                <article class="cfb-card" role="article">Task 2</article>
+            </section>
+            <section class="cfb-column" role="region" aria-label="In Progress column">
                 <h2 class="cfb-column__title">In Progress</h2>
-                <div class="cfb-card">Task 3</div>
-            </div>
-            <div class="cfb-column">
+                <article class="cfb-card" role="article">Task 3</article>
+            </section>
+            <section class="cfb-column" role="region" aria-label="Review column">
                 <h2 class="cfb-column__title">Review</h2>
-            </div>
-            <div class="cfb-column">
+            </section>
+            <section class="cfb-column" role="region" aria-label="Testing column">
                 <h2 class="cfb-column__title">Testing</h2>
-            </div>
-            <div class="cfb-column">
+            </section>
+            <section class="cfb-column" role="region" aria-label="Done column">
                 <h2 class="cfb-column__title">Done</h2>
-            </div>
-            <div class="cfb-column">
+            </section>
+            <section class="cfb-column" role="region" aria-label="Blocked column">
                 <h2 class="cfb-column__title">Blocked</h2>
-            </div>
-            <div class="cfb-column">
+            </section>
+            <section class="cfb-column" role="region" aria-label="Backlog column">
                 <h2 class="cfb-column__title">Backlog</h2>
-            </div>
+            </section>
         </div>
     </main>
     <script src="index.js"></script>
