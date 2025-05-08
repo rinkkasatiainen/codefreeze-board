@@ -1,14 +1,26 @@
 {
-  "name": "cfb-shell",
-  "version": "1.0.0",
+  "name": "@rinkkasatiainen/cfb-shell",
+  "version": "0.0.1",
   "type": "module",
   "description": "Shell for CFB. To be used in index.js to register features and modules.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rinkkasatiainen/codefreeze-board.git"
+  },
   "scripts": {
     "lint": "eslint -- src test",
-    "lint:fix": "eslint --fix -- src test",
-    "test": "mocha"
+    "lint:fix": "eslint --fix -- src test", 
+    "test": "mocha",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test && npm run lint",
+    "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@rinkkasatiainen/eslint-config": "^1.0.2",
@@ -21,5 +33,8 @@
     "mocha": "^10.0.0",
     "prettier": "^3.5.3",
     "sinon": "^15.0.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

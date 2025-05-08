@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "description": "UI for the board for codefreeze",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@rinkkasatiainen/cfb-shell": "^0.0.1"
+  }
 }
