@@ -19,12 +19,60 @@
         <div class="cfb-board" role="region" aria-label="Task board">
             <section class="cfb-column" role="region" aria-label="To Do column">
                 <h2 class="cfb-column__title">To Do</h2>
-                <article class="cfb-card" role="article">Task 1</article>
-                <article class="cfb-card" role="article">Task 2</article>
+                <article class="cfb-card" role="article">
+                    <header class="cfb-card__header">
+                        <span class="cfb-card__title">Task 1</span>
+                        <button class="cfb-card__menu" aria-label="Card options">
+                            <span class="cfb-card__menu-icon"></span>
+                        </button>
+                    </header>
+                    <div class="cfb-card__tags">
+                        <span class="cfb-tag cfb-tag--red">Frontend</span>
+                        <span class="cfb-tag cfb-tag--orange">Bug</span>
+                    </div>
+                    <footer class="cfb-card__footer">
+                        <div class="cfb-avatars" aria-label="Assigned team members">
+                            <div class="cfb-avatar" aria-label="John Doe">JD</div>
+                            <div class="cfb-avatar" aria-label="Jane Smith">JS</div>
+                            <div class="cfb-avatar" aria-label="Mike Johnson">MJ</div>
+                        </div>
+                    </footer>
+                </article>
+                <article class="cfb-card" role="article">
+                    <header class="cfb-card__header">
+                        <span class="cfb-card__title">Task 2</span>
+                        <button class="cfb-card__menu" aria-label="Card options">
+                            <span class="cfb-card__menu-icon"></span>
+                        </button>
+                    </header>
+                    <div class="cfb-card__tags">
+                        <span class="cfb-tag">Backend</span>
+                        <span class="cfb-tag">Feature</span>
+                        <span class="cfb-tag">High Priority</span>
+                    </div>
+                    <footer class="cfb-card__footer">
+                        <div class="cfb-avatars" aria-label="Assigned team members">
+                            <div class="cfb-avatar" aria-label="Sarah Wilson">SW</div>
+                            <div class="cfb-avatar" aria-label="Tom Brown">TB</div>
+                        </div>
+                    </footer>
+                </article>
             </section>
             <section class="cfb-column" role="region" aria-label="In Progress column">
                 <h2 class="cfb-column__title">In Progress</h2>
-                <article class="cfb-card" role="article">Task 3</article>
+                <article class="cfb-card" role="article">
+                    <header class="cfb-card__header">
+                        <span class="cfb-card__title">Task 3</span>
+                        <button class="cfb-card__menu" aria-label="Card options">
+                            <span class="cfb-card__menu-icon"></span>
+                        </button>
+                    </header>
+                    <footer class="cfb-card__footer">
+                        <div class="cfb-avatars" aria-label="Assigned team members">
+                            <div class="cfb-avatar" aria-label="Alex Green">AG</div>
+                        </div>
+                    </footer>
+                </article>
             </section>
             <section class="cfb-column" role="region" aria-label="Review column">
                 <h2 class="cfb-column__title">Review</h2>
