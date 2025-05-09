@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Add the Custom Elements always first to scripts/fakes.js file
+- to configure the created custom element, add it in the 'configure' method
