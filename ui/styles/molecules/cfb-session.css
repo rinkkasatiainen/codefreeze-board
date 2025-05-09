@@ -1,0 +1,22 @@
+cfb-session {
+    cursor: move;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+cfb-session.dragging {
+    opacity: 0.5;
+    background-color: sandybrown;
+    transform: rotate(15deg);
+    z-index: 1000; /* Ensure dragged item appears above others */
+}
+
+cfb-session.over {
+    border-top: 2px solid #007bff;
+}
+
+/* Style for the placeholder that remains in the original position */
+cfb-session.dragging + .cfb-session {
+    background-color: sandybrown;
+    //background-color: #f5f5f5;
+    transition: background-color 0.2s ease;
+} 
