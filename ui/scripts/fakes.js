@@ -40,6 +40,7 @@ class CFBSession extends HTMLElement {
     this.handleDragStart = (e) => {
       CFBSession.draggedItem = this;
       this.style.opacity = '0.5';
+      this.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/html', this.innerHTML);
 
@@ -55,6 +56,7 @@ class CFBSession extends HTMLElement {
 
     this.handleDragEnd = (e) => {
       this.style.opacity = '1';
+      this.classList.remove('dragging');
       document.querySelectorAll('.cfb-session').forEach(session => {
         session.classList.remove('over');
       });

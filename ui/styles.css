@@ -8,22 +8,10 @@
 @import 'styles/molecules/cfb-column.css';
 @import 'styles/molecules/cfb-navigation.css';
 @import 'styles/molecules/cfb-avatars.css';
+@import 'styles/molecules/cfb-session.css';
 
 /* Organisms */
 @import 'styles/organisms/cfb-board.css';
 
 /* Templates */
 @import 'styles/templates/cfb-layout.css';
-
-.cfb-session {
-    cursor: move;
-    transition: opacity 0.2s ease;
-}
-
-.cfb-session.dragging {
-    opacity: 0.5;
-}
-
-.cfb-session.over {
-    border-top: 2px solid #007bff;
-}
