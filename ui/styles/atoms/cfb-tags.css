@@ -1,0 +1,41 @@
+.cfb-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--color-column-border);
+    background-color: var(--color-card-bg);
+    color: var(--font-color-base);
+}
+
+/* Color variants */
+.cfb-tag--red {
+    background-color: #ffebe9;
+    border-color: #ffaba5;
+    color: #cf1322;
+}
+
+.cfb-tag--orange {
+    background-color: #fff7e6;
+    border-color: #ffd591;
+    color: #d46b08;
+}
+
+.cfb-tag--green {
+    background-color: #f6ffed;
+    border-color: #b7eb8f;
+    color: #389e0d;
+}
+
+.cfb-tag--blue {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+    color: #096dd9;
+}
+
+.cfb-tag--purple {
+    background-color: #f9f0ff;
+    border-color: #d3adf7;
+    color: #531dab;
+} 

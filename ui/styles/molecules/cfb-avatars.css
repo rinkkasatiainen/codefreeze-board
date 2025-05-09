@@ -1,0 +1,29 @@
+.cfb-avatars {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.cfb-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--color-column-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--font-color-base);
+    border: 2px solid var(--color-card-bg);
+}
+
+.cfb-avatar:not(:first-child) {
+    margin-left: -8px;
+}
+
+.cfb-avatar:hover {
+    z-index: 1;
+} 
