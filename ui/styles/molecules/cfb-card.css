@@ -7,6 +7,12 @@
     box-shadow: 0 1px 2px var(--color-shadow);
 }
 
+/* Card variants */
+.cfb-card--travel {
+    background-color: #f0f7ff;
+    border-left: 4px solid #1890ff;
+}
+
 .cfb-card__header {
     display: flex;
     justify-content: space-between;
