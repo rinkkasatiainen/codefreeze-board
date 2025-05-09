@@ -5,9 +5,20 @@ class CFBSection extends HTMLElement {
   }
 }
 
-class FakeModule {
+class CFBSession extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    // Component initialization logic will go here
+  }
+}
+
+export class FakeModule {
   configure() {
     customElements.define('cfb-section', CFBSection)
+    customElements.define('cfb-session', CFBSession)
   }
 
   activate() {

@@ -4,7 +4,7 @@ import { FakeModule } from './fakes.js';
 
 const shell = new Shell();
 
-shell.add(new FakeModule());
+shell.addModule(new FakeModule());
 
 shell.configure();
 shell.activate();
