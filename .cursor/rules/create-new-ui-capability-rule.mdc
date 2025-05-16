@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- When creating a new capability, copy it from 'cfb-npm-template', also the .npmrc file.
+- create similar folder structure - and copy both the cfb-example.js and the respective test case.
+- update the package json with proper description
