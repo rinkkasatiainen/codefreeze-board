@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 When I ask to write a test list, do the following.
 
-- create a noop function (`const noop = () => { /* noop */ }`)
-- create a todo function (`const todo = (test name) => noop()` )
+- create a noop function to global scope, if not exists (`const noop = () => { /* noop */ }`)
+- create a todo function to global scope, if not exists (`const todo = testName => { xit(testName, noop) }` )
 - the test list is a set of 'todo' function calls. 
 - write the test with a format "Should &gt;do the thing&lt;
