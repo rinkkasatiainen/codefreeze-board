@@ -1,5 +1,5 @@
 import { expect } from '@open-wc/testing'
-import { createTestLogger } from '../src/test-logger.js'
+import { createTestLogger, Times } from '../src/test-logger.js'
 import sinon from 'sinon'
 
 describe('TestLogger', () => {
@@ -25,6 +25,7 @@ describe('TestLogger', () => {
     xit(testName, noop) 
   }
 
+  // First implement the basic tests
   it('Should throw error when logging debug message with minLevel set to INFO', () => {
     logger.setMinLevel('INFO')
     expect(() => logger.debug('test message debug')).to.throw('Log level DEBUG is below minimum level INFO')
@@ -45,23 +46,47 @@ describe('TestLogger', () => {
     expect(() => logger.error('test message error')).to.throw('Logging ERROR should fail the test case')
   })
 
+  // Then implement next schenario of tests
   it('Should log debug message to console.debug when called', () => {
+    logger.setMinLevel('DEBUG')
     logger.debug('test debug message')
     expect(consoleSpy.debug).to.have.been.calledWith('test debug message')
   })
 
   it('Should log info message to console.info when called', () => {
+    logger.setMinLevel('INFO')
     logger.info('test info message')
     expect(consoleSpy.info).to.have.been.calledWith('test info message')
   })
 
   it('Should log warn message to console.warn when called', () => {
+    logger.setMinLevel('WARN')
     logger.warn('test warn message')
     expect(consoleSpy.warn).to.have.been.calledWith('test warn message')
   })
 
-  todo('Should allow a log debug message to be sent, if defined explicitly')
-  todo('Should allow a log info message to be sent, if defined explicitly')
-  todo('Should allow a log warn message to be sent, if defined explicitly')
-  todo('Should allow a log error message to be sent, if defined explicitly')
+  // last part of tests.
+  it('Should allow a log debug message to be sent, if defined explicitly, but does not log', () => {
+    logger.expect.debug(true, Times.once)
+    logger.debug('test debug message')
+    expect(consoleSpy.debug).to.not.have.been.called
+  })
+
+  it('Should allow a log info message to be sent, if defined explicitly', () => {
+    logger.expect.info(true, Times.once)
+    logger.info('test info message')
+    expect(consoleSpy.info).to.not.have.been.called
+  })
+
+  it('Should allow a log warn message to be sent, if defined explicitly', () => {
+    logger.expect.warn(true, Times.once)
+    logger.warn('test warn message')
+    expect(consoleSpy.warn).to.not.have.been.called
+  })
+
+  it('Should allow a log error message to be sent, if defined explicitly', () => {
+    logger.expect.error(true, Times.once)
+    logger.error('test error message')
+    expect(consoleSpy.error).to.not.have.been.called
+  })
 })
