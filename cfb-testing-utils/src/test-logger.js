@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import {LOG_LEVELS} from '@rinkkasatiainen/cfb-observability'
 
 // Logger interface is as follows:
@@ -11,7 +12,7 @@ import {LOG_LEVELS} from '@rinkkasatiainen/cfb-observability'
 
 class TestLogger {
   constructor(options = {}) {
-    this.minLevel = options.minLevel || 'DEBUG'
+    this.minLevel = options.minLevel || 'ERROR'
     this.prefix = options.prefix
     this.timestamp = options.timestamp
   }
@@ -48,15 +49,69 @@ class TestLogger {
     this.timestamp = false
   }
 
-  #log(level, levelValue, message, ...args) {
-    const minLevelValue = this.minLevel === undefined? 3 : LOG_LEVELS[this.minLevel]
+  #expectations = {
+    debug: [],
+    info: [],
+    warn: [],
+    error: [],
+  }
 
-    console.log(level, levelValue, minLevelValue,  message, ...args)
-    if (levelValue < minLevelValue ) {
+  #addExpectation(level, predicate, times) {
+    this.#expectations[level.toLowerCase()].push({
+      predicate,
+      times,
+      called: 0,
+    })
+  }
+
+  #checkExpectation(level, message, ...args) {
+    const expectations = this.#expectations[level.toLowerCase()]
+    if (expectations.length === 0) {
+      return false
+    }
+
+    const expectation = expectations[0]
+    const result = expectation.predicate(message, ...args)
+    if (result) {
+      expectation.called++
+      if (expectation.called === expectation.times) {
+        expectations.shift()
+      }
+      return true
+    }
+    return false
+  }
+
+  expect = {
+    debug: (predicate, times) => {
+      this.#addExpectation('DEBUG', typeof predicate === 'function' ? predicate : () => predicate, times)
+    },
+    info: (predicate, times) => {
+      this.#addExpectation('INFO', typeof predicate === 'function' ? predicate : () => predicate, times)
+    },
+    warn: (predicate, times) => {
+      this.#addExpectation('WARN', typeof predicate === 'function' ? predicate : () => predicate, times)
+    },
+    error: (predicate, times) => {
+      this.#addExpectation('ERROR', typeof predicate === 'function' ? predicate : () => predicate, times)
+    },
+  }
+
+  #log(level, levelValue, message, ...args) {
+    const minLevelValue = this.minLevel === undefined ? 3 : LOG_LEVELS[this.minLevel]
+
+    if (levelValue < minLevelValue) {
+
+      if (this.#checkExpectation(level, message, ...args)) {
+        return
+      }
       throw new Error(`Log level ${level} is below minimum level ${this.minLevel}`)
     }
 
     if (levelValue === LOG_LEVELS.ERROR) {
+      if (this.#checkExpectation(level, message, ...args)) {
+        return
+      }
       throw new Error('Logging ERROR should fail the test case')
     }
 
@@ -75,9 +130,10 @@ class TestLogger {
       return
     }
   }
+
 }
 
-export const createTestLogger = options => new TestLogger(options) 
+export const createTestLogger = options => new TestLogger(options)
 
 export class Times {
   static once = 'once'

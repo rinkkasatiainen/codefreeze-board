@@ -8,10 +8,10 @@ describe('TestLogger', () => {
 
   beforeEach(() => {
     consoleSpy = {
-      debug: sinon.spy(console, 'debug'),
-      info: sinon.spy(console, 'info'),
-      warn: sinon.spy(console, 'warn'),
-      error: sinon.spy(console, 'error'),
+      debug: sinon.stub(console, 'debug'),
+      info: sinon.stub(console, 'info'),
+      warn: sinon.stub(console, 'warn'),
+      error: sinon.stub(console, 'error'),
     }
     logger = createTestLogger()
   })
