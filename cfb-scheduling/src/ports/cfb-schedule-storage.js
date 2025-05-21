@@ -1,5 +1,10 @@
+import {createLogger} from '@rinkkasatiainen/cfb-observability'
+
 class CfbScheduleStorage {
+  #logger
+
   constructor() {
+    this.#logger = createLogger()
     this.dbName = 'cfb-db'
     this.dbVersion = 1
     this.storeName = 'cfb-sections'
@@ -15,6 +20,7 @@ class CfbScheduleStorage {
       const request = indexedDB.open(this.dbName, this.dbVersion)
 
       request.onerror = event => {
+        this.#logger.warn('Error opening database', {event})
         reject('Error opening database')
       }
 
@@ -26,78 +32,96 @@ class CfbScheduleStorage {
       request.onupgradeneeded = event => {
         const db = event.target.result
         if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id' })
+          const store = db.createObjectStore(this.storeName, { keyPath: ['eventId', 'id'] })
+          store.createIndex('eventId', 'eventId', { unique: false })
           store.createIndex('order', 'order', { unique: false })
         }
       }
     })
   }
 
-  async addSection(section) {
+  async addSection(eventId, section) {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
-      const request = store.add(section)
+      const sectionWithEventId = { ...section, eventId }
+      const request = store.add(sectionWithEventId)
 
       request.onsuccess = () => resolve(section)
-      request.onerror = () => reject('Error adding section')
+      request.onerror = event => {
+        this.#logger.warn('Error adding section', {event, section, eventId})
+        reject('Error adding section')
+      }
     })
   }
 
-  async updateSection(section) {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readwrite')
-      const store = transaction.objectStore(this.storeName)
-      const request = store.put(section)
-
-      request.onsuccess = () => resolve(section)
-      request.onerror = () => reject('Error updating section')
-    })
-  }
-
-  async getSection(id) {
+  async getSection(eventId, id) {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readonly')
       const store = transaction.objectStore(this.storeName)
-      const request = store.get(id)
+      const request = store.get([eventId, id])
 
-      request.onsuccess = () => resolve(request.result)
-      request.onerror = () => reject('Error getting section')
+      request.onsuccess = () => {
+        const result = request.result
+        if (result) {
+          const { eventId: _, ...sectionWithoutEventId } = result
+          resolve(sectionWithoutEventId)
+        } else {
+          resolve(undefined)
+        }
+      }
+      request.onerror = event => {
+        this.#logger.warn('Error getting section', {event, id, eventId})
+        reject('Error getting section')
+      }
     })
   }
 
-  async getAllSections() {
+  async getAllSections(eventId) {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readonly')
       const store = transaction.objectStore(this.storeName)
-      const request = store.getAll()
+      const index = store.index('eventId')
+      const request = index.getAll(IDBKeyRange.only(eventId))
 
-      request.onsuccess = () => resolve(request.result)
-      request.onerror = () => reject('Error getting all sections')
+      request.onsuccess = () => {
+        const sections = request.result.map(({ eventId: _, ...section }) => section)
+        resolve(sections)
+      }
+      request.onerror = event => {
+        this.#logger.warn('Error getting all sections', {event, eventId})
+        reject('Error getting all sections')
+      }
     })
   }
 
-  async deleteSection(id) {
+  async deleteSection(eventId, id) {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
-      const request = store.delete(id)
+      const request = store.delete([eventId, id])
 
       request.onsuccess = () => resolve()
-      request.onerror = () => reject('Error deleting section')
+      request.onerror = event => {
+        this.#logger.warn('Error deleting section', {event, id, eventId})
+        reject('Error deleting section')
+      }
     })
   }
 
-  async reorderSections(sections) {
+  async reorderSections(eventId, sections) {
     const transaction = this.db.transaction([this.storeName], 'readwrite')
     const store = transaction.objectStore(this.storeName)
 
     return Promise.all(
       sections.map((section, index) => new Promise((resolve, reject) => {
-        section.order = index
-        const request = store.put(section)
+        const sectionWithEventId = { ...section, eventId, order: index }
+        const request = store.put(sectionWithEventId)
         request.onsuccess = () => resolve(section)
-        request.onerror = () => reject('Error reordering sections')
+        request.onerror = event => {
+          this.#logger.warn('Error reordering sections', {event, section, index, eventId})
+          reject('Error reordering sections')
+        }
       })),
     )
   }

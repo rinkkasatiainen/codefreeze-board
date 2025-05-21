@@ -24,6 +24,7 @@
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
+    "@rinkkasatiainen/cfb-testing-utils": "^0.0.1",
     "@rinkkasatiainen/eslint-config": "^1.0.2",
     "@stylistic/eslint-plugin-js": "^4.2.0",
     "@web/dev-server-import-maps": "^0.2.1",
@@ -43,5 +44,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@rinkkasatiainen/cfb-observability": "^0.0.1"
+  }
 }

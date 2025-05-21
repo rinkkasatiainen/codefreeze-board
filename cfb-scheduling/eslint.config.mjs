@@ -13,5 +13,10 @@ export default [
   },
   { rules: {
     'mocha/no-top-level-hooks': 'off',
+    'no-unused-vars': 'error',
+    // '@stylistic/no-multiple-empty-lines': 'error',
+    '@stylistic/no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
+    '@stylistic/no-multi-spaces': 'warn',
+
   }},
 ]

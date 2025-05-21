@@ -1,68 +1,72 @@
-import { expect } from 'chai'
-import { cfbStorage } from '../../src/ports/cfb-schedule-storage.js'
+import {expect} from 'chai'
+import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
+import {createLogger} from '@rinkkasatiainen/cfb-observability'
 
 describe('CFBStorage', () => {
-  beforeEach(async () => {
-    await cfbStorage.init()
+  let failTestlogger
+  let testEventId
+
+  before(() => {
+    failTestlogger = createLogger()
   })
 
+  beforeEach(async () => {
+    await cfbStorage.init()
+    testEventId = 'test-event-id'
+  })
+  
+  afterEach(async () => {
+    const sections = await cfbStorage.getAllSections(testEventId)
+    await Promise.all(sections.map(section => cfbStorage.deleteSection(testEventId, section.id)))
+  })
 
-  xit('should add and retrieve a section', async () => {
-    const section = { id: 'test-1', title: 'Test Section', order: 0 }
-    await cfbStorage.addSection(section)
-        
-    const retrieved = await cfbStorage.getSection('test-1')
+  it('should add and retrieve a section', async () => {
+    const section = {id: 'test-1', title: 'Test Section', order: 0}
+    await cfbStorage.addSection(testEventId, section)
+
+    const retrieved = await cfbStorage.getSection(testEventId, 'test-1')
     expect(retrieved).to.deep.equal(section)
   })
 
-  xit('should update a section', async () => {
-    const section = { id: 'test-2', title: 'Test Section', order: 0 }
-    await cfbStorage.addSection(section)
-        
-    section.title = 'Updated Section'
-    await cfbStorage.updateSection(section)
-        
-    const retrieved = await cfbStorage.getSection('test-2')
-    expect(retrieved.title).to.equal('Updated Section')
-  })
-
-  xit('should get all sections', async () => {
+  it('should get all sections', async () => {
     const sections = [
-      { id: 'test-3', title: 'Section 1', order: 0 },
-      { id: 'test-4', title: 'Section 2', order: 1 },
+      {id: 'test-3', title: 'Section 1', order: 0},
+      {id: 'test-4', title: 'Section 2', order: 1},
     ]
-        
-    await Promise.all(sections.map(section => cfbStorage.addSection(section)))
-        
-    const retrieved = await cfbStorage.getAllSections()
+
+    await Promise.all(sections.map(section => cfbStorage.addSection(testEventId, section)))
+
+    const retrieved = await cfbStorage.getAllSections(testEventId)
     expect(retrieved).to.have.lengthOf(2)
     expect(retrieved.map(s => s.id)).to.have.members(['test-3', 'test-4'])
   })
 
-  xit('should delete a section', async () => {
-    const section = { id: 'test-5', title: 'Test Section', order: 0 }
-    await cfbStorage.addSection(section)
-        
-    await cfbStorage.deleteSection('test-5')
-        
-    const retrieved = await cfbStorage.getSection('test-5')
+  it('should delete a section', async () => {
+    const section = {id: 'test-5', title: 'Test Section', order: 0}
+    await cfbStorage.addSection(testEventId, section)
+
+    await cfbStorage.deleteSection(testEventId, 'test-5')
+
+    const retrieved = await cfbStorage.getSection(testEventId, 'test-5')
     expect(retrieved).to.be.undefined
   })
 
-  xit('should reorder sections', async () => {
+  it.only('should reorder sections', async () => {
     const sections = [
-      { id: 'test-6', title: 'Section 1', order: 0 },
-      { id: 'test-7', title: 'Section 2', order: 1 },
+      {id: 'test-6', title: 'Section 1', order: 0},
+      {id: 'test-7', title: 'Section 2', order: 1},
     ]
-        
-    await Promise.all(sections.map(section => cfbStorage.addSection(section)))
-        
+
+    await Promise.all(sections.map(section => cfbStorage.addSection(testEventId, section)))
+
     // Reverse the order
     const reordered = [...sections].reverse()
-    await cfbStorage.reorderSections(reordered)
-        
-    const retrieved = await cfbStorage.getAllSections()
+    await cfbStorage.reorderSections(testEventId, reordered)
+
+    const retrieved = (await cfbStorage.getAllSections(testEventId)).sort((a, b) => a.order - b.order)
     expect(retrieved[0].id).to.equal('test-7')
+    expect(retrieved[0].order).to.equal(0)
     expect(retrieved[1].id).to.equal('test-6')
+    expect(retrieved[1].order).to.equal(1)
   })
-}) 
+})

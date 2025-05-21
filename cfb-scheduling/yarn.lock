@@ -194,6 +194,18 @@
     unbzip2-stream "1.4.3"
     yargs "17.7.1"
 
+"@rinkkasatiainen/cfb-observability@^0.0.1":
+  version "0.0.1"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-observability/0.0.1/34146258245662cc29cb0715d81a9d2e1eda1bdb#34146258245662cc29cb0715d81a9d2e1eda1bdb"
+  integrity sha512-sN/p0JOy5/P+ed67QsRtBV9gJRWw7w1YdNOyULOQNK8mXegR+xqwrBVYbMaSGclPRzl35aO4fKjSDHwAtip1HQ==
+
+"@rinkkasatiainen/cfb-testing-utils@^0.0.1":
+  version "0.0.1"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-testing-utils/0.0.1/a522a5165bc8b4b2f4c8880f95e94a936afc0a05#a522a5165bc8b4b2f4c8880f95e94a936afc0a05"
+  integrity sha512-HW+A5LxZLxW39sHqYLhcN6x+1SuDNV1zSt6QpI/u4ieW3zKYAl8d3LdiJ2nz+E6D8wO1PH8kQKnWCIWmnb+oyQ==
+  dependencies:
+    "@rinkkasatiainen/cfb-observability" "^0.0.1"
+
 "@rinkkasatiainen/eslint-config@^1.0.2":
   version "1.0.2"
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config/1.0.2/19a6930cc4e28ec504ee977b7f3392487097e90a#19a6930cc4e28ec504ee977b7f3392487097e90a"

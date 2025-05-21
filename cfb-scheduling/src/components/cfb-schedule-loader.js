@@ -9,6 +9,8 @@ export class CfbScheduleLoader extends HTMLElement {
   static elementName = 'cfb-schedule-loader'
   static definedAttributes = {eventId: 'event-id'}
 
+  #eventId
+
   static get observedAttributes() {
     return [CfbScheduleLoader.definedAttributes.eventId]
   }
@@ -17,14 +19,16 @@ export class CfbScheduleLoader extends HTMLElement {
     if (newValue === oldValue) {
       return
     }
+
     if (name === CfbScheduleLoader.definedAttributes.eventId) {
-      const sections = await this.#loadSections()
+      this.#eventId = newValue
+      const sections = await this.#loadSections(this.#eventId)
       this.#storeSessionsToIndexDb(sections)
     }
   }
 
-  async #loadSections() {
-    return await CfbRetrievesSchedules.getScheduleSections()
+  async #loadSections(eventId) {
+    return await CfbRetrievesSchedules.getScheduleSections(eventId)
   }
 
   #storeSessionsToIndexDb(sections) {
@@ -33,7 +37,7 @@ export class CfbScheduleLoader extends HTMLElement {
       return
     }
     sections.forEach(section => {
-      cfbStorage.addSection(section)
+      cfbStorage.addSection(this.#eventId, section)
     })
   }
 }

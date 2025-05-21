@@ -19,10 +19,17 @@ const untilNotNull = async asyncCallback => {
   throw new Error('Timed out waiting for non-null result')
 }
 
+const noop = () => { /* noop */ }
+
+const todo = testName => {
+  xit(testName, noop)
+}
+
 describe('CfbScheduleLoader', () => {
   let testRoot = null
   let element
   let getScheduleSectionsStub
+  let eventId
 
   before(async () => {
     customElements.define(CfbScheduleLoader.elementName, CfbScheduleLoader)
@@ -37,14 +44,14 @@ describe('CfbScheduleLoader', () => {
     CfbRetrievesSchedules.getScheduleSections = getScheduleSectionsStub
     element = document.createElement('cfb-schedule-loader')
     testRoot.appendChild(element)
+    eventId = crypto.randomUUID()
   })
-
+  
   afterEach(async () => {
-    await emptyStorage()
+    await emptyStorage(eventId)
   })
 
   it('should store empty schedules when none are retrieved', async () => {
-    const eventId = 'test-event-1'
     getScheduleSectionsStub.resolves([])
     
     element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
@@ -54,7 +61,6 @@ describe('CfbScheduleLoader', () => {
 
   it('should store schedule sections in storage when event ID changes', async () => {
     testRoot.appendChild(element)
-    const eventId = 'test-event-1'
     const sections = [
       { id: 'section-1', name: 'Section 1', order: 0 },
       { id: 'section-2', name: 'Section 2', order: 1 },
@@ -64,27 +70,17 @@ describe('CfbScheduleLoader', () => {
     element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
     await tick()
 
-    // const storedSections = await untilNotNull(cfbStorage.getAllSections.bind(cfbStorage))
-    const storedSections = await cfbStorage.getAllSections()
+    const storedSections = await cfbStorage.getAllSections(eventId)
     expect(storedSections).to.deep.equal(sections)
   })
 
-
   todo('do some testing here.')
 })
-
-const noop = () => { /* noop */ }
-  
-const todo = testName => {
-  xit(testName, noop) 
-}
-
-async function emptyStorage() {
-  const sections = await cfbStorage.getAllSections()
-  await Promise.all(sections.map(section => cfbStorage.deleteSection(section.id)))
+async function emptyStorage(eventId) {
+  const sections = await cfbStorage.getAllSections(eventId)
+  await Promise.all(sections.map(section => cfbStorage.deleteSection(eventId, section.id)))
 }
 
 async function tick(ms = 0) {
   await new Promise(resolve => setTimeout(resolve, ms)) // Allow async operations to complete
 }
-
