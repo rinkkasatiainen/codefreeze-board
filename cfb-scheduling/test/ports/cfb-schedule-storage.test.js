@@ -1,6 +1,7 @@
 import {expect} from 'chai'
 import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import {LOG_LEVELS} from '../fakes/test-fail-logger.js'
 
 describe('CFBStorage', () => {
   let failTestlogger
@@ -8,6 +9,7 @@ describe('CFBStorage', () => {
 
   before(() => {
     failTestlogger = createLogger()
+    failTestlogger.setMinLevel(LOG_LEVELS.INFO)
   })
 
   beforeEach(async () => {
@@ -51,7 +53,7 @@ describe('CFBStorage', () => {
     expect(retrieved).to.be.undefined
   })
 
-  it.only('should reorder sections', async () => {
+  it('should reorder sections', async () => {
     const sections = [
       {id: 'test-6', title: 'Section 1', order: 0},
       {id: 'test-7', title: 'Section 2', order: 1},

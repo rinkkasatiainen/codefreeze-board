@@ -4,25 +4,19 @@ import * as sinon from 'sinon'
 import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
 import {CfbRetrievesSchedules} from '../../src/ports/cfb-retrieves-schedules.js'
 
-const untilNotNull = async asyncCallback => {
+const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
   const timeout = 1000 // 1 second timeout
 
   while (Date.now() - startTime < timeout) {
-    const result = await asyncCallback()
-    if (result !== null) {
+    const result = await asyncFn()
+    if (predicate(result)) {
       return result
     }
     await new Promise(resolve => setTimeout(resolve, 100))
   }
 
   throw new Error('Timed out waiting for non-null result')
-}
-
-const noop = () => { /* noop */ }
-
-const todo = testName => {
-  xit(testName, noop)
 }
 
 describe('CfbScheduleLoader', () => {
@@ -68,19 +62,13 @@ describe('CfbScheduleLoader', () => {
     getScheduleSectionsStub.resolves(sections)
 
     element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
-    await tick()
+    // await tick()
 
-    const storedSections = await cfbStorage.getAllSections(eventId)
+    const storedSections = await untilNotNull(() => cfbStorage.getAllSections(eventId), x => x.length > 0)
     expect(storedSections).to.deep.equal(sections)
   })
-
-  todo('do some testing here.')
 })
 async function emptyStorage(eventId) {
   const sections = await cfbStorage.getAllSections(eventId)
   await Promise.all(sections.map(section => cfbStorage.deleteSection(eventId, section.id)))
-}
-
-async function tick(ms = 0) {
-  await new Promise(resolve => setTimeout(resolve, ms)) // Allow async operations to complete
 }

@@ -1,5 +1,5 @@
 export class CfbRetrievesSchedules {
-  async getScheduleSections(id) {
+  async getScheduleSections(_id) {
     return [
       { name: 'Monday', id: '8f47c2a1-9b5d-4e0c-a2b3-c4d5e6f7g8h9', order: 0 },
       { name: 'Tuesday', id: '2c3d4e5f-6g7h-8i9j-k1l2-m3n4o5p6q7r', order: 1 },
