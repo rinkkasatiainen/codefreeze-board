@@ -1,4 +1,4 @@
-import {CfbRetrievesSchedules} from '../ports/cfb-retrieves-schedules.js'
+import CfbRetrievesSchedules from '../ports/cfb-retrieves-schedules.js'
 import cfbStorage from '../ports/cfb-schedule-storage.js'
 
 /**
@@ -7,7 +7,7 @@ import cfbStorage from '../ports/cfb-schedule-storage.js'
 
 export class CfbScheduleLoader extends HTMLElement {
   static elementName = 'cfb-schedule-loader'
-  static definedAttributes = {eventId: 'event-id'}
+  static definedAttributes = {eventId: 'data-event-id'}
 
   #eventId
 

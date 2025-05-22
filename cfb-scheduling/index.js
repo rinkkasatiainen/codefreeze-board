@@ -3,15 +3,15 @@ import cfbScheduleStorage from './src/ports/cfb-schedule-storage.js'
 
 export class SchedulingModule {
   // TODO: later - use features here
-  configure() {
+  async configure() {
     customElements.define(CfbScheduleLoader.elementName, CfbScheduleLoader)
-  }
-
-  async activate() {
     await cfbScheduleStorage.init()
   }
 
-  run() {
+  async activate() {
+  }
+
+  async run() {
     // Empty run method
   }
 }

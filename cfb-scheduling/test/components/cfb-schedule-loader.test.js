@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {CfbScheduleLoader} from '../../src/components/cfb-schedule-loader.js'
 import * as sinon from 'sinon'
 import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
-import {CfbRetrievesSchedules} from '../../src/ports/cfb-retrieves-schedules.js'
+import CfbRetrievesSchedules from '../../src/ports/cfb-retrieves-schedules.js'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
