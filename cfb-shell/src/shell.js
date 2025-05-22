@@ -16,8 +16,8 @@ export default class Shell {
   }
 
   configure() {
-    this.#features.forEach(module => {
-      module.configure()
+    this.#features.forEach(async module => {
+      await module.configure()
       this.#configuredModules.push(module)
       const idx = this.#features.findIndex(x => x === module)
       this.#features = [...this.#features.slice(0, idx), ...this.#features.slice(idx + 1)]
@@ -25,8 +25,8 @@ export default class Shell {
   }
 
   activate() {
-    this.#configuredModules.forEach(module => {
-      module.activate()
+    this.#configuredModules.forEach(async module => {
+      await module.activate()
       this.#activatedModules.push(module)
       const idx = this.#configuredModules.findIndex(x => x === module)
       this.#configuredModules = [...this.#configuredModules.slice(0, idx), ...this.#configuredModules.slice(idx + 1)]
@@ -34,8 +34,8 @@ export default class Shell {
   }
 
   run() {
-    this.#activatedModules.forEach(module => {
-      module.run()
+    this.#activatedModules.forEach(async module => {
+      await module.run()
       this.#startedModules.push(module)
       const idx = this.#activatedModules.findIndex(x => x === module)
       this.#activatedModules = [...this.#activatedModules.slice(0, idx), ...this.#activatedModules.slice(idx + 1)]
