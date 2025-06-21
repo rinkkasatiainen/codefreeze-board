@@ -51,18 +51,40 @@ for dir in cfb-*/; do
                 cd ..
             fi
             
+            # Extract test stats from output if available
+            test_stats=""
+            if [ "$QUIET" = false ]; then
+                # Look for pattern like "X passed, Y failed"
+                if echo "$output" | grep -q '[0-9]\+ passed, [0-9]\+ failed'; then
+                    test_stats=$(echo "$output" | grep -o '[0-9]\+ passed, [0-9]\+ failed' | tail -1)
+                fi
+                if echo "$output" | grep -q '[0-9]\+ passing ([0-9]\+'; then
+                    passing=$(echo "$output" | grep '[0-9]\+ passing' | tail -1)
+                    failing=$(echo "$output" | grep '[0-9]\+ failing' | tail -1 || echo "0 failing")
+                    test_stats="${passing}, ${failing}"
+                fi
+            fi
+            
             if [ $exit_code -eq 0 ]; then
                 if [ "$QUIET" = true ]; then
                     echo -e "${GREEN}✅ $package_name${NC}"
                 else
-                    echo -e "${GREEN}✅ PASSED${NC}"
+                    if [ -n "$test_stats" ]; then
+                        echo -e "${GREEN}✅ PASSED${NC} (${YELLOW}$test_stats${NC})"
+                    else
+                        echo -e "${GREEN}✅ PASSED${NC}"
+                    fi
                 fi
                 passed_tests=$((passed_tests + 1))
             else
                 if [ "$QUIET" = true ]; then
                     echo -e "${RED}❌ $package_name${NC}"
                 else
-                    echo -e "${RED}❌ FAILED${NC}"
+                    if [ -n "$test_stats" ]; then
+                        echo -e "${RED}❌ FAILED${NC} ($test_stats)"
+                    else
+                        echo -e "${RED}❌ FAILED${NC}"
+                    fi
                     echo -e "${YELLOW}Error output:${NC}"
                     echo "$output" | sed 's/^/  /'
                     echo ""
@@ -112,4 +134,4 @@ else
         echo -e "${GREEN}All tests passed!${NC}"
     fi
     exit 0
-fi 
+fi
