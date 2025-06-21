@@ -4,4 +4,29 @@
     padding: 20px;
     overflow-x: auto;
     min-height: calc(100vh - 40px);
+    /* Mobile touch improvements */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scroll-behavior: smooth;
+    /* Prevent text selection during drag */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    .cfb-board {
+        gap: 12px;
+        padding: 12px;
+        /* Ensure horizontal scrolling works well on mobile */
+        scroll-snap-type: x mandatory;
+    }
+    
+    .cfb-column {
+        scroll-snap-align: start;
+        /* Slightly smaller on mobile for better fit */
+        min-width: 280px;
+        max-width: 280px;
+    }
 } 

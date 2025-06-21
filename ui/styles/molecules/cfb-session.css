@@ -1,6 +1,13 @@
 cfb-session {
     cursor: move;
     transition: opacity 0.2s ease, transform 0.2s ease;
+    /* Prevent text selection during touch */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 cfb-session.dragging {
@@ -17,7 +24,7 @@ cfb-session.over {
 /* Style for the placeholder that remains in the original position */
 cfb-session.dragging + .cfb-session {
     background-color: sandybrown;
-    //background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
     transition: background-color 0.2s ease;
 }
 
@@ -43,4 +50,32 @@ cfb-drop-area {
 cfb-drop-area.drag-over {
     border-color: #007bff;
     background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Touch drag ghost styles */
+.cfb-touch-drag-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.8;
+    transform: translate(0, 0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    transition: none; /* Disable transitions for smooth dragging */
+}
+
+/* Mobile-specific touch improvements */
+@media (max-width: 768px) {
+    cfb-session {
+        /* Increase touch target size */
+        min-height: 44px;
+        /* Reduce rotation for better mobile experience */
+        /* transform: rotate(5deg); */
+    }
+    
+    cfb-session.dragging {
+        transform: rotate(5deg);
+    }
 } 
