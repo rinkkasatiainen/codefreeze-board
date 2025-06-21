@@ -1,8 +1,8 @@
 {
-  "name": "@rinkkasatiainen/cfb-scheduling",
-  "version": "0.0.3",
+  "name": "@rinkkasatiainen/cfb-session-discovery",
+  "version": "0.0.1",
   "type": "module",
-  "description": "Scheduling module for CFB. Handles scheduling and timing related functionality.",
+  "description": "Session discovery module for CFB. Handles session discovery related functions",
   "main": "dist/index.js",
   "license": "MIT",
   "publishConfig": {

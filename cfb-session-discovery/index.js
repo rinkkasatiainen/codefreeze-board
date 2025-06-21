@@ -1,10 +1,9 @@
 import {CfbScheduleLoader} from './src/components/cfb-schedule-loader.js'
 import cfbScheduleStorage from './src/ports/cfb-schedule-storage.js'
 
-export class SchedulingModule {
+export class SessionDiscoveryModule {
   // TODO: later - use features here
   async configure() {
-    customElements.define(CfbScheduleLoader.elementName, CfbScheduleLoader)
     await cfbScheduleStorage.init()
   }
 
@@ -12,6 +11,6 @@ export class SchedulingModule {
   }
 
   async run() {
-    // Empty run method
+    customElements.define(CfbScheduleLoader.elementName, CfbScheduleLoader)
   }
 }
