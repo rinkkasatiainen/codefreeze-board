@@ -239,10 +239,10 @@
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-observability/0.0.1/34146258245662cc29cb0715d81a9d2e1eda1bdb#34146258245662cc29cb0715d81a9d2e1eda1bdb"
   integrity sha512-sN/p0JOy5/P+ed67QsRtBV9gJRWw7w1YdNOyULOQNK8mXegR+xqwrBVYbMaSGclPRzl35aO4fKjSDHwAtip1HQ==
 
-"@rinkkasatiainen/eslint-config@^1.0.2":
-  version "1.0.2"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config/1.0.2/19a6930cc4e28ec504ee977b7f3392487097e90a#19a6930cc4e28ec504ee977b7f3392487097e90a"
-  integrity sha512-1+3mgRDZl4iLW7wqsA2TXLvkxnzTGypUXUbvcxZ+tQLL8UXuMQfNwCD3Rmos66dKoXI/1kyQ7aZkmk6i/wfpuQ==
+"@rinkkasatiainen/eslint-config@^1.0.3":
+  version "1.0.3"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config/1.0.3/4cc9bb9bd82f0ef679ecf6ad50eaa733fc579415#4cc9bb9bd82f0ef679ecf6ad50eaa733fc579415"
+  integrity sha512-bgkZsHBGNXfzX6euWBdBNgwGXOLKb8Huu8CRVaN7PZPZ16kWizbdI8mPmgA1dOWDTUE/EmSCnz9DR+A5Ua+kuw==
 
 "@rollup/plugin-node-resolve@^15.0.1":
   version "15.3.1"

@@ -20,11 +20,6 @@ describe('TestLogger', () => {
     sinon.restore()
   })
 
-  const noop = () => { /* noop */ }
-  const todo = testName => {
-    xit(testName, noop) 
-  }
-
   // First implement the basic tests
   it('Should throw error when logging debug message with minLevel set to INFO', () => {
     logger.setMinLevel('INFO')
@@ -32,7 +27,7 @@ describe('TestLogger', () => {
   })
 
   it('Should throw error when logging info message with minLevel set to WARN', () => {
-    logger.setMinLevel('WARN') 
+    logger.setMinLevel('WARN')
     expect(() => logger.info('test message warn')).to.throw('Log level INFO is below minimum level WARN')
   })
 
