@@ -1,5 +1,6 @@
 import CfbRetrievesSchedules from '../ports/cfb-retrieves-schedules.js'
 import cfbStorage from '../ports/cfb-schedule-storage.js'
+import {createLogger} from '@rinkkasatiainen/cfb-observability'
 
 /**
  * A simple schedule loader element
@@ -8,6 +9,7 @@ import cfbStorage from '../ports/cfb-schedule-storage.js'
 export class CfbScheduleLoader extends HTMLElement {
   static elementName = 'cfb-schedule-loader'
   static definedAttributes = {eventId: 'data-event-id'}
+  #logger = createLogger()
 
   #eventId
 
@@ -16,6 +18,7 @@ export class CfbScheduleLoader extends HTMLElement {
   }
 
   async attributeChangedCallback(name, oldValue, newValue) {
+    this.#logger.warn('Should fail')
     if (newValue === oldValue) {
       return
     }

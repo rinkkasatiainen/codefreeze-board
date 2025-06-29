@@ -1,7 +1,6 @@
 import {expect} from 'chai'
 import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
-import {LOG_LEVELS} from '../fakes/test-fail-logger.js'
+import {createLogger, LOG_LEVELS} from '@rinkkasatiainen/cfb-observability'
 
 describe('CFBStorage', () => {
   let failTestlogger
@@ -9,14 +8,14 @@ describe('CFBStorage', () => {
 
   before(() => {
     failTestlogger = createLogger()
-    failTestlogger.setMinLevel(LOG_LEVELS.INFO)
+    failTestlogger.setMinLevel(LOG_LEVELS.ERROR)
   })
 
   beforeEach(async () => {
     await cfbStorage.init()
     testEventId = 'test-event-id'
   })
-  
+
   afterEach(async () => {
     const sections = await cfbStorage.getAllSections(testEventId)
     await Promise.all(sections.map(section => cfbStorage.deleteSection(testEventId, section.id)))

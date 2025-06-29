@@ -1,19 +1,45 @@
-import { importMapsPlugin } from '@web/dev-server-import-maps'
+import {importMapsPlugin} from '@web/dev-server-import-maps'
+
+// Define test-specific module mappings
+const testImportMappings = {
+  // Map observability module to testing utilities for test environment
+  // '@rinkkasatiainen/cfb-observability': '@rinkkasatiainen/cfb-testing-utils/dist/index.js', // should not work ever
+  '@rinkkasatiainen/cfb-observability': '../node_modules/@rinkkasatiainen/cfb-testing-utils/dist/index.js',
+
+  // Map service worker for testing
+  // '/mockServiceWorker.js': './mockServiceWorker-foo.js',
+}
+
+// Web server plugins configuration
+const plugins = [
+  importMapsPlugin({
+    inject: {
+      importMap: {
+        imports: testImportMappings,
+      },
+    },
+  }),
+]
 
 export default {
-  plugins: [
-    importMapsPlugin({
-      inject: {
-        importMap: {
-          imports: {
-            // mock a dependency
-            // This should be more specific for the logging purposes. To be fixed.
-            // '@rinkkasatiainen/cfb-observability': '../../node_modules/@rinkkasatiainen/cfb-testing-utils/index.js',
-            '@rinkkasatiainen/cfb-observability': './test/fakes/test-fail-logger.js',
-            //     '/src/ports/cfb-retrieves-schedules.js': '/test/mocks/cfb-retrieves-schedules.js',
-          },
-        },
-      },
-    }),
-  ],
+  plugins,
+  nodeResolve: true,
+  browserStartTimeout: 60000,
+  testFramework: {
+    config: {
+      timeout: 3000,
+    },
+  },
+  // browsers: [
+  //   playwrightLauncher({product: 'chromium'}),
+  // ],
+  files: ['test/**/*.test.js'],
+  // Add polyfills for fetch and other browser APIs
+  polyfills: {
+    fetch: true,
+  },
+  // Enable experimental features for better MSW support
+  experimental: {
+    modernWeb: true,
+  },
 }

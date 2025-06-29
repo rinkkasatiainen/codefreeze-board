@@ -1,7 +1,4 @@
-import prettierPlugin from 'eslint-plugin-prettier'
 import {eslintConfig, rules} from '@rinkkasatiainen/eslint-config/js'
-// import stylisticJs from "@stylistic/eslint-plugin";
-// import mochaPlugin from "eslint-plugin-mocha";
 
 export default [
   {
@@ -11,12 +8,13 @@ export default [
     plugins: eslintConfig.plugins,
     rules: rules.recommended,
   },
-  { rules: {
-    'mocha/no-top-level-hooks': 'off',
-    // '@stylistic/no-multiple-empty-lines': 'error',
-    '@stylistic/no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
-    '@stylistic/no-multi-spaces': 'warn',
-    'no-unused-vars': ['error', {args: 'after-used', varsIgnorePattern: '^_', argsIgnorePattern: '^_'}],
-
-  }},
+  {
+    rules: {
+      'mocha/no-top-level-hooks': 'off',
+      // '@stylistic/no-multiple-empty-lines': 'error',
+      '@stylistic/no-multiple-empty-lines': ['error', {max: 1, maxEOF: 1}],
+      '@stylistic/no-multi-spaces': 'warn',
+      'no-unused-vars': ['error', {args: 'after-used', varsIgnorePattern: '^_', argsIgnorePattern: '^_'}],
+    }
+  }
 ]
