@@ -1,5 +1,5 @@
-import { expect } from '@open-wc/testing'
-import { createTestLogger, Times } from '../src/test-logger.js'
+import {expect} from '@open-wc/testing'
+import {createTestLogger, Times} from '../src/test-logger.js'
 import sinon from 'sinon'
 
 describe('TestLogger', () => {
@@ -18,6 +18,7 @@ describe('TestLogger', () => {
 
   afterEach(() => {
     sinon.restore()
+    // logger.setMinLevel('ERROR')
   })
 
   // First implement the basic tests
@@ -83,5 +84,13 @@ describe('TestLogger', () => {
     logger.expect.error(true, Times.once)
     logger.error('test error message')
     expect(consoleSpy.error).to.not.have.been.called
+  })
+
+  it('should be a singleton logger', () => {
+    const logger1 = createTestLogger()
+    const logger2 = createTestLogger()
+
+    logger1.expect.error(true, Times.once)
+    logger2.error('should not fail')
   })
 })

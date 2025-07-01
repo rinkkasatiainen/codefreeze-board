@@ -133,7 +133,11 @@ class TestLogger {
 
 }
 
-export const createTestLogger = options => new TestLogger(options)
+const singletonLogger = new TestLogger()
+export const createTestLogger = _ => {
+  singletonLogger.setMinLevel('ERROR')
+  return singletonLogger
+}
 
 export class Times {
   static once = 'once'

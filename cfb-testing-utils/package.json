@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-testing-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "Testing utilities for CFB. Provides common testing helpers and mocks.",
   "main": "dist/index.js",
