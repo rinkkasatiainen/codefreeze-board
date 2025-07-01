@@ -116,18 +116,18 @@ class TestLogger {
     }
 
     switch (level) {
-    case 'DEBUG':
-      console.debug(message, ...args) // eslint-disable-line no-console
-      return
-    case 'INFO':
-      console.info(message, ...args) // eslint-disable-line no-console
-      return
-    case 'WARN':
-      console.warn(message, ...args) // eslint-disable-line no-console
-      return
-    case 'ERROR':
-      console.error(message, ...args) // eslint-disable-line no-console
-      return
+      case 'DEBUG':
+        console.debug(message, ...args) // eslint-disable-line no-console
+        return
+      case 'INFO':
+        console.info(message, ...args) // eslint-disable-line no-console
+        return
+      case 'WARN':
+        console.warn(message, ...args) // eslint-disable-line no-console
+        return
+      case 'ERROR':
+        console.error(message, ...args) // eslint-disable-line no-console
+        return
     }
   }
 
