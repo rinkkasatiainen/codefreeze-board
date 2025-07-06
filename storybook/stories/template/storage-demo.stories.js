@@ -1,7 +1,7 @@
 import {exampleStorage} from '@rinkkasatiainen/cfb-npm-template'
 
 export default {
-  title: 'CFB Components/Storage Demo',
+  title: 'Template/CFB Components/Storage Demo',
   parameters: {
     docs: {
       description: {

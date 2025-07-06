@@ -6,7 +6,7 @@ if (!customElements.get(CfbExampleElement.elementName)) {
 }
 
 export default {
-  title: 'CFB Components/Example Element',
+  title: 'Template/CFB Components/Example Element',
   component: CfbExampleElement.elementName,
   parameters: {
     docs: {

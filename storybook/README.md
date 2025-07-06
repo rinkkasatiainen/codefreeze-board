@@ -35,26 +35,32 @@ The built files will be in the `storybook-static` directory.
 
 ## Available Stories
 
-### CFB Components
+### Template Components
 
-- **Example Element**: A simple web component that displays a greeting message
+- **CFB Example Element**: A simple web component that displays a greeting message
   - Default: Shows the component with default "World" greeting
   - Custom Name: Shows the component with a custom name
   - Empty Name: Shows the component with an empty name
   - Interactive: Allows real-time editing of the name attribute
 
-### Storage Demo
-
-- **IndexedDB Storage**: Demonstrates the storage functionality
+- **Storage Demo**: Demonstrates the IndexedDB storage functionality
   - Add random examples to the database
   - Retrieve all stored examples
   - Clear all data from storage
+
+### Default Examples
+
+- **Button**: Various button styles and states
+- **Header**: Page header with login/logout functionality
+- **Page**: Complete page layout example
 
 ## Adding New Components
 
 To add stories for new components:
 
-1. Create a new `.stories.js` file in the `stories/` directory
+1. Create a new `.stories.js` file in the appropriate directory:
+   - `stories/template/` for CFB template components
+   - `stories/default/` for example/demo components
 2. Import your component and register it as a custom element
 3. Define the story configuration with title, parameters, and argTypes
 4. Create story exports for different states/variants
