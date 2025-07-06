@@ -72,4 +72,4 @@ describe('ExampleStorage', () => {
     const retrieved = await exampleStorage.getAllExamples()
     expect(retrieved).to.be.an('array').that.is.empty
   })
-}) 
+})

@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-npm-template",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "description": "Scaffolding Template for cfb- based npm modules.",
   "main": "dist/index.js",
