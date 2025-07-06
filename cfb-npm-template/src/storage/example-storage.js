@@ -1,5 +1,6 @@
 class ExampleStorage {
   #logger
+  #db
 
   constructor() {
     this.#logger = {
@@ -27,17 +28,15 @@ class ExampleStorage {
       }
 
       request.onsuccess = event => {
-        this.db = event.target.result
+        this.#db = event.target.result
         ExampleStorage.#initialized = true
-        resolve(this.db)
+        resolve(null)
       }
 
       request.onupgradeneeded = event => {
         const db = event.target.result
         if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id' })
-          store.createIndex('name', 'name', { unique: false })
-          store.createIndex('age', 'age', { unique: false })
+          db.createObjectStore(this.storeName, { keyPath: 'id' })
         }
       }
     })
@@ -45,7 +44,7 @@ class ExampleStorage {
 
   async addExample(example) {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readwrite')
+      const transaction = this.#db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
       const request = store.add(example)
 
@@ -59,7 +58,7 @@ class ExampleStorage {
 
   async getExample(id) {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readonly')
+      const transaction = this.#db.transaction([this.storeName], 'readonly')
       const store = transaction.objectStore(this.storeName)
       const request = store.get(id)
 
@@ -75,7 +74,7 @@ class ExampleStorage {
 
   async getAllExamples() {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readonly')
+      const transaction = this.#db.transaction([this.storeName], 'readonly')
       const store = transaction.objectStore(this.storeName)
       const request = store.getAll()
 
@@ -91,7 +90,7 @@ class ExampleStorage {
 
   async deleteExample(id) {
     return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], 'readwrite')
+      const transaction = this.#db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
       const request = store.delete(id)
 

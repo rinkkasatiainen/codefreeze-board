@@ -2,8 +2,10 @@ import {CfbExampleElement} from './components/cfb-example.js'
 import exampleStorage from './storage/example-storage.js'
 
 export class NpmTemplateModule {
-  configure() {
-    // Only register if not already registered
+  #storage
+
+  async configure() {
+    this.#storage = await exampleStorage.init()
   }
 
   activate() {
@@ -11,6 +13,7 @@ export class NpmTemplateModule {
   }
 
   run() {
+    // Only register if not already registered
     this.#ensureDefined(CfbExampleElement.elementName, CfbExampleElement)
   }
 
@@ -19,12 +22,4 @@ export class NpmTemplateModule {
       customElements.define(elementName, element)
     }
   }
-
-  // Export storage for use in the template
-  get storage() {
-    return exampleStorage
-  }
 }
-
-// Export storage directly as well
-export {exampleStorage}
