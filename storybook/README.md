@@ -48,6 +48,16 @@ The built files will be in the `storybook-static` directory.
   - Retrieve all stored examples
   - Clear all data from storage
 
+- **CFB Session Discovery**:
+  - **Schedule Loader**: Web component that loads schedule sections for events
+    - Default: Basic component without event ID
+    - With Event ID: Component with predefined event ID
+    - Interactive: Real-time event ID input and loading
+  - **Storage Demo**: Schedule section storage functionality
+    - Add sample sections for events
+    - Retrieve sections by event ID
+    - Clear sections from storage
+
 ### Default Examples
 
 - **Button**: Various button styles and states
