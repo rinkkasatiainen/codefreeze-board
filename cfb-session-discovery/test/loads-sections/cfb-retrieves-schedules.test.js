@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { setupWorker } from 'msw/browser'
 import { http, HttpResponse } from 'msw'
-import CfbRetrievesSchedules from '../../src/ports/cfb-retrieves-schedules.js'
+import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker

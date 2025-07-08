@@ -1,10 +1,11 @@
 import {expect} from 'chai'
-import {CfbScheduleLoader} from '../../src/components/cfb-schedule-loader.js'
+import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
 import * as sinon from 'sinon'
-import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
-import CfbRetrievesSchedules from '../../src/ports/cfb-retrieves-schedules.js'
+import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
+import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
+import {withSection} from './cfb-section-models.js'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
@@ -61,8 +62,7 @@ describe('CfbScheduleLoader', () => {
 
   it('should store schedule sections in storage when event ID changes', async () => {
     const sections = [
-      { id: 'section-1', name: 'Section 1', order: 0 },
-      { id: 'section-2', name: 'Section 2', order: 1 },
+      withSection({order: 0}),
     ]
     getScheduleSectionsStub.resolves(sections)
 
@@ -72,6 +72,27 @@ describe('CfbScheduleLoader', () => {
 
     const storedSections = await untilNotNull(() => cfbStorage.getAllSections(eventId), x => x.length > 0)
     expect(storedSections).to.deep.equal(sections)
+  })
+
+  it('should update data-last-updated-at for all children', async () => {
+    const child1 = document.createElement('div')
+    child1.classList.add('listens-schedule-updates')
+    const child2 = document.createElement('div')
+    child2.classList.add('listens-schedule-updates')
+    element.appendChild(child1)
+    element.appendChild(child2)
+
+    const sections = [
+      withSection({order: 0}), withSection({order: 1}),
+    ]
+    getScheduleSectionsStub.resolves(sections)
+
+    element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
+    await tick()
+
+    const timestamp = child1.getAttribute('data-updated-at')
+    expect(timestamp).to.not.be.null
+    expect(child2.getAttribute('data-updated-at')).to.equal(timestamp)
   })
 })
 

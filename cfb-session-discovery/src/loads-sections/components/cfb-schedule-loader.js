@@ -27,6 +27,7 @@ export class CfbScheduleLoader extends HTMLElement {
       this.#eventId = newValue
       const sections = await this.#loadSections(this.#eventId)
       this.#storeSessionsToIndexDb(sections)
+      this.#updateChildren()
     }
   }
 
@@ -41,6 +42,13 @@ export class CfbScheduleLoader extends HTMLElement {
     }
     sections.forEach(section => {
       cfbStorage.addSection(this.#eventId, section)
+    })
+  }
+
+  #updateChildren(){
+    const timestamp = new Date().toISOString()
+    this.querySelectorAll('.listens-schedule-updates').forEach(e => {
+      e.setAttribute('data-updated-at', timestamp)
     })
   }
 }

@@ -1,24 +1,24 @@
 import {expect} from 'chai'
-import cfbStorage from '../../src/ports/cfb-schedule-storage.js'
+import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {createLogger, LOG_LEVELS} from '@rinkkasatiainen/cfb-observability'
+import {withClearableStorage} from '../test-helpers.js'
 
 describe('CFBStorage', () => {
   let failTestlogger
   let testEventId
 
-  before(() => {
+  before(async () => {
     failTestlogger = createLogger()
     failTestlogger.setMinLevel(LOG_LEVELS.ERROR)
+    await cfbStorage.init()
   })
 
   beforeEach(async () => {
-    await cfbStorage.init()
     testEventId = 'test-event-id'
   })
 
   afterEach(async () => {
-    const sections = await cfbStorage.getAllSections(testEventId)
-    await Promise.all(sections.map(section => cfbStorage.deleteSection(testEventId, section.id)))
+    withClearableStorage(cfbStorage).clearAll(testEventId)
   })
 
   it('should add and retrieve a section', async () => {
