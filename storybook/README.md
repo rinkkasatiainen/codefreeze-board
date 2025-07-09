@@ -53,6 +53,10 @@ The built files will be in the `storybook-static` directory.
     - Default: Basic component without event ID
     - With Event ID: Component with predefined event ID
     - Interactive: Real-time event ID input and loading
+  - **Schedule**: Web component that displays sections from IndexedDB
+    - Default: Basic component without attributes
+    - With Event ID: Component with predefined event ID
+    - Interactive: Real-time event ID input, section addition, and updates
   - **Storage Demo**: Schedule section storage functionality
     - Add sample sections for events
     - Retrieve sections by event ID

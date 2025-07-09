@@ -1,4 +1,4 @@
-import {exampleStorage} from '@rinkkasatiainen/cfb-npm-template'
+import exampleStorage from '@rinkkasatiainen/cfb-npm-template/src/storage/example-storage.js'
 
 export default {
   title: 'Template/CFB Components/Storage Demo',

@@ -1,7 +1,7 @@
-import cfbScheduleStorage from '@rinkkasatiainen/cfb-session-discovery/dist/src/ports/cfb-schedule-storage'
+import cfbScheduleStorage from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
 
 export default {
-  title: 'Template/CFB Session Discovery/Storage Demo',
+  title: '  CFB Session Discovery/Storage Demo',
   parameters: {
     docs: {
       description: {

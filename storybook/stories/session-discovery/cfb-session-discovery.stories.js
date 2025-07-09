@@ -1,12 +1,10 @@
 import {SessionDiscoveryModule} from '@rinkkasatiainen/cfb-session-discovery'
-import {CfbScheduleLoader} from '@rinkkasatiainen/cfb-session-discovery/dist/src/components/cfb-schedule-loader'
+import {CfbScheduleLoader} from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/components/cfb-schedule-loader.js'
 
 const module = new SessionDiscoveryModule()
 module.configure()
 module.activate()
 module.run()
-
-
 
 export default {
   title: 'Template/CFB Session Discovery/Schedule Loader',
