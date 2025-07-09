@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+when creating a web component, follow these rules:
+
+- take inspiration from [cfb-example.stories.js](mdc:storybook/stories/template/cfb-example.render.js) and the respective #cfb-example.render.js.
+- separate the rendering part into own file (.render.js)
+
+- Follow the following folder structure
+ - always put stories in /stories folder
+ - have a sub folder which is the name of the NPM module without the @rinkkasatiainen prefix
+ - create 2 files, cfb-<module_name>.render.js and cfb-<module_name>.stories.js
