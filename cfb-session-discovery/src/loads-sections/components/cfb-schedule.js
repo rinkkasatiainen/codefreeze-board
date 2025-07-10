@@ -41,7 +41,9 @@ export class CfbSchedule extends HTMLElement {
   async #render() {
     try {
       // Get sections from IndexDB for the specified event
-      const sections = await cfbScheduleStorage.getAllSections(this.#eventId || 'default-event')
+      const sections = await cfbScheduleStorage
+        .getAllSections(this.#eventId || 'default-event')
+      sections.sort((a, b) => a.order - b.order)
 
       // Clear existing content
       this.innerHTML = ''
