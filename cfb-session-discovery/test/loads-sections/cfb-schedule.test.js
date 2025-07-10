@@ -5,17 +5,7 @@ import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 import {ensureSingle, withClearableStorage} from '../test-helpers.js'
 import {withSection} from './cfb-section-models.js'
-
-const waitUntil = async (predicate, timeout = 100) => {
-  const startTime = Date.now()
-  while (Date.now() - startTime < timeout) {
-    if (await predicate()) {
-      return
-    }
-    await new Promise(resolve => setTimeout(resolve, 10))
-  }
-  throw new Error(`Timeout of ${timeout}ms exceeded waiting for predicate to become true`)
-}
+import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
 
 describe('CfbSchedule', () => {
   let testRoot = null
@@ -42,22 +32,16 @@ describe('CfbSchedule', () => {
   })
 
   it('should render empty when no sections exist', async () => {
-    const sut = document.createElement(CfbSchedule.elementName)
-    sut.setAttribute(CfbSchedule.definedAttributes.eventId, eventId)
-    testRoot.appendChild(sut)
+    const sut = await scheduleWithASection()
 
     await waitUntil(() => sut.children.length === 0)
     expect(sut.children.length).to.equal(0)
   })
 
-  it('should render sections when they exist in storage', async () => {
+  it('should render a single section when one section in storage', async () => {
     // Add a test section to storage
-    const testSection = withSection()
-    await cfbScheduleStorage.addSection(eventId, testSection)
-
-    const sut = document.createElement(CfbSchedule.elementName)
-    sut.setAttribute(CfbSchedule.definedAttributes.eventId, eventId)
-    testRoot.appendChild(sut)
+    const testSection = withSection({order: 0})
+    const sut = await scheduleWithASection(testSection)
 
     await waitUntil(() => sut.querySelectorAll('cfb-section').length > 0)
 
@@ -69,30 +53,26 @@ describe('CfbSchedule', () => {
   it('should update when data-updated-at attribute changes', async () => {
     // Add initial sections
     const section1 = withSection({order: 0})
-    await cfbScheduleStorage.addSection(eventId, section1)
+    const sut = await scheduleWithASection(section1)
 
-    const sut = document.createElement(CfbSchedule.elementName)
-    sut.setAttribute(CfbSchedule.definedAttributes.eventId, eventId)
-    testRoot.appendChild(sut)
-
-    await waitUntil(() => sut.children.length > 0)
+    await waitUntil(() => sut.querySelectorAll('cfb-section').length > 0)
 
     await cfbScheduleStorage.addSection(eventId, withSection({order: 1}))
     sut.setAttribute(CfbSchedule.definedAttributes.updatedAt, Date.now().toString())
 
-    await waitUntil(() => sut.children.length === 2)
-    expect(sut.children.length).to.equal(2)
+    await waitUntil(() => sut.querySelectorAll('cfb-section').length === 2)
+    const sections = sut.querySelectorAll('cfb-section')
+    expect(sections.length).to.equal(2)
   })
 
   it('should not update when data-updated-at attribute is the same', async () => {
-    const sut = document.createElement(CfbSchedule.elementName)
-    sut.setAttribute(CfbSchedule.definedAttributes.eventId, eventId)
-    sut.setAttribute(CfbSchedule.definedAttributes.updatedAt, '123')
-    testRoot.appendChild(sut)
+    const sut = await scheduleWithASection(withSection(), {updatedAt: '123'})
 
-    await waitUntil(() => sut.children.length >= 0)
+    await waitUntil(() => sut.children.length >= 1)
     const initialChildrenCount = sut.children.length
 
+    // Add a section to DB - rerender would change the
+    await cfbScheduleStorage.addSection(eventId, withSection())
     // Set the same attribute value
     sut.setAttribute(CfbSchedule.definedAttributes.updatedAt, '123')
 
@@ -117,4 +97,17 @@ describe('CfbSchedule', () => {
     // Restore original method
     cfbScheduleStorage.getAllSections = originalGetAllSections
   })
+
+  const scheduleWithASection = async (section = withSection(), params = {}) => {
+    await cfbScheduleStorage.addSection(eventId, section)
+
+    const sut = document.createElement(CfbSchedule.elementName)
+    sut.setAttribute(CfbSchedule.definedAttributes.eventId, eventId)
+    Object.entries(params).forEach(([key, value]) => {
+      sut.setAttribute(key, value)
+    })
+
+    testRoot.appendChild(sut)
+    return sut
+  }
 })

@@ -274,10 +274,10 @@
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-observability/0.0.1/34146258245662cc29cb0715d81a9d2e1eda1bdb"
   integrity sha512-sN/p0JOy5/P+ed67QsRtBV9gJRWw7w1YdNOyULOQNK8mXegR+xqwrBVYbMaSGclPRzl35aO4fKjSDHwAtip1HQ==
 
-"@rinkkasatiainen/cfb-testing-utils@^0.0.3":
-  version "0.0.3"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-testing-utils/0.0.3/31424c5b823edaf02e19678c4ebec3aaae3e2260#31424c5b823edaf02e19678c4ebec3aaae3e2260"
-  integrity sha512-C4QLl4HCcarOj4FdGh3p5GTCVIK8khBustlE0QZYRp0JMrHEhn1aQsAFrXbZ+DbYgPHhsV09zblhYMLCP2cNpA==
+"@rinkkasatiainen/cfb-testing-utils@^0.0.4":
+  version "0.0.4"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-testing-utils/0.0.4/5614d36ff3374cde9787d77b29b8587a18d9fefc#5614d36ff3374cde9787d77b29b8587a18d9fefc"
+  integrity sha512-8maVbzCR8FeZQx0fy5BT784Dvf5Pr+wcfKrib/0/A2ih/fSRZUaE2rGCW/b8LWN1ET76L8TIKsLB+xqoNq0FbA==
   dependencies:
     "@rinkkasatiainen/cfb-observability" "^0.0.1"
 
