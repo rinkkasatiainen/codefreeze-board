@@ -1,9 +1,9 @@
 {
   "name": "@rinkkasatiainen/cfb-observability",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "description": "Observability module for CFB. Handles logging and monitoring functionality.",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
