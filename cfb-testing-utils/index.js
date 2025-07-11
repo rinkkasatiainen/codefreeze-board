@@ -11,3 +11,5 @@ export const createLogger = testLogger // TestFail Logger for @cfb-observability
 export const createTestLogger = testLogger
 
 export { waitUntil } from './src/wait-until.js'
+export { tick } from './src/tick.js'
+export { todo, testList } from './src/test-list.js'
