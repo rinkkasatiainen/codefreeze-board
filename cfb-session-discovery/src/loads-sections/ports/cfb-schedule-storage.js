@@ -33,16 +33,16 @@ class CfbScheduleStorage {
 
       request.onupgradeneeded = event => {
         const db = event.target.result
-        this.#logger.info('Database upgrade needed, creating stores...')
+        // this.#logger.info('Database upgrade needed, creating stores...')
 
         if (!db.objectStoreNames.contains(this.storeName)) {
-          this.#logger.info('Creating sections store...')
+          // this.#logger.info('Creating sections store...')
           const store = db.createObjectStore(this.storeName, { keyPath: ['eventId', 'id'] })
           store.createIndex('eventId', 'eventId', { unique: false })
           store.createIndex('order', 'order', { unique: false })
         }
         if (!db.objectStoreNames.contains(this.sessionsStoreName)) {
-          this.#logger.info('Creating sessions store...')
+          // this.#logger.info('Creating sessions store...')
           const sessionsDb = db.createObjectStore(this.sessionsStoreName, { keyPath: ['eventId', 'sectionId', 'id'] })
           sessionsDb.createIndex('eventId', 'eventId', { unique: false })
           sessionsDb.createIndex('sectionId', 'sectionId', { unique: false })
@@ -187,8 +187,6 @@ class CfbScheduleStorage {
 
       getRequest.onsuccess = async () => {
         const session = getRequest.result
-        debugger
-        const allKeys = getRequest
         if (!session) {
           reject('Session not found')
           return

@@ -1,12 +1,6 @@
 import {expect} from 'chai'
 import {CfbSection} from '../../src/loads-sections/components/cfb-section.js'
-
-const noop = () => { /* noop */
-}
-const todo = testName => {
-
-  xit(testName, noop)
-}
+import {todo} from '@rinkkasatiainen/cfb-testing-utils'
 
 describe('CfbSection', () => {
   let testRoot = null

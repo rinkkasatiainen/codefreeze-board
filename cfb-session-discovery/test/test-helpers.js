@@ -27,11 +27,12 @@ function isArray(value) {
 }
 
 export function ensureSingle(arr, predicate = () => true) {
-  if (!(isArray(arr) && arr.length === 1)) {
-    throw new AssertionError('Expected array to have exactly one element, but got: ' + arr.join(', '))
+  const elements = arr instanceof NodeList ? Array.from(arr) : arr
+  if (!(isArray(elements) && elements.length === 1)) {
+    throw new AssertionError('Expected array to have exactly one element, but got: ' + elements.join(', '))
   }
-  if(arr.filter(predicate).length !== 1){
+  if (elements.filter(predicate).length !== 1) {
     throw new AssertionError('expected the single element to match predicate')
   }
-  return arr[0]
+  return elements[0]
 }

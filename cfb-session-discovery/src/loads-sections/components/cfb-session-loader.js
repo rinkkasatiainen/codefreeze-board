@@ -58,6 +58,7 @@ export class CfbSessionLoader extends HTMLElement {
     try {
       // Fetch sessions for the event and section
       const sessions = await this.#fetchSessions(this.#eventId, this.#sectionId)
+      sessions.sort((a, b) => a.order - b.order)
 
       // Find the cfb-section child element
       const sectionElement = this.querySelector('cfb-section')
@@ -91,6 +92,7 @@ export class CfbSessionLoader extends HTMLElement {
 
   #createSessionElement(session) {
     const sessionElement = document.createElement('cfb-session')
+    sessionElement.setAttribute('data-session-id', session.id)
 
     const tagsHtml = session.tags.map(tag =>
       `<span class="cfb-tag cfb-tag--${tag.type}">${tag.name}</span>`,

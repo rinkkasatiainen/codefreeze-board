@@ -3,6 +3,7 @@ import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {createLogger, LOG_LEVELS} from '@rinkkasatiainen/cfb-observability'
 import {withClearableStorage} from '../test-helpers.js'
 import {mockSessionWith} from './cfb-section-models.js'
+import {todo} from '@rinkkasatiainen/cfb-testing-utils'
 
 describe('CFBStorage', () => {
   let failTestlogger
@@ -76,13 +77,6 @@ describe('CFBStorage', () => {
   })
 
   describe('sessions', () => {
-    const noop = () => { /* noop */
-    }
-    const todo = testName => {
-
-      xit(testName, noop)
-    }
-
     describe('basic flow', () => {
       it('Should add and retrieve a session', async () => {
         const session = mockSessionWith()
@@ -194,11 +188,81 @@ describe('CFBStorage', () => {
     })
 
     describe('data', () => {
-      todo('Should handle session data with tags correctly')
-      todo('Should handle session data with speakers correctly')
-      todo('Should handle session data with order correctly')
-      todo('Should handle session data with description correctly')
-      todo('Should handle session data with sectionId correctly')
+      it('Should handle session data with tags correctly', async () => {
+        const session = mockSessionWith({
+          tags: [
+            {name: 'Frontend', type: 'blue'},
+            {name: 'React', type: 'purple'},
+            {name: 'Workshop', type: 'green'},
+          ],
+        })
+
+        await cfbStorage.addSession(testEventId, session)
+
+        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        expect(sessions.map( x=>x.tags)).to.eql([session.tags])
+      })
+
+      it('Should handle session data with speakers correctly', async () => {
+        const session = mockSessionWith({
+          speakers: [
+            {name: 'John Doe', initial: 'JD'},
+            {name: 'Jane Smith', initials: 'JS'},
+            {name: 'Mike Johnson', initial: 'MJ'},
+          ],
+        })
+
+        await cfbStorage.addSession(testEventId, session)
+
+        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        expect(sessions.map( x=>x.speakers)).to.eql([session.speakers])
+      })
+
+      it('Should handle session data with order correctly', async () => {
+        const session1 = mockSessionWith({order: 0})
+        const session2 = mockSessionWith({order: 1, sectionId: session1.sectionId})
+        const session3 = mockSessionWith({order: 2, sectionId: session1.sectionId})
+
+        await cfbStorage.addSession(testEventId, session1)
+        await cfbStorage.addSession(testEventId, session2)
+        await cfbStorage.addSession(testEventId, session3)
+
+        const sessions = await cfbStorage.getAllSessions(testEventId, session1.sectionId)
+        expect(sessions).to.have.lengthOf(3)
+
+        // Verify order is preserved
+        const sortedSessions = sessions.sort((a, b) => a.order - b.order)
+        expect(sortedSessions[0].order).to.equal(0)
+        expect(sortedSessions[1].order).to.equal(1)
+        expect(sortedSessions[2].order).to.equal(2)
+      })
+
+      it('Should handle session data with description correctly', async () => {
+        const session = mockSessionWith({
+          description: `This is a detailed description of the session 
+          with multiple lines 
+          and special characters: !@#$%^&*()`,
+        })
+
+        await cfbStorage.addSession(testEventId, session)
+
+        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        expect(sessions).to.have.lengthOf(1)
+        expect(sessions[0].description).to.equal(session.description)
+      })
+
+      it('Should handle session data with sectionId correctly', async () => {
+        const session = mockSessionWith({
+          sectionId: 'special-section-id-with-dashes-and-underscores',
+        })
+
+        await cfbStorage.addSession(testEventId, session)
+
+        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        expect(sessions).to.have.lengthOf(1)
+        expect(sessions[0].sectionId).to.equal(session.sectionId)
+        expect(sessions[0].sectionId).to.equal('special-section-id-with-dashes-and-underscores')
+      })
     })
 
     describe('validation', () => {
