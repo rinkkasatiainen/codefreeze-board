@@ -50,10 +50,8 @@ export class CfbSchedule extends HTMLElement {
 
       // Add a cfb-section for each entry
       sections.forEach(section => {
-        const sectionElement = document.createElement('cfb-section')
-        sectionElement.setAttribute('data-section-id', section.id)
-        sectionElement.setAttribute('data-name', section.name)
-        this.appendChild(sectionElement)
+        const x = `<cfb-section data-section-id="${section.id}" data-name="${section.name}"></cfb-section>`
+        this.innerHTML += x
       })
     } catch (error) {
       this.#logger.error('Error rendering schedule:', error)

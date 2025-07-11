@@ -1,0 +1,24 @@
+.cfb-section {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.cfb-column__title {
+    margin: 0;
+    padding: 0;
+}
+
+.cfb-column {
+    margin: 0;
+    padding: 0;
+}
+
+.cfb-session-placeholder {
+    display: block;
+    min-height: 20px;
+    border: 2px dashed #ccc;
+    margin: 5px 0;
+    background-color: #f9f9f9;
+} 

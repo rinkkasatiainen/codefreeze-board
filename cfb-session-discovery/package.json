@@ -1,9 +1,9 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "Session discovery module for CFB. Handles session discovery related functions",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -19,7 +19,7 @@
     "test:manual": "web-test-runner \"test/**/*.test.js\" --node-resolve --config test/web-test-runner.config.mjs --manual",
     "test:specific": "web-test-runner --files=test/**/*${PATTERN:-*}*.test.js --node-resolve --config test/web-test-runner.config.mjs",
     "clean": "rm -rf dist",
-    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/",
+    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp -r css dist/",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run lint",
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
