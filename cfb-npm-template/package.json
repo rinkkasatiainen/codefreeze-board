@@ -1,9 +1,9 @@
 {
   "name": "@rinkkasatiainen/cfb-npm-template",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "Scaffolding Template for cfb- based npm modules.",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
