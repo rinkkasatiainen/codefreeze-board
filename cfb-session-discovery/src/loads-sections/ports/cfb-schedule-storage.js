@@ -6,8 +6,9 @@ class CfbScheduleStorage {
   constructor() {
     this.#logger = createLogger()
     this.dbName = 'cfb-db'
-    this.dbVersion = 1
+    this.dbVersion = 2
     this.storeName = 'cfb-sections'
+    this.sessionsStoreName = 'cfb-sessions'
   }
 
   static #initialized = null
@@ -26,15 +27,28 @@ class CfbScheduleStorage {
 
       request.onsuccess = event => {
         this.db = event.target.result
+        CfbScheduleStorage.#initialized = true
         resolve(this.db)
       }
 
       request.onupgradeneeded = event => {
         const db = event.target.result
+        this.#logger.info('Database upgrade needed, creating stores...')
+
         if (!db.objectStoreNames.contains(this.storeName)) {
+          this.#logger.info('Creating sections store...')
           const store = db.createObjectStore(this.storeName, { keyPath: ['eventId', 'id'] })
           store.createIndex('eventId', 'eventId', { unique: false })
           store.createIndex('order', 'order', { unique: false })
+        }
+        if (!db.objectStoreNames.contains(this.sessionsStoreName)) {
+          this.#logger.info('Creating sessions store...')
+          const sessionsDb = db.createObjectStore(this.sessionsStoreName, { keyPath: ['eventId', 'sectionId', 'id'] })
+          sessionsDb.createIndex('eventId', 'eventId', { unique: false })
+          sessionsDb.createIndex('sectionId', 'sectionId', { unique: false })
+          sessionsDb.createIndex('eventSection', ['eventId', 'sectionId'], { unique: false })
+          sessionsDb.createIndex('order', 'order', { unique: false })
+          sessionsDb.createIndex('eventSessionId', ['eventId', 'id'], {unique: true})
         }
       }
     })
@@ -124,6 +138,97 @@ class CfbScheduleStorage {
         }
       })),
     )
+  }
+
+  async addSession(eventId, session) {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([this.sessionsStoreName], 'readwrite')
+      const store = transaction.objectStore(this.sessionsStoreName)
+      const sessionWithKeys = { ...session, eventId, sectionId: session.sectionId }
+
+      this.#logger.info('Adding session with keys:', {eventId, sectionId: session.sectionId, id: session.id})
+
+      const request = store.add(sessionWithKeys)
+
+      request.onsuccess = () => resolve(session)
+      request.onerror = event => {
+        this.#logger.warn('Error adding session', {event, session, eventId, sessionWithKeys})
+        reject('Error adding session')
+      }
+    })
+  }
+
+  async getAllSessions(eventId, sectionId) {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([this.sessionsStoreName], 'readonly')
+      const store = transaction.objectStore(this.sessionsStoreName)
+      const index = store.index('eventSection')
+      const request = index.getAll(IDBKeyRange.only([eventId, sectionId]))
+
+      request.onsuccess = () => {
+        const sessions = request.result.map(({ eventId: _, ...session }) => session)
+        resolve(sessions)
+      }
+      request.onerror = event => {
+        this.#logger.warn('Error getting all sessions', {event, eventId, sectionId})
+        reject('Error getting all sessions')
+      }
+    })
+  }
+
+  async deleteSession(eventId, sessionId) {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([this.sessionsStoreName], 'readwrite')
+      const store = transaction.objectStore(this.sessionsStoreName)
+
+      // First get the session to find its sectionId
+      const index = store.index('eventSessionId')
+      const getRequest = index.get([eventId, sessionId])
+
+      getRequest.onsuccess = async () => {
+        const session = getRequest.result
+        debugger
+        const allKeys = getRequest
+        if (!session) {
+          reject('Session not found')
+          return
+        }
+
+        const deleteRequest = store.delete([eventId, session.sectionId, sessionId])
+        deleteRequest.onsuccess = () => resolve()
+        deleteRequest.onerror = event => {
+          this.#logger.warn('Error deleting session', {event, sessionId, eventId})
+          reject('Error deleting session')
+        }
+      }
+
+      getRequest.onerror = event => {
+        this.#logger.warn('Error getting session for deletion', {event, sessionId, eventId})
+        reject('Error getting session for deletion')
+      }
+    })
+  }
+
+  // Method to reset database for testing
+  async resetDatabase() {
+    if (this.db) {
+      this.db.close()
+    }
+    CfbScheduleStorage.#initialized = false
+
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(this.dbName)
+
+      request.onsuccess = () => {
+        this.#logger.info('Database deleted successfully')
+        resolve()
+      }
+
+      request.onerror = event => {
+        this.#logger.warn('Error deleting database', {event})
+        reject('Error deleting database')
+      }
+    })
   }
 }
 

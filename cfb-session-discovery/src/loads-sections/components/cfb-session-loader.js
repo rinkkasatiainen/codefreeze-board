@@ -2,15 +2,19 @@
  * A session loader component that fetches and displays sessions for a section
  */
 
+import cfbScheduleStorage from '../ports/cfb-schedule-storage.js'
+import {createLogger} from '@rinkkasatiainen/cfb-observability'
+
 export class CfbSessionLoader extends HTMLElement {
   static elementName = 'cfb-session-loader'
 
   static definedAttributes = {
     sectionId: 'data-section-id',
     eventId: 'data-event-id',
-    updatedAt: 'data-updated-at'
+    updatedAt: 'data-updated-at',
   }
 
+  #logger = createLogger()
   #sectionId = undefined
   #eventId = undefined
   #updatedAt = undefined
@@ -19,7 +23,7 @@ export class CfbSessionLoader extends HTMLElement {
     return [
       CfbSessionLoader.definedAttributes.sectionId,
       CfbSessionLoader.definedAttributes.eventId,
-      CfbSessionLoader.definedAttributes.updatedAt
+      CfbSessionLoader.definedAttributes.updatedAt,
     ]
   }
 
@@ -31,7 +35,7 @@ export class CfbSessionLoader extends HTMLElement {
     if (newValue === oldValue) {
       return
     }
-    
+
     if (name === CfbSessionLoader.definedAttributes.sectionId) {
       this.#sectionId = newValue
       this.#render()
@@ -54,7 +58,7 @@ export class CfbSessionLoader extends HTMLElement {
     try {
       // Fetch sessions for the event and section
       const sessions = await this.#fetchSessions(this.#eventId, this.#sectionId)
-      
+
       // Find the cfb-section child element
       const sectionElement = this.querySelector('cfb-section')
       if (!sectionElement) {
@@ -76,34 +80,24 @@ export class CfbSessionLoader extends HTMLElement {
   }
 
   async #fetchSessions(eventId, sectionId) {
-    // TODO: Implement actual session fetching logic
-    // For now, return mock data
-    return [
-      {
-        id: crypto.randomUUID(),
-        name: 'Monday: Team Offsite in Helsinki',
-        description: 'Team building event in Helsinki',
-        sectionId: sectionId,
-        order: 0,
-        tags: [{name: 'Travel', type: 'blue'}, {name: 'Team Event', type: 'purple'}],
-        speakers: [
-          {name: 'John Doe', initial: 'JD'}, 
-          {name: 'Jane Smith', initials: 'JS'},
-          {name: 'Mike Johnson', initials: 'MJ'}
-        ]
-      }
-    ]
+    try {
+      await cfbScheduleStorage.init()
+      return await cfbScheduleStorage.getAllSessions(eventId, sectionId)
+    } catch (error) {
+      this.#logger.error('Error fetching sessions:', error)
+      return []
+    }
   }
 
   #createSessionElement(session) {
     const sessionElement = document.createElement('cfb-session')
-    
-    const tagsHtml = session.tags.map(tag => 
-      `<span class="cfb-tag cfb-tag--${tag.type}">${tag.name}</span>`
+
+    const tagsHtml = session.tags.map(tag =>
+      `<span class="cfb-tag cfb-tag--${tag.type}">${tag.name}</span>`,
     ).join('')
 
-    const avatarsHtml = session.speakers.map(speaker => 
-      `<div class="cfb-avatar" aria-label="${speaker.name}">${speaker.initial || speaker.initials}</div>`
+    const avatarsHtml = session.speakers.map(speaker =>
+      `<div class="cfb-avatar" aria-label="${speaker.name}">${speaker.initial || speaker.initials}</div>`,
     ).join('')
 
     sessionElement.innerHTML = `
@@ -127,4 +121,4 @@ export class CfbSessionLoader extends HTMLElement {
 
     return sessionElement
   }
-} 
+}

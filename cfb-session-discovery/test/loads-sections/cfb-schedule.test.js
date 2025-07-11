@@ -10,11 +10,13 @@ import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
 describe('CfbSchedule', () => {
   let testRoot = null
   let testFailLogger = null
+  let eventId
 
   before(async () => {
     await cfbScheduleStorage.init()
 
     customElements.define(CfbSchedule.elementName, CfbSchedule)
+    eventId = 'test-event-schedule-test' + crypto.randomUUID()
   })
 
   beforeEach(() => {
@@ -24,10 +26,8 @@ describe('CfbSchedule', () => {
     document.body.appendChild(testRoot)
   })
 
-  const eventId = 'test-event-schedule-test'
-
   afterEach(async () => {
-    withClearableStorage(cfbScheduleStorage).clearAll(eventId)
+    await withClearableStorage(cfbScheduleStorage).clearAll(eventId)
     document.querySelectorAll('#test-root').forEach(el => el.remove())
   })
 

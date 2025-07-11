@@ -2,9 +2,21 @@ import {AssertionError} from 'chai'
 
 export const withClearableStorage = storage => {
   storage.clearAll = async function(eventId) {
-    const examples = await this.getAllSections(eventId)
+    const sections = [...await this.getAllSections(eventId)]
+    // Also clear sessions if the storage has session methods
+    const deleteSessions = []
+    if (this.getAllSessions) {
+      for (const section of sections) {
+        const sessions = await this.getAllSessions(eventId, section.id)
+        const sessionDeletePromises = sessions.map(session => this.deleteSession(eventId, session.id))
+        deleteSessions.push(...sessionDeletePromises)
+      }
+    }
+
+    const examples = [...sections]
     const deletePromises = examples.map(example => this.deleteSection(eventId, example.id))
-    await Promise.all(deletePromises)
+    await Promise.all([...deletePromises, ...deleteSessions])
+
     delete storage.clearAll
   }
   return storage

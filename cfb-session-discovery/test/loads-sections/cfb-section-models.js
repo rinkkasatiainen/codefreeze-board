@@ -22,3 +22,16 @@ export function withSection(mockWith = {}) {
   const example = {id: randomId(), name: randomString(10) , order: 0}
   return {...example, ...mockWith}
 }
+
+export function mockSessionWith(mockWith = {}) {
+  const example = {
+    id: crypto.randomUUID(),
+    name: `Name: ${randomString(10)}`,
+    description: 'Test Description ' + randomString(10) ,
+    sectionId: crypto.randomUUID(),
+    order: 0,
+    tags: [{name: 'Test', type: 'blue'}],
+    speakers: [{name: 'Test Speaker', initial: 'TS'}],
+  }
+  return {...example, ...mockWith}
+}

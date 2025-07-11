@@ -35,7 +35,7 @@ export class CfbSection extends HTMLElement {
 
   static definedAttributes = {
     name: 'data-name',
-    sectionId: 'data-section-id'
+    sectionId: 'data-section-id',
   }
 
   #name = undefined
@@ -100,7 +100,7 @@ export class CfbSection extends HTMLElement {
 
     // Add event listeners to the newly created elements
     this.querySelectorAll('section.cfb-column').forEach(e =>
-      e.addEventListener('dragleave', this.handleSessionHoverOff.bind(this))
+      e.addEventListener('dragleave', this.handleSessionHoverOff.bind(this)),
     )
   }
 
@@ -175,4 +175,4 @@ export class CfbSection extends HTMLElement {
       placeholder.remove()
     })
   }
-} 
+}

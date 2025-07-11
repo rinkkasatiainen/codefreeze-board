@@ -48,7 +48,7 @@
   ],
   "dependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.0.1",
-    "@rinkkasatiainen/cfb-testing-utils": "^0.0.4"
+    "@rinkkasatiainen/cfb-testing-utils": "^0.1.1"
   },
   "msw": {
     "workerDirectory": [
