@@ -7,5 +7,6 @@ when creating a web component, follow these rules:
 
 - just create a simple example web component, use from [cfb-example.js](mdc:cfb-npm-template/src/components/cfb-example.js).
 - also create a respective test case, use from [cfb-example.test.js](mdc:cfb-npm-template/test/components/cfb-example.test.js).
+- in the test case, add only test list, not test implementation. for rule 'write-a-test-list.mdc'
 - the important part for the web component are 'definedAttributes', 'elementName' from the example
 - follow the naming convention of 'cfb-' for files and CfbExample for the component
