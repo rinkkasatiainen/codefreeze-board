@@ -40,6 +40,19 @@ describe('CfbSchedule', () => {
       expect(sut.children.length).to.equal(0)
     })
 
+    it('should wrape section with a section loader', async () => {
+      // Add a test section to storage
+      const testSection = withSection({order: 0})
+      const sut = await scheduleWithASection(testSection)
+
+      await waitUntil(sut.whenNoOfSectionsIs(1))
+
+      const sessionLoader = ensureSingle(Array.from(sut.querySelectorAll('cfb-session-loader')))
+      expect(sessionLoader.getAttribute('data-section-id')).to.equal(testSection.id)
+      const sectionElement = ensureSingle(Array.from(sessionLoader.querySelectorAll('cfb-section')))
+      expect(sectionElement.getAttribute('data-name')).to.equal(testSection.name)
+    })
+
     it('should render a single section when one section in storage', async () => {
       // Add a test section to storage
       const testSection = withSection({order: 0})
