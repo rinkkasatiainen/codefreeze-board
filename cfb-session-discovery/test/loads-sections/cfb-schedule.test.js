@@ -14,14 +14,14 @@ describe('CfbSchedule', () => {
 
   before(async () => {
     await cfbScheduleStorage.init()
+    testRoot = document.createElement('div')
+    testRoot.id = 'test-root'
 
     customElements.define(CfbSchedule.elementName, CfbSchedule)
     eventId = 'test-event-schedule-test' + crypto.randomUUID()
   })
 
   beforeEach(() => {
-    testRoot = document.createElement('div')
-    testRoot.id = 'test-root'
     testFailLogger = createLogger()
     document.body.appendChild(testRoot)
   })

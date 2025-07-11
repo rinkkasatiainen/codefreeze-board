@@ -7,11 +7,11 @@ describe('CfbSection', () => {
 
   before(() => {
     customElements.define(CfbSection.elementName, CfbSection)
+    testRoot = document.createElement('div')
+    testRoot.id = 'test-root'
   })
 
   beforeEach(() => {
-    testRoot = document.createElement('div')
-    testRoot.id = 'test-root'
     document.body.appendChild(testRoot)
   })
 

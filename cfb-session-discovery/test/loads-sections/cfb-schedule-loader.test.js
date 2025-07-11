@@ -31,14 +31,14 @@ describe('CfbScheduleLoader', () => {
 
   before(async () => {
     customElements.define(CfbScheduleLoader.elementName, CfbScheduleLoader)
+    testRoot = document.createElement('div')
+    testRoot.id = 'test-testRoot'
     await cfbStorage.init()
   })
 
   beforeEach(async () => {
-    testRoot = document.createElement('div')
     testFailLogger = createLogger()
     testFailLogger.expect.warn(true, Times.once)
-    testRoot.id = 'test-testRoot'
     document.body.appendChild(testRoot)
     getScheduleSectionsStub = sinon.stub()
     CfbRetrievesSchedules.getScheduleSections = getScheduleSectionsStub
