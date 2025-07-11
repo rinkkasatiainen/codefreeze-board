@@ -10,3 +10,6 @@ when creating a web component, follow these rules:
 - in the test case, add only test list, not test implementation. for rule 'write-a-test-list.mdc'
 - the important part for the web component are 'definedAttributes', 'elementName' from the example
 - follow the naming convention of 'cfb-' for files and CfbExample for the component
+
+- the component, when fetching data, by default needs to fetch that from IndexDB. Please check if the 
+capability contains an indexDB client (typically in /ports folder) - and if it does, in the component, just do programming by wishful thinking, and use non-existing code. And write a TODO to implement that in the indexDb storage.

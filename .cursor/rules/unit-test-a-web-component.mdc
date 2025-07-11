@@ -1,0 +1,7 @@
+When writing unit tests for a web component, Please use @rinkkasatiainen/testing-utils as much as possible.  For example:
+  - waitUntil to wait for items to be rendered.
+  - tick.js if you just need to trigger javascript event loop.
+
+ For creating components in the tests, please make a helper method that returns element called 'sut'. It should 
+  - take an object as parameter, the object keys should be one from the 'definedAttributes' and the helper sets those attributes to the given values.
+  
