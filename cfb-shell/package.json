@@ -1,9 +1,9 @@
 {
   "name": "@rinkkasatiainen/cfb-shell",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "type": "module",
   "description": "Shell for CFB. To be used in index.js to register features and modules.",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
