@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFreeze Board</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "@rinkkasatiainen/cfb-shell": "/node_modules/@rinkkasatiainen/cfb-shell/dist/index.js"
+            }
+        }
+    </script>
+    <script type="module" src="scripts/index.js"></script>
+</head>
+<body>
+<header>
+    <nav class="cfb-navigation">
+        <div class="cfb-user">
+            <div class="cfb-user__avatar">EE</div>
+            <span class="cfb-user__name">Evan Example</span>
+        </div>
+    </nav>
+</header>
+<main>
+    <div class="cfb-board" role="region" aria-label="Task board">
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Monday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Monday column">
+                <cfb-session>
+                    <article class="cfb-card cfb-card--travel" role="article">
+                        <header class="cfb-card__header">
+                            <span class="cfb-card__title">Monday: Team Offsite in Helsinki</span>
+                            <button class="cfb-card__menu" aria-label="Card options">
+                                <span class="cfb-card__menu-icon"></span>
+                            </button>
+                        </header>
+                        <div class="cfb-card__tags">
+                            <span class="cfb-tag cfb-tag--blue">Travel</span>
+                            <span class="cfb-tag cfb-tag--purple">Team Event</span>
+                        </div>
+                        <footer class="cfb-card__footer">
+                            <div class="cfb-avatars" aria-label="Attending team members">
+                                <div class="cfb-avatar" aria-label="John Doe">JD</div>
+                                <div class="cfb-avatar" aria-label="Jane Smith">JS</div>
+                                <div class="cfb-avatar" aria-label="Mike Johnson">MJ</div>
+                            </div>
+                        </footer>
+                    </article>
+                </cfb-session>
+                <cfb-session>
+                    <article class="cfb-card" role="article">
+                        <header class="cfb-card__header">
+                            <span class="cfb-card__title">Task 1</span>
+                            <button class="cfb-card__menu" aria-label="Card options">
+                                <span class="cfb-card__menu-icon"></span>
+                            </button>
+                        </header>
+                        <div class="cfb-card__tags">
+                            <span class="cfb-tag cfb-tag--red">Frontend</span>
+                            <span class="cfb-tag cfb-tag--orange">Bug</span>
+                        </div>
+                        <footer class="cfb-card__footer">
+                            <div class="cfb-avatars" aria-label="Assigned team members">
+                                <div class="cfb-avatar" aria-label="John Doe">JD</div>
+                                <div class="cfb-avatar" aria-label="Jane Smith">JS</div>
+                                <div class="cfb-avatar" aria-label="Mike Johnson">MJ</div>
+                            </div>
+                        </footer>
+                    </article>
+                </cfb-session>
+                <cfb-session>
+                    <article class="cfb-card" role="article">
+                        <header class="cfb-card__header">
+                            <span class="cfb-card__title">Task 2</span>
+                            <button class="cfb-card__menu" aria-label="Card options">
+                                <span class="cfb-card__menu-icon"></span>
+                            </button>
+                        </header>
+                        <div class="cfb-card__tags">
+                            <span class="cfb-tag">Backend</span>
+                            <span class="cfb-tag">Feature</span>
+                            <span class="cfb-tag">High Priority</span>
+                        </div>
+                        <footer class="cfb-card__footer">
+                            <div class="cfb-avatars" aria-label="Assigned team members">
+                                <div class="cfb-avatar" aria-label="Sarah Wilson">SW</div>
+                                <div class="cfb-avatar" aria-label="Tom Brown">TB</div>
+                            </div>
+                        </footer>
+                    </article>
+                </cfb-session>
+            </section>
+        </cfb-section>
+
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Tuesday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Tuesday column">
+                <cfb-session>
+                    <article class="cfb-card" role="article">
+                        <header class="cfb-card__header">
+                            <span class="cfb-card__title">Team Meeting</span>
+                            <button class="cfb-card__menu" aria-label="Card options">
+                                <span class="cfb-card__menu-icon"></span>
+                            </button>
+                        </header>
+                        <div class="cfb-card__tags">
+                            <span class="cfb-tag cfb-tag--blue">Meeting</span>
+                            <span class="cfb-tag cfb-tag--green">Planning</span>
+                        </div>
+                        <footer class="cfb-card__footer">
+                            <div class="cfb-avatars" aria-label="Attending team members">
+                                <div class="cfb-avatar" aria-label="John Doe">JD</div>
+                                <div class="cfb-avatar" aria-label="Jane Smith">JS</div>
+                                <div class="cfb-avatar" aria-label="Mike Johnson">MJ</div>
+                            </div>
+                        </footer>
+                    </article>
+                </cfb-session>
+            </section>
+        </cfb-section>
+
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Wednesday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Wednesday column">
+                <cfb-session>
+                    <article class="cfb-card" role="article">
+                        <header class="cfb-card__header">
+                            <span class="cfb-card__title">Code Review</span>
+                            <button class="cfb-card__menu" aria-label="Card options">
+                                <span class="cfb-card__menu-icon"></span>
+                            </button>
+                        </header>
+                        <div class="cfb-card__tags">
+                            <span class="cfb-tag cfb-tag--red">Review</span>
+                            <span class="cfb-tag cfb-tag--orange">Technical</span>
+                        </div>
+                        <footer class="cfb-card__footer">
+                            <div class="cfb-avatars" aria-label="Review team members">
+                                <div class="cfb-avatar" aria-label="Sarah Wilson">SW</div>
+                                <div class="cfb-avatar" aria-label="Tom Brown">TB</div>
+                            </div>
+                        </footer>
+                    </article>
+                </cfb-session>
+            </section>
+        </cfb-section>
+
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Thursday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Thursday column">
+            </section>
+        </cfb-section>
+
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Friday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Friday column">
+            </section>
+        </cfb-section>
+
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Saturday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Saturday column">
+            </section>
+        </cfb-section>
+
+        <cfb-section>
+            <cfb-column-title>
+                <h2 class="cfb-column__title">Sunday</h2>
+            </cfb-column-title>
+            <section class="cfb-column" role="region" aria-label="Sunday column">
+            </section>
+        </cfb-section>
+    </div>
+</main>
+</body>
+</html>

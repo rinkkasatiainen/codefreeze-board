@@ -52,8 +52,16 @@ export class CFBColumnTitle extends HTMLElement {
         target: this
       }
     })
+    const onTopEvent2 = new CustomEvent('cfb-session-on-top-title', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        target: this
+      }
+    })
 
     this.dispatchEvent(onTopEvent)
+    this.dispatchEvent(onTopEvent2)
   }
 }
 

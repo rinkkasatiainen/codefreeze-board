@@ -3,6 +3,7 @@ export class CFBSection extends HTMLElement {
     super()
     this.addEventListener('cfb-moved-session', this.handleSessionMoved.bind(this))
     this.addEventListener('cfb-session-on-top', this.addADropArea.bind(this))
+    this.addEventListener('cfb-session-on-top-title', this.addADropAreaTitle.bind(this))
     this.addEventListener('mouseleave', this.handleSessionHoverOff.bind(this))
     this.addEventListener('mouseout', this.handleSessionHoverOff.bind(this))
     this.querySelectorAll('section.cfb-column').forEach(e =>
@@ -28,6 +29,25 @@ export class CFBSection extends HTMLElement {
     return false
   }
 
+  addADropAreaTitle(e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const target = e.detail.target
+    const column = this.querySelector('.cfb-column')
+
+    // Remove any existing placeholder first
+    this.removeDropArea()
+
+    // Create new placeholder
+    const placeholder = document.createElement('cfb-drop-area')
+    placeholder.className = 'cfb-session-placeholder'
+
+    // Insert placeholder at the target position
+    column.insertBefore(placeholder, column.firstChild)
+
+    return false
+  }
   addADropArea(e) {
     e.preventDefault()
     e.stopPropagation()
