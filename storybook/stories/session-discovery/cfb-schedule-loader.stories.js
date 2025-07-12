@@ -1,4 +1,4 @@
-import {renderScheduleLoader, renderScheduleLoaderInteractive} from './cfb-session-discovery.render.js'
+import {renderScheduleLoader, renderScheduleLoaderInteractive} from './cfb-schedule-loader.render.js'
 import {scheduleMocks} from '@rinkkasatiainen/cfb-session-discovery/mocks/schedules.js'
 
 export default {

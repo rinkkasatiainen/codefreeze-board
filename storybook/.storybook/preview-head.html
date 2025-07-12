@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- 
+    Storybook Preview Head Configuration
+    This file is loaded before each story and can be used for:
+    - CSS imports
+    - Import mapping
+    - Mock Service Worker setup
+    - Global configurations
+  -->
+  
+  <!-- CSS Imports -->
+  <link rel="stylesheet" href="../node_modules/@rinkkasatiainen/cfb-session-discovery/dist/css/styles.css">
+  <link rel="stylesheet" href="/styles.css">
+
+  <!-- Import Mapping (for future use) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "@rinkkasatiainen/cfb-session-discovery/": "../node_modules/@rinkkasatiainen/cfb-session-discovery/",
+        "@rinkkasatiainen/cfb-npm-template/": "../node_modules/@rinkkasatiainen/cfb-npm-template/",
+        "@rinkkasatiainen/cfb-session-discovery": "../node_modules/@rinkkasatiainen/cfb-session-discovery",
+        "@rinkkasatiainen/cfb-shell": "../node_modules/@rinkkasatiainen/cfb-shell"
+      }
+    }
+  </script>
+  
+  <!-- Mock Service Worker Setup (for future use) -->
+  <!-- 
+  <script>
+    // Mock Service Worker configuration will be added here
+    // This allows us to mock API calls in Storybook stories
+    // Example:
+    // - Mock API endpoints for schedule data
+    // - Mock IndexedDB operations
+    // - Mock event dispatching
+  </script>
+  -->
+  
+  <!-- Shell Initialization -->
+  <script type="module">
+    import { Shell } from '@rinkkasatiainen/cfb-shell';
+    import { SessionDiscoveryModule } from '@rinkkasatiainen/cfb-session-discovery';
+
+    console.log('Initializing shell...')
+    // Initialize shell with session discovery module
+    const shell = new Shell();
+    shell.addModule(new SessionDiscoveryModule());
+    
+    // Configure, activate, and run the shell
+    await shell.configure();
+    await shell.activate();
+    console.log('Activated shell.')
+    await shell.run();
+    console.log('Shell ready.')
+  </script>
+  
+  <!-- Global Styles (if needed) -->
+  <style>
+    /* Additional global styles can be added here */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body>
+</body>
+</html> 

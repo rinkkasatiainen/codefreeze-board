@@ -1,0 +1,77 @@
+.cfb-card {
+    display: block;
+    background-color: var(--color-card-bg);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 2px var(--color-shadow);
+}
+
+/* Card variants */
+.cfb-card--travel {
+    background-color: #f0f7ff;
+    border-left: 4px solid #1890ff;
+}
+
+.cfb-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.cfb-card__title {
+    font-weight: 500;
+    flex: 1;
+    margin-right: 8px;
+}
+
+.cfb-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.cfb-card__menu {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.cfb-card__menu:hover {
+    background-color: var(--color-column-bg);
+}
+
+.cfb-card__menu-icon {
+    position: relative;
+    width: 16px;
+    height: 18px;
+}
+
+.cfb-card__menu-icon::before,
+.cfb-card__menu-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--font-color-base);
+    border-radius: 1px;
+}
+
+.cfb-card__menu-icon::before {
+    top: 4px;
+    box-shadow: 0 4px 0 var(--font-color-base);
+}
+
+.cfb-card__menu-icon::after {
+    bottom: 4px;
+} 
