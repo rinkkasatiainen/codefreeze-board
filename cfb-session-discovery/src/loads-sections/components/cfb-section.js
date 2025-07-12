@@ -88,7 +88,6 @@ export class CfbSection extends HTMLElement {
 
   #render() {
     const name = this.#name || 'Untitled'
-    const sectionId = this.#sectionId || 'default-section'
 
     this.innerHTML = `
       <cfb-column-title>
@@ -165,7 +164,7 @@ export class CfbSection extends HTMLElement {
     return false
   }
 
-  handleSessionHoverOff(e) {
+  handleSessionHoverOff() {
     this.removeDropArea()
   }
 

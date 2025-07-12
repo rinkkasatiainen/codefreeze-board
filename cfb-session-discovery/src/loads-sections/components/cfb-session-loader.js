@@ -82,7 +82,6 @@ export class CfbSessionLoader extends HTMLElement {
 
   async #fetchSessions(eventId, sectionId) {
     try {
-      await cfbScheduleStorage.init()
       return await cfbScheduleStorage.getAllSessions(eventId, sectionId)
     } catch (error) {
       this.#logger.error('Error fetching sessions:', error)

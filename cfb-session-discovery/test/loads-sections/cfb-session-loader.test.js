@@ -5,13 +5,12 @@ import {ensureSingle} from '../test-helpers.js'
 import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {stub} from 'sinon'
 import {exampleSessionEntry} from '../../contracts/session-entry.js'
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 
 const noop = () => { /* noop */
 }
 const todo = testName => {
-
+  // eslint-disable-next-line mocha/no-pending-tests
   xit(testName, noop)
 }
 

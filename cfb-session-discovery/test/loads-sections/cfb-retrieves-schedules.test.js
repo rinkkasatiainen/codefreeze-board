@@ -1,7 +1,7 @@
-import { expect } from 'chai'
-import { setupWorker } from 'msw/browser'
-import { http, HttpResponse } from 'msw'
+import {expect} from 'chai'
+import {http, HttpResponse} from 'msw'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
+import {setupMocks} from '../../mocks/schedules.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker
@@ -9,28 +9,13 @@ describe('CfbRetrievesSchedules', () => {
 
   before(async () => {
     // Setup MSW worker for browser environment
-    worker = setupWorker(
-      http.post('/schedules', async ({ request }) => {
-        const body = await request.json()
-
-        // Validate request body
-        if (!body.eventId) {
-          return HttpResponse.json(
-            { error: 'eventId is required' },
-            { status: 400 },
-          )
-        }
-
-        // Mock successful response
-        return HttpResponse.json({
-          sections: [
-            { name: 'Monday', id: 'monday-123', order: 0 },
-            { name: 'Tuesday', id: 'tuesday-456', order: 1 },
-            { name: 'Wednesday', id: 'wednesday-789', order: 2 },
-          ],
-        })
-      }),
-    )
+    worker = setupMocks({
+      '/schedules': [
+        {name: 'Monday', id: 'monday-123', order: 0},
+        {name: 'Tuesday', id: 'tuesday-456', order: 1},
+        {name: 'Wednesday', id: 'wednesday-789', order: 2},
+      ],
+    })
 
     // Start the worker
     await worker.start({quiet: true})
@@ -77,7 +62,7 @@ describe('CfbRetrievesSchedules', () => {
 
     // Override the handler to capture the request
     worker.use(
-      http.post('/schedules', async ({ request }) => {
+      http.post('/schedules', async ({request}) => {
         capturedRequest = await request.json()
         return HttpResponse.json({
           sections: [],
@@ -96,8 +81,8 @@ describe('CfbRetrievesSchedules', () => {
     // Override handler to return error
     worker.use(
       http.post('/schedules', () => HttpResponse.json(
-        { error: 'Internal server error' },
-        { status: 500 },
+        {error: 'Internal server error'},
+        {status: 500},
       )),
     )
 
@@ -126,15 +111,15 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle missing eventId in request', async () => {
     // Override handler to return 400 for missing eventId
     worker.use(
-      http.post('/schedules', async ({ request }) => {
+      http.post('/schedules', async ({request}) => {
         const body = await request.json()
         if (!body.eventId) {
           return HttpResponse.json(
-            { error: 'eventId is required' },
-            { status: 400 },
+            {error: 'eventId is required'},
+            {status: 400},
           )
         }
-        return HttpResponse.json({ sections: [] })
+        return HttpResponse.json({sections: []})
       }),
     )
 

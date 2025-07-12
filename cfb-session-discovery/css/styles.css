@@ -1,1 +1,4 @@
-@import './components/cfb-section.css';
+@import 'molecules/cfb-section.css';
+@import 'molecules/cfb-session.css';
+@import 'molecules/cfb-card.css';
+@import 'molecules/cfb-avatars.css';
