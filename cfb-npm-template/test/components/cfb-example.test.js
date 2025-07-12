@@ -6,11 +6,11 @@ describe('ExampleElement', () => {
 
   before(() => {
     customElements.define(CfbExampleElement.elementName, CfbExampleElement)
+    testRoot = document.createElement('div')
+    testRoot.id = 'test-testRoot'
   })
 
   beforeEach(() => {
-    testRoot = document.createElement('div')
-    testRoot.id = 'test-testRoot'
     document.body.appendChild(testRoot)
   })
 
