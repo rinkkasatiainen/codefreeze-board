@@ -68,21 +68,33 @@ The built files will be in the `storybook-static` directory.
 - **Header**: Page header with login/logout functionality
 - **Page**: Complete page layout example
 
+## Adding New Capability
+
+To add stories for a new capability:
+
+
+1. Install the capability with `npm install cabability`
+2. In [preview-head.html](.storybook/preview-head.html)
+   1. Add import mapping
+   2. Add module to shell
+   3. Add CSS from the capability
+2. create a folder under `stories` for the capability
+ 
 ## Adding New Components
 
-To add stories for new components:
+To add stories for new components for a capability:
 
 1. Create a new `.stories.js` file in the appropriate directory:
-   - `stories/template/` for CFB template components
+   - `stories/<capability-name>/` for CFB components
    - `stories/default/` for example/demo components
-2. Import your component and register it as a custom element
-3. Define the story configuration with title, parameters, and argTypes
-4. Create story exports for different states/variants
+2. Create a new `.render.js` file and implement the render functionality there
+2. Define the story configuration with title, parameters, and argTypes
+3. Create story exports for different states/variants
 
 Example:
 
 ```javascript
-import {YourComponent} from '@your-package/your-component'
+import {render} from './<capability>.render.js'
 
 // Register the custom element
 if (!customElements.get(YourComponent.elementName)) {
@@ -97,11 +109,7 @@ export default {
 
 export const Default = {
   args: {},
-  render: (args) => {
-    const element = document.createElement(YourComponent.elementName)
-    // ... setup
-    return element
-  }
+  render
 }
 ```
 
@@ -111,6 +119,7 @@ Storybook configuration is in the `.storybook/` directory:
 
 - `main.js`: Main configuration file
 - `preview.js`: Global parameters and decorators
+- `preview-head.html`: Import mapping, CSS declaration, capability registration
 
 ## Contributing
 

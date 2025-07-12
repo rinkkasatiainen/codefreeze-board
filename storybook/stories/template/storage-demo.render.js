@@ -1,4 +1,4 @@
-import exampleStorage from '@rinkkasatiainen/cfb-npm-template/src/storage/example-storage.js'
+import exampleStorage from '@rinkkasatiainen/cfb-npm-template/dist/src/storage/example-storage.js'
 
 export function renderStorageDemo() {
   const container = document.createElement('div')

@@ -1,4 +1,5 @@
 import {renderScheduleLoader, renderScheduleLoaderInteractive} from './cfb-session-discovery.render.js'
+import {scheduleMocks} from '@rinkkasatiainen/cfb-session-discovery/mocks/schedules.js'
 
 export default {
   title: '  CFB Session Discovery/Schedule Loader',
@@ -7,8 +8,14 @@ export default {
       description: {
         component: 'A web component that loads schedule sections from an API and stores them in IndexedDB. The component listens for data-updated-at events and manages schedule data persistence.'
       }
-    }
-  }
+    },
+    msw: {
+      handlers: [
+        scheduleMocks()
+      ],
+    },
+  },
+
 }
 
 // Default story - basic component

@@ -7,7 +7,8 @@ const config = {
     "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
-    "@storybook/addon-docs"
+    "@storybook/addon-docs",
+    "msw-storybook-addon"
   ],
   "framework": {
     "name": "@storybook/html-vite",
