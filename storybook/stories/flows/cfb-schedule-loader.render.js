@@ -12,10 +12,15 @@ export function renderFlowOfLoadingSchedule(args) {
     await cfbScheduleStorage.addSession(eventId, e)
   })
 
-  return `<cfb-schedule-loader data-event-id="${eventId}">
-    <cfb-schedule data-event-id="${eventId}">
-    </cfb-schedule>
-  </cfb-schedule-loader>`
+  return `
+  <div class="cfb-board" role="region" aria-label="Task board">
+    <cfb-schedule-loader data-event-id="${eventId}">
+      <cfb-session-loader data-event-id="${eventId}" data-section-id="${day0Entries[0].sectionId}" class="listens-schedule-updates">
+        <cfb-schedule data-event-id="${eventId}">
+        </cfb-schedule>
+      </cfb-session-loader>
+    </cfb-session-loader>
+  </div>`
 }
 
 export function renderScheduleLoaderInteractive(args) {
