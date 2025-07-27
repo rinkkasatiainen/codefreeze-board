@@ -158,7 +158,25 @@ class CfbScheduleStorage {
     })
   }
 
-  async getAllSessions(eventId, sectionId) {
+  async getAllSessionsForEvent(eventId) {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([this.sessionsStoreName], 'readonly')
+      const store = transaction.objectStore(this.sessionsStoreName)
+      const index = store.index('eventId')
+      const request = index.getAll(IDBKeyRange.only(eventId))
+
+      request.onsuccess = () => {
+        const sessions = request.result.map(({ eventId: _, ...session }) => session)
+        resolve(sessions)
+      }
+      request.onerror = event => {
+        this.#logger.warn('Error getting all sessions', {event, eventId, sectionId})
+        reject('Error getting all sessions')
+      }
+    })
+  }
+
+  async getAllSessionsForSection(eventId, sectionId) {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.sessionsStoreName], 'readonly')
       const store = transaction.objectStore(this.sessionsStoreName)

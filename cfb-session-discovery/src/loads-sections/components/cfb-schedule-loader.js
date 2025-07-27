@@ -18,7 +18,6 @@ export class CfbScheduleLoader extends HTMLElement {
   }
 
   async attributeChangedCallback(name, oldValue, newValue) {
-    this.#logger.warn('Should fail')
     if (newValue === oldValue) {
       return
     }

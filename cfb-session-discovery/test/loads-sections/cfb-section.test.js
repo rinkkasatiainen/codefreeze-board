@@ -20,14 +20,11 @@ describe('CfbSection', () => {
   })
 
   describe('render', () => {
-
     it('should render with default values when no attributes are set', () => {
       const sut = document.createElement(CfbSection.elementName)
       testRoot.appendChild(sut)
 
-      expect(sut.querySelector('h2.cfb-column__title').textContent).to.equal('Untitled')
-      expect(sut.querySelector('section.cfb-column')).to.exist
-      expect(sut.querySelector('section.cfb-column').getAttribute('aria-label')).to.equal('Untitled column')
+      expect(sut.innerHTML).to.equal('')
     })
 
     it('should render with provided name attribute', () => {

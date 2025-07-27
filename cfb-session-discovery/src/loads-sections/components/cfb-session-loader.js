@@ -9,19 +9,16 @@ export class CfbSessionLoader extends HTMLElement {
   static elementName = 'cfb-session-loader'
 
   static definedAttributes = {
-    sectionId: 'data-section-id',
     eventId: 'data-event-id',
     updatedAt: 'data-updated-at',
   }
 
   #logger = createLogger()
-  #sectionId = undefined
   #eventId = undefined
   #updatedAt = undefined
 
   static get observedAttributes() {
     return [
-      CfbSessionLoader.definedAttributes.sectionId,
       CfbSessionLoader.definedAttributes.eventId,
       CfbSessionLoader.definedAttributes.updatedAt,
     ]
@@ -36,10 +33,6 @@ export class CfbSessionLoader extends HTMLElement {
       return
     }
 
-    if (name === CfbSessionLoader.definedAttributes.sectionId) {
-      this.#sectionId = newValue
-      this.#render()
-    }
     if (name === CfbSessionLoader.definedAttributes.eventId) {
       this.#eventId = newValue
       this.#render()
@@ -51,38 +44,48 @@ export class CfbSessionLoader extends HTMLElement {
   }
 
   async #render() {
-    if (!this.#sectionId || !this.#eventId || !this.#updatedAt) {
+    if (!this.#eventId || !this.#updatedAt) {
       return
     }
 
     try {
       // Fetch sessions for the event and section
-      const sessions = await this.#fetchSessions(this.#eventId, this.#sectionId)
-      sessions.sort((a, b) => a.order - b.order)
+      const sessions = await this.#fetchSessions(this.#eventId)
 
-      // Find the cfb-section child element
-      const sectionElement = this.querySelector('cfb-section')
-      if (!sectionElement) {
-        return
-      }
+      const groupBy = (array, key) => array.reduce((result, item) => {
+        result[item[key]] = [...(result[item[key]] || []), item]
+        return result
+      }, {})
+      // Group sessions by sectionId
+      const groupedSessions = groupBy(sessions, 'sectionId')
 
-      // Clear existing sessions
-      const existingSessions = sectionElement.querySelectorAll('cfb-session')
-      existingSessions.forEach(session => session.remove())
+      // Log each section ID and sort sessions within groups
+      Object.entries(groupedSessions).forEach(([sectionId, sectionSessions]) => {
+        const sessionsInOrder = [...sectionSessions.sort((a, b) => a.order - b.order)]
 
-      // Add each session as a child of the section
-      sessions.forEach(session => {
-        const sessionElement = this.#createSessionElement(session)
-        sectionElement.appendChild(sessionElement)
+        // Find the cfb-section child element for this section
+        const sectionElement = this.querySelector(`cfb-section[data-section-id='${sectionId}'] > section`)
+        if (!sectionElement) {
+          return
+        }
+        // Clear existing sessions for this section
+        const existingSessions = sectionElement.querySelectorAll('cfb-session')
+        existingSessions.forEach(session => session.remove())
+
+        // Add each session as a child of the section
+        sessionsInOrder.forEach(session => {
+          const sessionElement = this.#createSessionElement(session)
+          sectionElement.appendChild(sessionElement)
+        })
       })
     } catch (error) {
       console.error('Error loading sessions:', error)
     }
   }
 
-  async #fetchSessions(eventId, sectionId) {
+  async #fetchSessions(eventId) {
     try {
-      return await cfbScheduleStorage.getAllSessions(eventId, sectionId)
+      return await cfbScheduleStorage.getAllSessionsForEvent(eventId)
     } catch (error) {
       this.#logger.error('Error fetching sessions:', error)
       return []

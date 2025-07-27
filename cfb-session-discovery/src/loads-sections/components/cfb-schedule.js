@@ -48,17 +48,20 @@ export class CfbSchedule extends HTMLElement {
       // Clear existing content
       this.innerHTML = ''
 
+      const board = document.createElement('div')
+      board.classList.add('cfb-board')
+
       // Add a cfb-section for each entry
-      const now = new Date().toISOString()
       sections.forEach(section => {
-        const sectionHtml = `<cfb-session-loader 
-          data-event-id="${this.#eventId}" 
+        const sectionHtml = `
+        <cfb-section 
           data-section-id="${section.id}" 
-          data-updated-at="${now}"
-        ><cfb-section data-section-id="${section.id}" data-name="${section.name}"></cfb-section
-        ></cfb-session-loader> `
-        this.innerHTML += sectionHtml
+          data-event-id="${this.#eventId}" 
+          data-name="${section.name}"
+        ></cfb-section>`
+        board.innerHTML += sectionHtml
       })
+      this.appendChild(board)
     } catch (error) {
       this.#logger.error('Error rendering schedule:', error)
       this.innerHTML = '<div>Error loading schedule</div>'

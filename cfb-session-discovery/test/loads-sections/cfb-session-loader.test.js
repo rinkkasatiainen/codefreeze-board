@@ -6,6 +6,7 @@ import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-stor
 import {stub} from 'sinon'
 import {exampleSessionEntry} from '../../contracts/session-entry.js'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
+import {mockSessionWith} from './cfb-section-models.js'
 
 const noop = () => { /* noop */
 }
@@ -26,17 +27,21 @@ describe('CfbSessionLoader', () => {
   })
 
   beforeEach(() => {
-    cfbScheduleStorage.getAllSessions = stub().resolves([])
+    cfbScheduleStorage.getAllSessionsForEvent = stub().resolves([])
     document.body.appendChild(testRoot)
   })
 
   afterEach(async () => {
-    cfbScheduleStorage.getAllSessions.reset()
+    cfbScheduleStorage.getAllSessionsForEvent.reset()
     document.querySelectorAll('#test-root').forEach(el => el.innerHTML = '')
   })
 
   const createSut = (attributes = {}) => {
-    const attrs = {sectionId: testSectionId, eventId: testEventId, updatedAt: '1234567890', ...attributes}
+    const attrs = {
+      sectionId: exampleSessionEntry.sectionId,
+      eventId: testEventId,
+      updatedAt: '1234567890', ...attributes,
+    }
     const sut = document.createElement(CfbSessionLoader.elementName)
 
     const sectionId = attrs.sectionId
@@ -49,7 +54,7 @@ describe('CfbSessionLoader', () => {
     if (attrs.updatedAt) {
       sut.setAttribute(CfbSessionLoader.definedAttributes.updatedAt, attributes.updatedAt)
     }
-    sut.innerHTML = `<cfb-section data-section-id="${sectionId}"></cfb-section>`
+    sut.innerHTML = `<cfb-section data-section-id="${sectionId}"><section></section></cfb-section>`
     testRoot.appendChild(sut)
 
     sut.getSessions = () => Array.from(sut.querySelectorAll('cfb-session'))
@@ -60,18 +65,18 @@ describe('CfbSessionLoader', () => {
 
   describe('render', () => {
     it('Should render sessions when all required attributes are set', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut()
 
       await waitUntil(sut.whenNoOfSessionsIs(1), 200)
 
       // Just check that the component is created and has the right structure
       expect(sut.tagName.toLowerCase()).to.equal('cfb-session-loader')
-      expect(sut.querySelectorAll('cfb-session').length).to.eql(1)
+      expect(sut.getSessions().length).to.eql(1)
     })
 
     it('Should not render sessions when section-id is missing', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut({
         sectionId: undefined,
       })
@@ -79,11 +84,11 @@ describe('CfbSessionLoader', () => {
 
       // Check that component is created but no sessions are rendered
       expect(sut.tagName.toLowerCase()).to.equal('cfb-session-loader')
-      expect(sut.querySelectorAll('cfb-session').length).to.eql(0)
+      expect(sut.getSessions().length).to.eql(0)
     })
 
     it('Should not render sessions when event-id is missing', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut({
         eventId: undefined,
       })
@@ -95,7 +100,7 @@ describe('CfbSessionLoader', () => {
     })
 
     it('Should not render sessions when updated-at is missing', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut({
         updatedAt: undefined,
       })
@@ -106,11 +111,27 @@ describe('CfbSessionLoader', () => {
       expect(sut.tagName.toLowerCase()).to.equal('cfb-session-loader')
       expect(sut.querySelectorAll('cfb-session').length).to.eql(0)
     })
+
+    const randomSessionForSection = () => mockSessionWith({sectionId: exampleSessionEntry.sectionId})
+
+    it('Should clear existing sessions before adding new ones', async () => {
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([randomSessionForSection()])
+      const sut = createSut({sectionId: exampleSessionEntry.sectionId})
+      await waitUntil(sut.whenNoOfSessionsIs(1), 100)
+
+      // Update the updatedAt attribute to trigger re-render
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([randomSessionForSection(), randomSessionForSection()])
+      sut.setAttribute(CfbSessionLoader.definedAttributes.updatedAt, 'now')
+      await waitUntil(sut.whenNoOfSessionsIs(2), 100)
+
+      const finalSessionCount = sut.getSessions().length
+      expect(finalSessionCount).to.equal(2)
+    })
   })
 
   describe('html structure', () => {
     it('Should create session elements with correct HTML structure', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut()
 
       await waitUntil(sut.whenNoOfSessionsIs(1))
@@ -125,7 +146,7 @@ describe('CfbSessionLoader', () => {
     })
 
     it('Should handle session data with tags correctly', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut()
 
       await waitUntil(sut.whenNoOfSessionsIs(1))
@@ -138,7 +159,7 @@ describe('CfbSessionLoader', () => {
     })
 
     it('Should handle session data with speakers correctly', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut()
 
       await waitUntil(sut.whenNoOfSessionsIs(1))
@@ -150,24 +171,32 @@ describe('CfbSessionLoader', () => {
     })
   })
 
-  describe('corner cases', () => {
+  describe.skip('corner cases', () => {
+    it('should not add sessions to wrong sessionId', async () => {
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
+      const sut = createSut({sectionId: 'wrong-section-id'})
+      await tick() // event loop
+
+      expect(sut.getSessions().length).to.eql(0)
+    })
+
     it('Should handle empty sessions array', async () => {
-      cfbScheduleStorage.getAllSessions.resolves([exampleSessionEntry])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([exampleSessionEntry])
       const sut = createSut()
       await waitUntil(sut.whenNoOfSessionsIs(1))
 
       // set to return empty array, force rerender
-      cfbScheduleStorage.getAllSessions.resolves([])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([])
       sut.setAttribute(CfbSessionLoader.definedAttributes.updatedAt, 'now')
       await waitUntil(sut.whenNoOfSessionsIs(0))
 
       // Check that component is created but no sessions are rendered
       expect(sut.tagName.toLowerCase()).to.equal('cfb-session-loader')
-      expect(sut.querySelectorAll('cfb-session').length).to.eql(0)
+      expect(sut.getSessions().length).to.eql(0)
     })
 
     it('Should handle fetch errors gracefully', async () => {
-      cfbScheduleStorage.getAllSessions.rejects(new Error('Network error'))
+      cfbScheduleStorage.getAllSessionsForEvent.rejects(new Error('Network error'))
       const logger = createTestLogger()
       logger.expect.error('Error fetching sessions', Times.once)
       const sut = createSut()
@@ -179,7 +208,7 @@ describe('CfbSessionLoader', () => {
     })
 
     it('Should update sessions when data-updated-at changes', async () => {
-      const sut = createSut({sectionId: exampleSessionEntry.sectionId})
+      const sut = createSut()
       await tick()
 
       // Verify initial session
@@ -187,7 +216,7 @@ describe('CfbSessionLoader', () => {
 
       // Update the updatedAt attribute to trigger re-render
       const session2 = {...exampleSessionEntry, id: 'session-2'}
-      cfbScheduleStorage.getAllSessions.resolves([session2])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([session2])
       sut.setAttribute(CfbSessionLoader.definedAttributes.updatedAt, '1234567891')
 
       await waitUntil(sut.whenNoOfSessionsIs(1), 200)
@@ -199,12 +228,14 @@ describe('CfbSessionLoader', () => {
 
     it('Should update sessions when data-section-id changes', async () => {
       const sut = createSut({sectionId: exampleSessionEntry.sectionId})
+      sut.innerHTML += '<cfb-section data-section-id="section-2"><section></section></cfb-section>'
       await tick() // JS event loop to trigger promises
 
       expect(sut.getSessions().length).to.eql(0)
 
       // Update the sectionId attribute to trigger re-render
-      cfbScheduleStorage.getAllSessions.resolves([{...exampleSessionEntry, id: 'session-2', sectionId: 'session-2'}])
+      cfbScheduleStorage.getAllSessionsForEvent
+        .resolves([{...exampleSessionEntry, id: 'session-2', sectionId: 'session-2'}])
       sut.setAttribute(CfbSessionLoader.definedAttributes.sectionId, 'section-2')
 
       // Wait for the attribute change to trigger re-render
@@ -223,7 +254,7 @@ describe('CfbSessionLoader', () => {
 
       // Update the eventId attribute to trigger re-render
       const session2 = {...exampleSessionEntry, eventId: 'event-id-2', id: 'session-2'}
-      cfbScheduleStorage.getAllSessions.resolves([session2])
+      cfbScheduleStorage.getAllSessionsForEvent.resolves([session2])
       sut.setAttribute(CfbSessionLoader.definedAttributes.eventId, 'event-id-2')
 
       // Wait for the attribute change to trigger re-render

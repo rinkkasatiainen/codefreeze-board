@@ -77,13 +77,14 @@ describe('CFBStorage', () => {
   })
 
   describe('sessions', () => {
-    describe('basic flow', () => {
+    describe('basic flow for finding all sessions', () => {
       it('Should add and retrieve a session', async () => {
         const session = mockSessionWith()
 
         await cfbStorage.addSession(testEventId, session)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessions).to.have.lengthOf(1)
         expect(sessions[0]).to.deep.equal(session)
       })
@@ -95,13 +96,14 @@ describe('CFBStorage', () => {
         await cfbStorage.addSession(testEventId, session1)
         await cfbStorage.addSession(testEventId, session2)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session1.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session1.sectionId)
         expect(sessions).to.have.lengthOf(2)
         expect(sessions.map(s => s.id)).to.have.members([session1.id, session2.id])
       })
 
       it('Should return empty array when no sessions exist for event and section', async () => {
-        const sessions = await cfbStorage.getAllSessions(testEventId, 'non-existent-section')
+        const sessions = (await cfbStorage.getAllSessionsForEvent(crypto.randomUUID()))
         expect(sessions).to.be.an('array').that.is.empty
       })
 
@@ -110,14 +112,16 @@ describe('CFBStorage', () => {
         await cfbStorage.addSession(testEventId, session)
 
         // Verify session exists
-        const sessionsBefore = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessionsBefore = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessionsBefore).to.have.lengthOf(1)
 
         // Delete the session
         await cfbStorage.deleteSession(testEventId, session.id)
 
         // Verify session is deleted
-        const sessionsAfter = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessionsAfter = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessionsAfter).to.eql([])
       })
 
@@ -131,7 +135,8 @@ describe('CFBStorage', () => {
 
         await Promise.all(sessions.map(session => cfbStorage.addSession(testEventId, session)))
 
-        const retrievedSessions = await cfbStorage.getAllSessions(testEventId, sessionWith.sectionId)
+        const retrievedSessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === sessionWith.sectionId)
         retrievedSessions.sort((a, b) => a.order - b.order)
         expect(retrievedSessions).to.have.lengthOf(3)
         expect(retrievedSessions.map(s => s.id)).to.eql(sessions.map(s => s.id))
@@ -151,8 +156,10 @@ describe('CFBStorage', () => {
         await cfbStorage.addSession(testEventId, session1)
         await cfbStorage.addSession(testEventId, session2)
 
-        const sessionsA = await cfbStorage.getAllSessions(testEventId, 'section-a')
-        const sessionsB = await cfbStorage.getAllSessions(testEventId, 'section-b')
+        const sessionsA = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === 'section-a')
+        const sessionsB = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === 'section-b')
 
         expect(sessionsA).to.have.lengthOf(1)
         expect(sessionsB).to.have.lengthOf(1)
@@ -177,8 +184,118 @@ describe('CFBStorage', () => {
         await cfbStorage.addSession(event1, session1)
         await cfbStorage.addSession(event2, session2)
 
-        const sessionsEvent1 = await cfbStorage.getAllSessions(event1, 'section-1')
-        const sessionsEvent2 = await cfbStorage.getAllSessions(event2, 'section-1')
+        const sessionsEvent1 = await cfbStorage.getAllSessionsForSection(event1, 'section-1')
+        const sessionsEvent2 = await cfbStorage.getAllSessionsForSection(event2, 'section-1')
+
+        expect(sessionsEvent1).to.have.lengthOf(1)
+        expect(sessionsEvent2).to.have.lengthOf(1)
+        expect(sessionsEvent1[0].id).to.equal(session1.id)
+        expect(sessionsEvent2[0].id).to.equal(session2.id)
+      })
+    })
+
+    describe('basic flow', () => {
+      it('Should add and retrieve a session', async () => {
+        const session = mockSessionWith()
+
+        await cfbStorage.addSession(testEventId, session)
+
+        const sessions = await cfbStorage.getAllSessionsForSection(testEventId, session.sectionId)
+        expect(sessions).to.have.lengthOf(1)
+        expect(sessions[0]).to.deep.equal(session)
+      })
+
+      it('Should get all sessions for a specific event and section', async () => {
+        const session1 = mockSessionWith()
+        const session2 = mockSessionWith({sectionId: session1.sectionId, order: session1.order + 1})
+
+        await cfbStorage.addSession(testEventId, session1)
+        await cfbStorage.addSession(testEventId, session2)
+
+        const sessions = await cfbStorage.getAllSessionsForSection(testEventId, session1.sectionId)
+        expect(sessions).to.have.lengthOf(2)
+        expect(sessions.map(s => s.id)).to.have.members([session1.id, session2.id])
+      })
+
+      it('Should return empty array when no sessions exist for event and section', async () => {
+        const sessions = await cfbStorage.getAllSessionsForSection(testEventId, 'non-existent-section')
+        expect(sessions).to.be.an('array').that.is.empty
+      })
+
+      it('Should delete a session by eventId and sessionId', async () => {
+        const session = mockSessionWith({id: '1', sectionId: 'not-used' })
+        await cfbStorage.addSession(testEventId, session)
+
+        // Verify session exists
+        const sessionsBefore = await cfbStorage.getAllSessionsForSection(testEventId, session.sectionId)
+        expect(sessionsBefore).to.have.lengthOf(1)
+
+        // Delete the session
+        await cfbStorage.deleteSession(testEventId, session.id)
+
+        // Verify session is deleted
+        const sessionsAfter = await cfbStorage.getAllSessionsForSection(testEventId, session.sectionId)
+        expect(sessionsAfter).to.eql([])
+      })
+
+      it('Should handle multiple sessions in same section', async () => {
+        const sessionWith = mockSessionWith()
+        const sessions = [
+          sessionWith,
+          mockSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 1}),
+          mockSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 2}),
+        ]
+
+        await Promise.all(sessions.map(session => cfbStorage.addSession(testEventId, session)))
+
+        const retrievedSessions = await cfbStorage.getAllSessionsForSection(testEventId, sessionWith.sectionId)
+        retrievedSessions.sort((a, b) => a.order - b.order)
+        expect(retrievedSessions).to.have.lengthOf(3)
+        expect(retrievedSessions.map(s => s.id)).to.eql(sessions.map(s => s.id))
+      })
+
+      it('Should handle sessions across different sections', async () => {
+        const session1 = mockSessionWith({
+          sectionId: 'section-a',
+          order: 0,
+        })
+        const session2 = mockSessionWith({
+          sectionId: 'section-b',
+          order: 0,
+        })
+        const eventId = crypto.randomUUID()
+
+        await cfbStorage.addSession(eventId, session1)
+        await cfbStorage.addSession(eventId, session2)
+
+        const sessionsA = await cfbStorage.getAllSessionsForSection(eventId, 'section-a')
+        const sessionsB = await cfbStorage.getAllSessionsForSection(eventId, 'section-b')
+
+        expect(sessionsA).to.have.lengthOf(1)
+        expect(sessionsB).to.have.lengthOf(1)
+        expect(sessionsA[0].id).to.equal(session1.id)
+        expect(sessionsB[0].id).to.equal(session2.id)
+      })
+
+      it('Should handle sessions across different events', async () => {
+        const event1 = 'event-10'
+        const event2 = 'event-11'
+
+        const session1 = mockSessionWith({
+          sectionId: 'section-1',
+          order: 0,
+        })
+
+        const session2 = mockSessionWith({
+          sectionId: 'section-1',
+          order: 0,
+        })
+
+        await cfbStorage.addSession(event1, session1)
+        await cfbStorage.addSession(event2, session2)
+
+        const sessionsEvent1 = await cfbStorage.getAllSessionsForSection(event1, 'section-1')
+        const sessionsEvent2 = await cfbStorage.getAllSessionsForSection(event2, 'section-1')
 
         expect(sessionsEvent1).to.have.lengthOf(1)
         expect(sessionsEvent2).to.have.lengthOf(1)
@@ -199,7 +316,8 @@ describe('CFBStorage', () => {
 
         await cfbStorage.addSession(testEventId, session)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessions.map( x=>x.tags)).to.eql([session.tags])
       })
 
@@ -214,7 +332,8 @@ describe('CFBStorage', () => {
 
         await cfbStorage.addSession(testEventId, session)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessions.map( x=>x.speakers)).to.eql([session.speakers])
       })
 
@@ -227,7 +346,8 @@ describe('CFBStorage', () => {
         await cfbStorage.addSession(testEventId, session2)
         await cfbStorage.addSession(testEventId, session3)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session1.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session1.sectionId)
         expect(sessions).to.have.lengthOf(3)
 
         // Verify order is preserved
@@ -246,7 +366,8 @@ describe('CFBStorage', () => {
 
         await cfbStorage.addSession(testEventId, session)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessions).to.have.lengthOf(1)
         expect(sessions[0].description).to.equal(session.description)
       })
@@ -258,7 +379,8 @@ describe('CFBStorage', () => {
 
         await cfbStorage.addSession(testEventId, session)
 
-        const sessions = await cfbStorage.getAllSessions(testEventId, session.sectionId)
+        const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
+          .filter(x => x.sectionId === session.sectionId)
         expect(sessions).to.have.lengthOf(1)
         expect(sessions[0].sectionId).to.equal(session.sectionId)
         expect(sessions[0].sectionId).to.equal('special-section-id-with-dashes-and-underscores')

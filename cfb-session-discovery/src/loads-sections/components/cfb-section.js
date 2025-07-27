@@ -2,47 +2,23 @@
  * A section component that displays a column with title and content area
  */
 
-// CSS styles for the component
-const styles = `
-.cfb-section {
-    display: block;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-.cfb-column__title {
-    margin: 0;
-    padding: 0;
-}
-
-.cfb-column {
-    margin: 0;
-    padding: 0;
-}
-
-.cfb-session-placeholder {
-    display: block;
-    min-height: 20px;
-    border: 2px dashed #ccc;
-    margin: 5px 0;
-    background-color: #f9f9f9;
-}
-`
-
 export class CfbSection extends HTMLElement {
   static elementName = 'cfb-section'
 
   static definedAttributes = {
     name: 'data-name',
     sectionId: 'data-section-id',
+    eventId: 'data-event-id',
   }
 
   #name = undefined
   #sectionId = undefined
+  #eventId = undefined
 
   static get observedAttributes() {
-    return [CfbSection.definedAttributes.name, CfbSection.definedAttributes.sectionId]
+    return [CfbSection.definedAttributes.name,
+      CfbSection.definedAttributes.sectionId,
+      CfbSection.definedAttributes.eventId]
   }
 
   constructor() {
@@ -52,24 +28,6 @@ export class CfbSection extends HTMLElement {
     this.addEventListener('cfb-session-on-top-title', this.addADropAreaTitle.bind(this))
     this.addEventListener('mouseleave', this.handleSessionHoverOff.bind(this))
     this.addEventListener('mouseout', this.handleSessionHoverOff.bind(this))
-  }
-
-  // Inject styles when component is defined
-  static define() {
-    if (!customElements.get(CfbSection.elementName)) {
-      // Inject styles if not already present
-      if (!document.querySelector('#cfb-section-styles')) {
-        const styleSheet = document.createElement('style')
-        styleSheet.id = 'cfb-section-styles'
-        styleSheet.textContent = styles
-        document.head.appendChild(styleSheet)
-      }
-      customElements.define(CfbSection.elementName, CfbSection)
-    }
-  }
-
-  connectedCallback() {
-    this.#render()
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -84,18 +42,19 @@ export class CfbSection extends HTMLElement {
       this.#sectionId = newValue
       this.#render()
     }
+    if (name === CfbSection.definedAttributes.eventId) {
+      this.#eventId = newValue
+      this.#render()
+    }
   }
 
   #render() {
     const name = this.#name || 'Untitled'
 
-    this.innerHTML = `
-      <cfb-column-title>
+    this.innerHTML = `<cfb-column-title>
         <h2 class="cfb-column__title">${name}</h2>
       </cfb-column-title>
-      <section class="cfb-column" role="region" aria-label="${name} column">
-      </section>
-    `
+      <section class="cfb-column" role="region" aria-label="${name} column"></section>`
 
     // Add event listeners to the newly created elements
     this.querySelectorAll('section.cfb-column').forEach(e =>
