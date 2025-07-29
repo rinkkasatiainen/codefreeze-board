@@ -1,6 +1,7 @@
 import CfbRetrievesSchedules from '../ports/cfb-retrieves-schedules.js'
 import cfbStorage from '../ports/cfb-schedule-storage.js'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import {sectionsLoaded, sessionsLoaded} from '../../events/events-loaded.js'
 
 /**
  * A simple schedule loader element
@@ -50,6 +51,7 @@ export class CfbScheduleLoader extends HTMLElement {
     this.querySelectorAll('.listens-session-updates').forEach(e => {
       e.setAttribute('data-updated-at', timestamp)
     })
+    this.dispatchEvent(sectionsLoaded(this.#eventId))
   }
 }
 

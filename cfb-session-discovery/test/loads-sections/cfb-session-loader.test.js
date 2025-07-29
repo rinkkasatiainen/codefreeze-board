@@ -6,7 +6,9 @@ import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 import {mockSessionWith} from './cfb-section-models.js'
-import {todo} from '@rinkkasatiainen/cfb-testing-utils'
+import {todo, waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+import {EventTypes, isSectionsLoaded, isSessionsLoaded} from '../../src/events/events-loaded.js'
+import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
@@ -152,6 +154,22 @@ describe('CfbSessionLoader', () => {
       expect(timestamp1).to.equal(timestamp2)
       expect(timestamp2).to.equal(timestamp3)
       expect(timestamp1).to.not.be.null
+    })
+
+    it('dispatches event for schedule loaded', async () => {
+      let called = false
+      const listener = event => {
+        if(isSessionsLoaded(event)) {
+          called = true
+        }
+      }
+      testRoot.addEventListener(EventTypes.SESSIONS_LOADED, listener)
+
+      getScheduleSessionsStub.resolves([mockSessionWith({order: 0})])
+
+      element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
+      await waitUntil(() => called, 200)
+      testRoot.removeEventListener(EventTypes.SESSIONS_LOADED, listener)
     })
   })
 

@@ -6,6 +6,8 @@ import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 import {withSection} from './cfb-section-models.js'
+import {EventTypes, isSectionsLoaded, isSessionsLoaded} from '../../src/events/events-loaded.js'
+import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
@@ -93,6 +95,22 @@ describe('CfbScheduleLoader', () => {
     const timestamp = child1.getAttribute('data-updated-at')
     expect(timestamp).to.not.be.null
     expect(child2.getAttribute('data-updated-at')).to.equal(timestamp)
+  })
+
+  it('dispatches event for schedule loaded', async () => {
+    let called = false
+    const listener = event => {
+      if(isSectionsLoaded(event)) {
+        called = true
+      }
+    }
+    testRoot.addEventListener(EventTypes.SECTIONS_LOADED, listener)
+
+    getScheduleSectionsStub.resolves([withSection()])
+
+    element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
+    await waitUntil(() => called, 200)
+    testRoot.removeEventListener(EventTypes.SECTIONS_LOADED, listener)
   })
 })
 
