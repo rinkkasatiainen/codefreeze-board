@@ -76,9 +76,9 @@ describe('CfbScheduleLoader', () => {
 
   it('should update data-last-updated-at for all children', async () => {
     const child1 = document.createElement('div')
-    child1.classList.add('listens-schedule-updates')
+    child1.classList.add('listens-session-updates')
     const child2 = document.createElement('div')
-    child2.classList.add('listens-schedule-updates')
+    child2.classList.add('listens-session-updates')
     element.appendChild(child1)
     element.appendChild(child2)
 

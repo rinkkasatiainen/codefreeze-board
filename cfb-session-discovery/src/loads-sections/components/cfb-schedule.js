@@ -54,11 +54,17 @@ export class CfbSchedule extends HTMLElement {
       // Add a cfb-section for each entry
       sections.forEach(section => {
         const sectionHtml = `
-        <cfb-section 
+        <cfb-session-scheduler
           data-section-id="${section.id}" 
-          data-event-id="${this.#eventId}" 
-          data-name="${section.name}"
-        ></cfb-section>`
+          data-event-id="${this.#eventId}"
+          class="listens-session-updates"
+         ><cfb-section 
+            data-section-id="${section.id}" 
+            data-event-id="${this.#eventId}" 
+            data-name="${section.name}"
+          ></cfb-section
+        ></cfb-session-scheduler>
+        `
         board.innerHTML += sectionHtml
       })
       this.appendChild(board)

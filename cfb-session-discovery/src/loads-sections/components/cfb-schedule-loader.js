@@ -31,6 +31,7 @@ export class CfbScheduleLoader extends HTMLElement {
   }
 
   async #loadSections(eventId) {
+    await tick(100)
     return await CfbRetrievesSchedules.getScheduleSections(eventId)
   }
 
@@ -46,8 +47,14 @@ export class CfbScheduleLoader extends HTMLElement {
 
   #updateChildren(){
     const timestamp = new Date().toISOString()
-    this.querySelectorAll('.listens-schedule-updates').forEach(e => {
+    this.querySelectorAll('.listens-session-updates').forEach(e => {
       e.setAttribute('data-updated-at', timestamp)
     })
   }
+}
+
+async function tick(timeoutInMs = 100) {
+  return new Promise(resolve => {
+    setTimeout( resolve, timeoutInMs)
+  })
 }
