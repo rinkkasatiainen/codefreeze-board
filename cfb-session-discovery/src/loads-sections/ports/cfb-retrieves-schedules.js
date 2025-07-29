@@ -32,6 +32,52 @@ class CfbRetrievesSchedules {
       ]
     }
   }
+
+  async getScheduleSessions(eventId) {
+    // TODO: test-drive this.
+    try {
+      const response = await fetch('/sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId,
+          // TODO: Add user token here later
+          // token: userToken
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data.sessions || []
+    } catch {
+      // Fallback to default sessions for now
+      return [
+        {
+          id: 'session-1',
+          name: 'Example Session',
+          description: 'This is an example session',
+          sectionId: '8f47c2a1-9b5d-4e0c-a2b3-c4d5e6f7g8h9',
+          order: 0,
+          tags: [{name: 'Workshop', type: 'blue'}],
+          speakers: [{name: 'John Doe', initial: 'JD'}],
+        },
+        {
+          id: 'session-2',
+          name: 'Another Session',
+          description: 'This is another example session',
+          sectionId: '2c3d4e5f-6g7h-8i9j-k1l2-m3n4o5p6q7r',
+          order: 1,
+          tags: [{name: 'Technical', type: 'green'}],
+          speakers: [{name: 'Jane Smith', initial: 'JS'}],
+        },
+      ]
+    }
+  }
 }
 
 export default new CfbRetrievesSchedules()

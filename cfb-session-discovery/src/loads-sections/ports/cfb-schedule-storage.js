@@ -146,7 +146,7 @@ class CfbScheduleStorage {
       const store = transaction.objectStore(this.sessionsStoreName)
       const sessionWithKeys = { ...session, eventId, sectionId: session.sectionId }
 
-      this.#logger.info('Adding session with keys:', {eventId, sectionId: session.sectionId, id: session.id})
+      // this.#logger.info('Adding session with keys:', {eventId, sectionId: session.sectionId, id: session.id})
 
       const request = store.add(sessionWithKeys)
 
