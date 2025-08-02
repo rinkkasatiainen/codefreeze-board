@@ -6,7 +6,7 @@ import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 import {withSection} from './cfb-section-models.js'
-import {EventTypes, isSectionsLoaded, isSessionsLoaded} from '../../src/events/events-loaded.js'
+import {EventTypes, isSectionsLoaded} from '../../src/events/events-loaded.js'
 import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {

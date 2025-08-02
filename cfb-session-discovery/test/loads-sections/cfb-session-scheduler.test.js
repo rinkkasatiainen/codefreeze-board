@@ -170,7 +170,7 @@ describe('CfbSessionScheduler', () => {
     })
   })
 
-  describe.skip('corner cases', () => {
+  describe('corner cases', () => {
     it('should not add sessions to wrong sessionId', async () => {
       cfbScheduleStorage.getAllSessionsForSection.resolves([exampleSessionEntry])
       const sut = createSut({sectionId: 'wrong-section-id'})
@@ -234,7 +234,7 @@ describe('CfbSessionScheduler', () => {
 
       // Update the sectionId attribute to trigger re-render
       cfbScheduleStorage.getAllSessionsForSection
-        .resolves([{...exampleSessionEntry, id: 'session-2', sectionId: 'session-2'}])
+        .resolves([{...exampleSessionEntry, id: 'session-2', sectionId: 'section-2'}])
       sut.setAttribute(CfbSessionScheduler.definedAttributes.sectionId, 'section-2')
 
       // Wait for the attribute change to trigger re-render

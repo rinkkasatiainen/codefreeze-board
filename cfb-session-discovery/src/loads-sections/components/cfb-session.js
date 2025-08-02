@@ -43,7 +43,7 @@ export class CfbSession extends HTMLElement {
       }
     }
 
-    this.handleDragEnd = e => {
+    this.handleDragEnd = _evt => {
       this.style.opacity = '1'
       this.classList.remove('dragging')
       CfbSession.draggedItem = null

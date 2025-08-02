@@ -63,21 +63,21 @@ export class CfbSessionScheduler extends HTMLElement {
         result[item[key]] = [...(result[item[key]] || []), item]
         return result
       }, {})
+      const sectionElement = this.querySelector(`cfb-section[data-section-id='${this.#sectionId}'] > section`)
+      if (!sectionElement) {
+        return
+      }
+      sectionElement.innerHTML = ''
+
       // Group sessions by sectionId
       const groupedSessions = groupBy(sessions, 'sectionId')
 
       // Log each section ID and sort sessions within groups
       Object.entries(groupedSessions).forEach(([sectionId, sectionSessions]) => {
-        const sessionsInOrder = [...sectionSessions.sort((a, b) => a.order - b.order)]
-
-        // Find the cfb-section child element for this section
-        const sectionElement = this.querySelector(`cfb-section[data-section-id='${sectionId}'] > section`)
-        if (!sectionElement) {
+        if(sectionId !== this.#sectionId) {
           return
         }
-        // Clear existing sessions for this section
-        const existingSessions = sectionElement.querySelectorAll('cfb-session')
-        existingSessions.forEach(session => session.remove())
+        const sessionsInOrder = [...sectionSessions.sort((a, b) => a.order - b.order)]
 
         // Add each session as a child of the section
         sessionsInOrder.forEach(session => {
@@ -86,7 +86,7 @@ export class CfbSessionScheduler extends HTMLElement {
         })
       })
     } catch (error) {
-      console.error('Error loading sessions:', error)
+      this.#logger.error('Error rendering sessions:', error)
     }
   }
 

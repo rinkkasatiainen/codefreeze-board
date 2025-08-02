@@ -7,7 +7,7 @@ import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 import {mockSessionWith} from './cfb-section-models.js'
 import {todo, waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
-import {EventTypes, isSectionsLoaded, isSessionsLoaded} from '../../src/events/events-loaded.js'
+import {EventTypes, isSessionsLoaded} from '../../src/events/events-loaded.js'
 import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
