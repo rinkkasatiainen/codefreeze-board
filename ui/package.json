@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.1.0",
-    "@rinkkasatiainen/cfb-session-discovery": "../cfb-session-discovery/rinkkasatiainen-cfb-session-discovery-v0.1.0.tgz",
+    "@rinkkasatiainen/cfb-session-discovery": "^0.1.0",
     "@rinkkasatiainen/cfb-shell": "^0.0.1"
   },
   "devDependencies": {
