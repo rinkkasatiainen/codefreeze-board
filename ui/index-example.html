@@ -8,10 +8,38 @@
     <script type="importmap">
         {
             "imports": {
-                "@rinkkasatiainen/cfb-shell": "/node_modules/@rinkkasatiainen/cfb-shell/dist/index.js"
+                "msw/browser": "./node_modules/msw/lib/browser/index.mjs",
+                "msw": "./node_modules/msw/lib/core/index.mjs",
+                "@mswjs/interceptors/WebSocket": "./node_modules/@mswjs/interceptors/lib/browser/interceptors/WebSocket/index.mjs",
+                "@mswjs/interceptors": "./node_modules/@mswjs/interceptors/lib/browser/index.mjs",
+                "outvariant": "./node_modules/outvariant/lib/index.mjs",
+                "@open-draft/until": "./node_modules/@open-draft/until/lib/index.mjs",
+                "is-node-process": "./node_modules/is-node-process/lib/index.mjs",
+                "@bundled-es-modules/tough-cookie": "./node_modules/@bundled-es-modules/tough-cookie/index-esm.js",
+                "@bundled-es-modules/cookie": "./node_modules/@bundled-es-modules/cookie/index-esm.js",
+                "@bundled-es-modules/statuses": "./node_modules/@bundled-es-modules/statuses/index-esm.js",
+                "headers-polyfill": "./node_modules/headers-polyfill/lib/index.mjs",
+                "strict-event-emitter": "./node_modules/strict-event-emitter/lib/index.mjs",
+                "@open-draft/deferred-promise": "./node_modules/@open-draft/deferred-promise/build/index.mjs",
+                "@open-draft/logger": "./node_modules/@open-draft/logger/lib/index.mjs",
+                "path-to-regexp": "./node_modules/path-to-regexp/dist.es2015/index.js",
+
+                "document": "this is also needed for msw mocking",
+                "@rinkkasatiainen/cfb-session-discovery/mocks/": "./node_modules/@rinkkasatiainen/cfb-session-discovery/mocks/",
+                "last": "but-not-least"
             }
         }
     </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "@rinkkasatiainen/cfb-shell": "./node_modules/@rinkkasatiainen/cfb-shell/dist/index.js",
+                "@rinkkasatiainen/cfb-session-discovery": "./node_modules/@rinkkasatiainen/cfb-session-discovery/dist/index.js",
+                "@rinkkasatiainen/cfb-observability": "./node_modules/@rinkkasatiainen/cfb-observability/dist/index.js"
+            }
+        }
+    </script>
+    <script type="module" src="index.js"></script>
     <script type="module" src="_public/scripts/index.js"></script>
 </head>
 <body>
@@ -25,11 +53,28 @@
 </header>
 <main>
     <div class="cfb-board" role="region" aria-label="Task board">
+        <cfb-schedule-orchestrator>
+            <cfb-schedule-loader data-event-id="codefreeze-2025">
+            </cfb-schedule-loader>
+            <cfb-session-loader data-event-id="codefreeze-2025" >
+            </cfb-session-loader>
+            <cfb-schedule data-event-id="codefreeze-2025" class="listens-schedule-updates">
+            </cfb-schedule>
+        </cfb-schedule-orchestrator>
+        <cfb-schedule-loader data-event-id="codefreeze-2025">
+            <cfb-session-loader data-event-id="codefreeze-2025" class="listens-schedule-updates">
+                <cfb-schedule data-event-id="codefreeze-2025" class="listens-schedule-updates">
+                </cfb-schedule>
+            </cfb-session-loader>
+        </cfb-schedule-loader>
+    </div>
+    <p>old stuff</p>
+    <div class="cfb-board2" role="region" aria-label="Task board">
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Monday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Monday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Monday</h2>
+                </cfb-column-title>
                 <cfb-session>
                     <article class="cfb-card cfb-card--travel" role="article">
                         <header class="cfb-card__header">
@@ -97,10 +142,10 @@
         </cfb-section>
 
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Tuesday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Tuesday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Tuesday</h2>
+                </cfb-column-title>
                 <cfb-session>
                     <article class="cfb-card" role="article">
                         <header class="cfb-card__header">
@@ -126,10 +171,10 @@
         </cfb-section>
 
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Wednesday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Wednesday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Wednesday</h2>
+                </cfb-column-title>
                 <cfb-session>
                     <article class="cfb-card" role="article">
                         <header class="cfb-card__header">
@@ -154,34 +199,34 @@
         </cfb-section>
 
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Thursday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Thursday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Thursday</h2>
+                </cfb-column-title>
             </section>
         </cfb-section>
 
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Friday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Friday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Friday</h2>
+                </cfb-column-title>
             </section>
         </cfb-section>
 
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Saturday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Saturday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Saturday</h2>
+                </cfb-column-title>
             </section>
         </cfb-section>
 
         <cfb-section>
-            <cfb-column-title>
-                <h2 class="cfb-column__title">Sunday</h2>
-            </cfb-column-title>
             <section class="cfb-column" role="region" aria-label="Sunday column">
+                <cfb-column-title>
+                    <h2 class="cfb-column__title">Sunday</h2>
+                </cfb-column-title>
             </section>
         </cfb-section>
     </div>

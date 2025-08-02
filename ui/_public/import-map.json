@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "msw/browser": "./node_modules/msw/dist/mjs/msw.browser.mjs",
+    "msw": "./node_modules/msw/dist/mjs/msw.mjs",
+    "outvariant": "./node_modules/outvariant/dist/mjs/outvariant.mjs"
+  }
+}

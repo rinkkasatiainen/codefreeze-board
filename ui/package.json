@@ -2,9 +2,23 @@
   "name": "codefreeze-board",
   "version": "1.0.0",
   "description": "UI for the board for codefreeze",
-  "main": "index.js",
+  "main": "_public/index.js",
   "license": "MIT",
+  "scripts": {
+    "msw:init": "msw init test --save",
+    "msw:import-map": "msw import-map _public > _public/import-map.json"
+  },
   "dependencies": {
+    "@rinkkasatiainen/cfb-observability": "^0.1.0",
+    "@rinkkasatiainen/cfb-session-discovery": "../cfb-session-discovery/rinkkasatiainen-cfb-session-discovery-v0.1.0.tgz",
     "@rinkkasatiainen/cfb-shell": "^0.0.1"
+  },
+  "devDependencies": {
+    "msw": "^2.10.4"
+  },
+  "msw": {
+    "workerDirectory": [
+      ""
+    ]
   }
 }
