@@ -29,17 +29,17 @@ async function build() {
       await fs.copy(path.join(sourceDir, 'styles.css'), path.join(distDir, 'styles.css'));
     }
     
-    // Step 5: Copy _public folder to dist
-    console.log('📁 Copying _public folder...');
-    await fs.copy(path.join(sourceDir, '_public'), path.join(distDir, '_public'));
+    // Step 5: Copy assets folder to dist
+    console.log('📁 Copying assets folder...');
+    await fs.copy(path.join(sourceDir, 'assets'), path.join(distDir, 'assets'));
     
     // Step 6: Bundle and minify JavaScript
     console.log('📦 Bundling and minifying JavaScript...');
     
-    // Find all JavaScript files in _public and entry point
+    // Find all JavaScript files in assets and entry point
     const entryPoints = [
       path.join(sourceDir, 'index.js'),
-      ...globSync(path.join(sourceDir, '_public/**/*.js')),
+      // ...globSync(path.join(sourceDir, 'assets/scripts/**/*.js')),
     ];
     
     await esbuild.build({
@@ -83,11 +83,6 @@ async function build() {
     indexHtml = indexHtml.replace(
       /<script type="module" src="index.js"><\/script>/g,
       '<script type="module" src="bundled/index.js"></script>'
-    );
-    
-    indexHtml = indexHtml.replace(
-      /<script type="module" src="_public\/scripts\/index.js"><\/script>/g,
-      '<script type="module" src="bundled/_public/scripts/index.js"></script>'
     );
     
     // Write the modified index.html

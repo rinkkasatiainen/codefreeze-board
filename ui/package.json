@@ -2,11 +2,11 @@
   "name": "codefreeze-board",
   "version": "1.0.0",
   "description": "UI for the board for codefreeze",
-  "main": "_public/index.js",
+  "main": "_fakes/index.js",
   "license": "MIT",
   "scripts": {
     "msw:init": "msw init test --save",
-    "msw:import-map": "msw import-map _public > _public/import-map.json"
+    "msw:import-map": "msw import-map _fakes > _fakes/import-map.json"
   },
   "dependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.1.0",

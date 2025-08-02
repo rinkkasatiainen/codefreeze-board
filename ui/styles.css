@@ -1,17 +1,17 @@
 /* Atoms */
-@import '_public/styles/atoms/cfb-colors.css';
-@import '_public/styles/atoms/cfb-typography.css';
-@import '_public/styles/atoms/cfb-tags.css';
+@import 'assets/styles/atoms/cfb-colors.css';
+@import 'assets/styles/atoms/cfb-typography.css';
+@import 'assets/styles/atoms/cfb-tags.css';
 
 /* Molecules */
-@import '_public/styles/molecules/cfb-card.css';
-@import '_public/styles/molecules/cfb-column.css';
-@import '_public/styles/molecules/cfb-navigation.css';
-@import '_public/styles/molecules/cfb-avatars.css';
-@import '_public/styles/molecules/cfb-session.css';
+@import 'assets/styles/molecules/cfb-card.css';
+@import 'assets/styles/molecules/cfb-column.css';
+@import 'assets/styles/molecules/cfb-navigation.css';
+@import 'assets/styles/molecules/cfb-avatars.css';
+@import 'assets/styles/molecules/cfb-session.css';
 
 /* Organisms */
-@import '_public/styles/organisms/cfb-board.css';
+@import 'assets/styles/organisms/cfb-board.css';
 
 /* Templates */
-@import '_public/styles/templates/cfb-layout.css';
+@import 'assets/styles/templates/cfb-layout.css';
