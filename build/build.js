@@ -22,7 +22,11 @@ async function build() {
     // Step 3: Copy index.js to dist folder
     console.log('📄 Copying index.js...');
     await fs.copy(path.join(sourceDir, 'index.js'), path.join(distDir, 'index.js'));
-    
+
+    // Step 3.1: Copy index.js to dist folder
+    console.log('📄 Copying mockServiceWorker.js... -- this should not happen when backend is done.');
+    await fs.copy(path.join(sourceDir, 'mockServiceWorker.js'), path.join(distDir, 'mockServiceWorker.js'));
+
     // Step 4: Copy styles.css if it exists
     if (fs.existsSync(path.join(sourceDir, 'styles.css'))) {
       console.log('📄 Copying styles.css...');
