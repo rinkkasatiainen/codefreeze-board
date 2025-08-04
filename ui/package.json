@@ -11,10 +11,10 @@
   "dependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.1.0",
     "@rinkkasatiainen/cfb-session-discovery": "^0.1.0",
-    "@rinkkasatiainen/cfb-shell": "^0.0.1"
+    "@rinkkasatiainen/cfb-shell": "^0.0.1",
+    "msw": "^2.10.4"
   },
   "devDependencies": {
-    "msw": "^2.10.4"
   },
   "msw": {
     "workerDirectory": [
