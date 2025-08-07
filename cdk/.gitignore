@@ -1,1 +1,5 @@
 cdk.out
+lib/**/*.js
+bin/**/*.js
+bin/**/*.d.ts
+lib/**/*.d.ts

@@ -22,6 +22,8 @@ export class CodefreezeBoardStack extends cdk.Stack {
     // S3 bucket for hosting the static website
     const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
       bucketName: `codefreeze-board-${this.account}-${this.region}`,
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: 'index.html',
       publicReadAccess: false, // We'll use CloudFront for access
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // For development - change for production
@@ -75,9 +77,9 @@ export class CodefreezeBoardStack extends cdk.Stack {
         }),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-        responseHeadersPolicy: new cloudfront.ResponseHeadersPolicy(this, 'ResponseHeadersPolicy', {
-          responseHeadersPolicyName: 'CodefreezeBoardHeaders',
-          comment: 'Headers for CodeFreeze Board',
+        responseHeadersPolicy: new cloudfront.ResponseHeadersPolicy(this, 'MainResponseHeadersPolicy', {
+          responseHeadersPolicyName: 'CodefreezeBoardMainHeaders',
+          comment: 'Headers for CodeFreeze Board main content',
           securityHeadersBehavior: {
             contentTypeOptions: { override: true },
             frameOptions: { frameOption: cloudfront.HeadersFrameOption.DENY, override: true },
@@ -95,11 +97,13 @@ export class CodefreezeBoardStack extends cdk.Stack {
           httpStatus: 404,
           responseHttpStatus: 200,
           responsePagePath: '/index.html',
+          ttl: cdk.Duration.seconds(0),
         },
         {
           httpStatus: 403,
           responseHttpStatus: 200,
           responsePagePath: '/index.html',
+          ttl: cdk.Duration.seconds(0),
         },
       ],
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100, // Use only North America and Europe
@@ -141,5 +145,17 @@ export class CodefreezeBoardStack extends cdk.Stack {
         description: 'Custom Domain URL',
       });
     }
+
+    // Output the S3 bucket name for debugging
+    new cdk.CfnOutput(this, 'WebsiteBucketName', {
+      value: websiteBucket.bucketName,
+      description: 'S3 Bucket Name',
+    });
+
+    // Output the CloudFront distribution ID for debugging
+    new cdk.CfnOutput(this, 'DistributionId', {
+      value: distribution.distributionId,
+      description: 'CloudFront Distribution ID',
+    });
   }
 } 
