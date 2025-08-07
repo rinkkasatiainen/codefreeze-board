@@ -13,10 +13,13 @@ mkdir -p build/dist
 # Copy all UI files to build/dist
 echo "📁 Copying UI files..."
 cp -r assets build/dist/ 2>/dev/null || true
-cp -r node_modules build/dist/ 2>/dev/null || true
+cp -r node_modules/@rinkkasatiainen build/dist/ 2>/dev/null || true
 cp -r *.js build/dist/ 2>/dev/null || true
 cp -r *.css build/dist/ 2>/dev/null || true
 cp -r *.html build/dist/ 2>/dev/null || true
+# Replace node_modules/@rinkkasatiainen/ with @rinkkasatiainen in HTML files
+echo "🔄 Updating import paths in HTML files..."
+find build/dist -name "*.html" -exec sed -i '' 's|./node_modules/@rinkkasatiainen/|./@rinkkasatiainen/|g' {} \;
 
 # Copy node_modules for ES modules
 echo "📦 Copying node_modules..."
