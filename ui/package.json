@@ -6,15 +6,18 @@
   "license": "MIT",
   "scripts": {
     "msw:init": "msw init test --save",
-    "msw:import-map": "msw import-map _fakes > _fakes/import-map.json"
+    "msw:import-map": "msw import-map _fakes > _fakes/import-map.json",
+    "build": "node build.js"
   },
   "dependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.1.0",
-    "@rinkkasatiainen/cfb-session-discovery": "^0.1.0",
+    "@rinkkasatiainen/cfb-session-discovery": "^0.1.1",
     "@rinkkasatiainen/cfb-shell": "^0.0.1",
     "msw": "^2.10.4"
   },
   "devDependencies": {
+    "esbuild": "^0.25.8",
+    "fs-extra": "^11.3.1"
   },
   "msw": {
     "workerDirectory": [

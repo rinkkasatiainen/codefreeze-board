@@ -4,6 +4,7 @@
 
 import cfbScheduleStorage from '../ports/cfb-schedule-storage.js'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import {sectionsAddedToDom} from '../../events/events-loaded.js'
 
 export class CfbSchedule extends HTMLElement {
   static elementName = 'cfb-schedule'
@@ -35,6 +36,11 @@ export class CfbSchedule extends HTMLElement {
     if (name === CfbSchedule.definedAttributes.eventId) {
       this.#eventId = newValue
       this.#render()
+    }
+    // TODO: AkS: test this
+    if(this.#eventId !== undefined && this.#updatedAt !== undefined) {
+      this.#render()
+      this.dispatchEvent(sectionsAddedToDom(this.#eventId))
     }
   }
 

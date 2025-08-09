@@ -23,7 +23,7 @@ find build/dist -name "*.html" -exec sed -i '' 's|./node_modules/@rinkkasatiaine
 
 # Copy node_modules for ES modules
 echo "📦 Copying node_modules..."
-cp -r node_modules build/dist/ 2>/dev/null || true
+cp -r node_modules/@rinkkasatiainen build/dist/ 2>/dev/null || true
 
 # Copy _public directory
 echo "📁 Copying _public directory..."
