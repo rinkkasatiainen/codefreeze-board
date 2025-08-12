@@ -18,7 +18,11 @@ if [ ! -d "node_modules" ]; then
     yarn install
 fi
 
-# Build the project
+# Build the UI first so assets exist for S3 deployment
+echo "🔨 Building UI..."
+(cd ../build && yarn build)
+
+# Build the CDK project
 echo "🔨 Building CDK project..."
 yarn build
 

@@ -19,7 +19,12 @@ cp -r *.css build/dist/ 2>/dev/null || true
 cp -r *.html build/dist/ 2>/dev/null || true
 # Replace node_modules/@rinkkasatiainen/ with @rinkkasatiainen in HTML files
 echo "🔄 Updating import paths in HTML files..."
-find build/dist -name "*.html" -exec sed -i '' 's|./node_modules/@rinkkasatiainen/|./@rinkkasatiainen/|g' {} \;
+sed -i -e "s|.\/node_modules\/@rinkkasatiainen/|.\/@rinkkasatiainen/|g" build/dist/index.html
+# find build/dist -name "*.html" -exec sed -i '' 's|./node_modules/@rinkkasatiainen/|./@rinkkasatiainen/|g' {} \;
+
+echo "🔄 Updating environment variables"
+sed -i -e "s/import.meta.env?.DEV/true/g" build/dist/index.js
+#f ind build/dist -name "index.js" -exec sed -i '' 's|import.meta.env?.DEV|true|g' {} \;
 
 # Copy node_modules for ES modules
 echo "📦 Copying node_modules..."
@@ -27,7 +32,7 @@ cp -r node_modules/@rinkkasatiainen build/dist/ 2>/dev/null || true
 
 # Copy _public directory
 echo "📁 Copying _public directory..."
-cp -r _public build/dist/ 2>/dev/null || true
+# cp -r _public build/dist/ 2>/dev/null || true
 
 # Ensure mockServiceWorker.js is in the root of build/dist
 echo "🔧 Ensuring mockServiceWorker.js is accessible..."

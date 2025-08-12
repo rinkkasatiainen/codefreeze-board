@@ -43,6 +43,13 @@ async function build() {
     console.log('📁 Copying node modules folder...');
     await fs.copy(path.join(sourceDir, 'node_modules', '@rinkkasatiainen'), path.join(distDir, '@rinkkasatiainen'));
 
+    console.log('📝 fixing environment variables...');
+    let indexJs = await fs.readFile(path.join(distDir, 'index.js'), 'utf8');
+
+    // Replace module scripts with bundled version
+    indexJs = indexJs.replace( /import.meta.env\?.DEV/g, 'true' );
+    await fs.writeFile(path.join(distDir, 'index.js'), indexJs);
+
     // Step 6: Bundle and minify JavaScript
     console.log('📦 Bundling and minifying JavaScript...');
 

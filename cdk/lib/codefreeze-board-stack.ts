@@ -22,8 +22,9 @@ export class CodefreezeBoardStack extends cdk.Stack {
     // S3 bucket for hosting the static website
     const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
       bucketName: `codefreeze-board-${this.account}-${this.region}`,
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: 'index.html',
+      // accessControl: s3.BucketAccessControl.PRIVATE,
+      // websiteIndexDocument: 'index.html',
+      // websiteErrorDocument: 'index.html',
       publicReadAccess: false, // We'll use CloudFront for access
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // For development - change for production

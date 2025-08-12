@@ -21,6 +21,11 @@ export class CfbAmplifyStack extends cdk.Stack {
       name: 'codefreeze-board-amplify',
       repository: props.githubRepo,
       accessToken: cdk.SecretValue.secretsManager('github-token').toString(),
+      customRules:[{
+          source:"node_modules/@rinkkasatiainen/<*>",
+            target:"@rinkkasatiainen/<*>",
+            status:"301"
+        }],
       buildSpec: `
 version: 0.2
 frontend:
@@ -30,7 +35,7 @@ frontend:
         - cd ui
         - npm config set @rinkkasatiainen:registry https://npm.pkg.github.com
         - npm config set //npm.pkg.github.com/:_authToken=$NPM_AUTH_TOKEN    
-        - yarn install --production
+        - yarn install
     build:
       commands:
         - ./build.sh
