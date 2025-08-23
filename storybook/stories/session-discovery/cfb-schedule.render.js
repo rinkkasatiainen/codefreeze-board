@@ -1,5 +1,6 @@
 import {CfbSchedule} from '@rinkkasatiainen/cfb-session-discovery'
 import cfbScheduleStorage from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
+import {Randomizer} from '../randomizer'
 
 export function renderSchedule(args) {
   const element = document.createElement(CfbSchedule.elementName)
@@ -61,23 +62,42 @@ export function renderScheduleInteractive(args) {
   status.style.border = '1px solid #dee2e6'
   status.style.borderRadius = '4px'
   status.style.marginTop = '10px'
-  status.textContent = 'Status: Ready to add sections'
+  status.textContent = 'Status: Initializing storage...'
   
-  // Sample sections data
-  const sampleSections = [
-    { id: 'section-1', name: 'Monday', order: 0 },
-    { id: 'section-2', name: 'Tuesday', order: 1 },
-    { id: 'section-3', name: 'Wednesday', order: 2 },
-    { id: 'section-4', name: 'Thursday', order: 3 },
-    { id: 'section-5', name: 'Friday', order: 4 }
+  // Sample sections function that takes eventId as parameter
+  const createSampleSections = (eventId, sectionIds = ['section-1', 'section-2', 'section-3', 'section-4', 'section-5']) => [
+    { id: 'section-1', name: 'Monday', order: 0, eventId, sectionId: Randomizer.randomFromList(sectionIds) },
+    { id: 'section-2', name: 'Tuesday', order: 1, eventId, sectionId: Randomizer.randomFromList(sectionIds) },
+    { id: 'section-3', name: 'Wednesday', order: 2, eventId, sectionId: Randomizer.randomFromList(sectionIds) },
+    { id: 'section-4', name: 'Thursday', order: 3, eventId, sectionId: Randomizer.randomFromList(sectionIds) },
+    { id: 'section-5', name: 'Friday', order: 4, eventId, sectionId: Randomizer.randomFromList(sectionIds) }
   ]
   
-  // Initialize storage
+  // Initialize storage in the background
   cfbScheduleStorage.init()
+    .then(() => {
+      console.log('Storage initialized successfully')
+      status.textContent = 'Status: Ready to add sections'
+    })
+    .catch(error => {
+      console.error('Storage initialization failed:', error)
+      status.textContent = `❌ Error initializing storage: ${error.message}`
+      status.style.backgroundColor = '#f8d7da'
+      status.style.borderColor = '#f5c6cb'
+    })
   
   addButton.addEventListener('click', async () => {
     try {
+      console.log('Add button clicked')
+      status.textContent = 'Status: Adding sections...'
+      status.style.backgroundColor = '#f8f9fa'
+      status.style.borderColor = '#dee2e6'
+      
       const eventId = input.value.trim() || 'demo-event-123'
+      console.log('Event ID:', eventId)
+      
+      const sampleSections = createSampleSections(eventId)
+      console.log('Sample sections:', sampleSections)
       
       // Add sample sections
       const addPromises = sampleSections.map(section =>
@@ -85,10 +105,12 @@ export function renderScheduleInteractive(args) {
       )
       await Promise.all(addPromises)
       
+      console.log('Sections added successfully')
       status.textContent = `✅ Added ${sampleSections.length} sections for event: ${eventId}`
       status.style.backgroundColor = '#d4edda'
       status.style.borderColor = '#c3e6cb'
     } catch (error) {
+      console.error('Error adding sections:', error)
       status.textContent = `❌ Error adding sections: ${error.message}`
       status.style.backgroundColor = '#f8d7da'
       status.style.borderColor = '#f5c6cb'
@@ -97,17 +119,28 @@ export function renderScheduleInteractive(args) {
   
   clearButton.addEventListener('click', async () => {
     try {
+      console.log('Clear button clicked')
+      status.textContent = 'Status: Clearing sections...'
+      status.style.backgroundColor = '#f8f9fa'
+      status.style.borderColor = '#dee2e6'
+      
       const eventId = input.value.trim() || 'demo-event-123'
+      console.log('Event ID:', eventId)
+      
       const sections = await cfbScheduleStorage.getAllSections(eventId)
+      console.log('Found sections to delete:', sections)
+      
       const deletePromises = sections.map(section =>
         cfbScheduleStorage.deleteSection(eventId, section.id)
       )
       await Promise.all(deletePromises)
       
+      console.log('Sections cleared successfully')
       status.textContent = `🗑️ Cleared ${sections.length} section(s) for event: ${eventId}`
       status.style.backgroundColor = '#fff3cd'
       status.style.borderColor = '#ffeaa7'
     } catch (error) {
+      console.error('Error clearing sections:', error)
       status.textContent = `❌ Error clearing sections: ${error.message}`
       status.style.backgroundColor = '#f8d7da'
       status.style.borderColor = '#f5c6cb'

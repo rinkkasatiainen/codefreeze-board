@@ -3,5 +3,17 @@ node_modules
 .idea
 dist
 
+# storybook
 *storybook.log
 storybook-static
+
+# temporary testing files
+**/_tmp*.test.js
+**/_tmp*.test.js
+tmp*._test.js
+tmp*._test.js
+
+# temporary NPM packages for development
+rinkkasatiainen-cfb-*.tgz
+
+#

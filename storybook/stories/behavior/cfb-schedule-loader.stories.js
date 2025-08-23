@@ -2,7 +2,7 @@ import {renderScheduleLoader, renderScheduleLoaderInteractive} from './cfb-sched
 import {scheduleMocks} from '@rinkkasatiainen/cfb-session-discovery/mocks/schedules.js'
 
 export default {
-  title: '  CFB Session Discovery/Schedule Loader',
+  title: 'Behavior/Cfb Session Discovery/Schedule Loader',
   parameters: {
     docs: {
       description: {

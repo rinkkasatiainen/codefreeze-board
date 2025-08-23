@@ -1,13 +1,29 @@
 import cfbScheduleStorage
   from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
 
-export function renderStorageDemo() {
+
+
+function getEventIds(storage) {
+  storage.getAllEventIds = function(){
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([this.storeName], 'readonly')
+      const objectStore = transaction.objectStore(this.storeName)
+      const indexName = 'eventId'
+      const index = objectStore.index(indexName);
+
+      index.getAllKeys().onsuccess = (event) => {
+        const keys = event.target.result.map(key => key[0])
+        resolve([...new Set(keys)])
+      }
+    })
+  }
+  return storage.getAllEventIds();
+}
+
+export function renderSectionStorageDemo() {
   const container = document.createElement('div')
   container.style.padding = '20px'
   container.style.fontFamily = 'Arial, sans-serif'
-
-  // Initialize storage
-  cfbScheduleStorage.init()
 
   const title = document.createElement('h3')
   title.textContent = 'Schedule Storage Demo'
@@ -21,13 +37,18 @@ export function renderStorageDemo() {
   const controls = document.createElement('div')
   controls.style.marginBottom = '20px'
 
-  const eventIdInput = document.createElement('input')
-  eventIdInput.type = 'text'
-  eventIdInput.placeholder = 'Event ID'
-  eventIdInput.value = 'demo-event-123'
+
+  const eventIdInput = document.createElement('select')
+  eventIdInput.id = 'event-id-select'
   eventIdInput.style.marginRight = '10px'
   eventIdInput.style.padding = '8px'
   eventIdInput.style.width = '150px'
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = 'Select event from storage';
+  defaultOption.disabled = true;
+  eventIdInput.appendChild(defaultOption);
+
 
   const addButton = document.createElement('button')
   addButton.textContent = 'Add Sample Sections'
@@ -69,6 +90,25 @@ export function renderStorageDemo() {
   output.style.whiteSpace = 'pre-wrap'
   output.style.minHeight = '100px'
   output.textContent = 'Storage output will appear here...'
+
+
+
+  // Initialize storage
+  cfbScheduleStorage.init()
+    .then(() => {
+      console.log('Storage initialized successfully')
+      getEventIds(cfbScheduleStorage).then(eventIds => {
+        eventIds.forEach(id => {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = id;
+          eventIdInput.appendChild(option);
+        })
+      })
+    })
+    .catch(error => {
+      console.error('Storage initialization failed:', error)
+    })
 
   // Sample sections data
   // TODO: take this from somewhere in domain! Even a pact test?

@@ -1,5 +1,10 @@
 # Codefreeze Board
 
+## Deploying to AWS.
+
+There's currently 2 ways to deploy this to AWS. One is using directly S3 and CloudFront 
+and nother is to use AWS Amplify. I'll keep on building both options until I know
+more which I prefer. See more from [cdk/README.md](cdk/README.md) or [build/README.md](build/README.md) 
 
 
 ## Testing locally on iPhone:

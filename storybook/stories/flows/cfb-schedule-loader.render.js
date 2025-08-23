@@ -19,7 +19,7 @@ export function renderFlowOfLoadingSchedule(args) {
         <cfb-schedule data-event-id="${eventId}">
         </cfb-schedule>
       </cfb-session-loader>
-    </cfb-session-loader>
+    </cfb-schedule-loader>
   </div>`
 }
 
