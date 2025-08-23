@@ -10,10 +10,7 @@
     "build": "node build.js"
   },
   "dependencies": {
-    "@rinkkasatiainen/cfb-observability": "^0.1.0",
-    "@rinkkasatiainen/cfb-session-discovery": "^0.1.0",
-    "@rinkkasatiainen/cfb-shell": "^0.0.1",
-    "msw": "^2.10.4"
+    "@rinkkasatiainen/cfb-ui": "^0.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

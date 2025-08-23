@@ -416,9 +416,9 @@
   integrity sha512-T1QyPSDCyMXaO3pzBkF96E8xMkiRYbUEZADd29SyPGabqxMViNoii+NcK7eWJAEoU6RZyEm5lVSIjTmcdoB9HA==
 
 "@inquirer/confirm@^5.0.0":
-  version "5.1.14"
-  resolved "https://registry.yarnpkg.com/@inquirer/confirm/-/confirm-5.1.14.tgz#e6321edf51a3a5f54dc548b80ef6ba89891351ad"
-  integrity sha512-5yR4IBfe0kXe59r1YCTG8WXkUbl7Z35HK87Sw+WUyGD8wNUx7JvY7laahzeytyE1oLn74bQnL7hstctQxisQ8Q==
+  version "5.1.15"
+  resolved "https://registry.yarnpkg.com/@inquirer/confirm/-/confirm-5.1.15.tgz#c502d5c642fdba0669b17442b40794c97bdbccb4"
+  integrity sha512-SwHMGa8Z47LawQN0rog0sT+6JpiL0B7eW9p1Bb7iCeKDGTI5Ez25TSc2l8kw52VV7hA4sX/C78CGkMrKXfuspA==
   dependencies:
     "@inquirer/core" "^10.1.15"
     "@inquirer/type" "^3.0.8"
@@ -694,9 +694,9 @@
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
 "@mswjs/interceptors@^0.39.1":
-  version "0.39.5"
-  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.39.5.tgz#6f0571493bf76291a60b62234ed0add2c4bd970e"
-  integrity sha512-B9nHSJYtsv79uo7QdkZ/b/WoKm20IkVSmTc/WCKarmDtFwM0dRx2ouEniqwNkzCSLn3fydzKmnMzjtfdOWt3VQ==
+  version "0.39.6"
+  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.39.6.tgz#44094a578f20da4749d1a0eaf3cdb7973604004b"
+  integrity sha512-bndDP83naYYkfayr/qhBHMhk0YGwS1iv6vaEGcr0SQbO0IZtbOPqjKjds/WcG+bJA+1T5vCx6kprKOzn5Bg+Vw==
   dependencies:
     "@open-draft/deferred-promise" "^2.2.0"
     "@open-draft/logger" "^0.3.0"
@@ -739,24 +739,26 @@
   integrity sha512-Fa9uqfjS9QjLbAnpL9CBmTGISjq2qvE0U8f04umVwtkekHDctXwGtv4X45yI22ZcpL8zh9VmNdlKNNr9TcKvPQ==
 
 "@rinkkasatiainen/cfb-session-discovery@^0.1.1":
-  version "0.1.0"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-session-discovery/0.1.0/f071a504bd8ba730551f47df124dd9e875f01f2f#f071a504bd8ba730551f47df124dd9e875f01f2f"
-  integrity sha512-ml4I0qyOuDosBwXbtNYPpWhtl3+mQT67pLOUZHBGAbUBPJjCoXyrVL0V4xugOFp39MS9jobod1DWuiTJnimsuw==
+  version "0.1.2"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-session-discovery/0.1.2/901c2fbaee2527e029471b74301bf64ba6d85440#901c2fbaee2527e029471b74301bf64ba6d85440"
+  integrity sha512-XTI2k1HOip9mNoZbLCHGMfDOnPFBzHx4Kcld1wJvarrnp1X0byw+3SHyr+lwWuWpJ1tJGkKEc4lPrrNDCHoF1g==
   dependencies:
     "@rinkkasatiainen/cfb-observability" "^0.0.1"
-    "@rinkkasatiainen/cfb-testing-utils" "^0.1.1"
 
 "@rinkkasatiainen/cfb-shell@^0.0.1":
   version "0.0.1"
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-shell/0.0.1/f7f759f25b3fc17d6595bbebb51c9a81cd193f23#f7f759f25b3fc17d6595bbebb51c9a81cd193f23"
   integrity sha512-GlUUPPt3Q8RWX0cwva3tLYLL2mQix5lgizTSz5Bl+7EDeZ3JgzeK+ItpGJpryZITT7zb/tduSdcf3UclHFwTxQ==
 
-"@rinkkasatiainen/cfb-testing-utils@^0.1.1":
+"@rinkkasatiainen/cfb-ui@^0.1.0":
   version "0.1.1"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-testing-utils/0.1.1/924c84517f41a14fd96d24a0703b8e76e4c66f26#924c84517f41a14fd96d24a0703b8e76e4c66f26"
-  integrity sha512-QWpSNbNpyZRwE3KvauQe6ImVJdwia+wt8zd+YHn9kCKYaXdYN2t7vzp/o5B/AnL3d5sB91AEgmswJBWRXimzVA==
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-ui/0.1.1/108477ef06e063e3af8b5081c00e202e0c00e061#108477ef06e063e3af8b5081c00e202e0c00e061"
+  integrity sha512-dyr4ltIVVYwfF07lIwGjsCLlei/dC/qH/8/QqNKONKFK7u4nQ5mpSo8BNQ8uYDFlhyY0G4ixKRY0XEg3iA+KcQ==
   dependencies:
-    "@rinkkasatiainen/cfb-observability" "^0.0.1"
+    "@rinkkasatiainen/cfb-observability" "^0.1.0"
+    "@rinkkasatiainen/cfb-session-discovery" "^0.1.1"
+    "@rinkkasatiainen/cfb-shell" "^0.0.1"
+    msw "^2.10.4"
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
@@ -2110,9 +2112,9 @@ ms@^2.1.3:
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
 msw@^2.10.4:
-  version "2.10.4"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-2.10.4.tgz#a39dad96468aecfd752e5b7df4bbc86f1d73dec4"
-  integrity sha512-6R1or/qyele7q3RyPwNuvc0IxO8L8/Aim6Sz5ncXEgcWUNxSKE+udriTOWHtpMwmfkLYlacA2y7TIx4cL5lgHA==
+  version "2.10.5"
+  resolved "https://registry.yarnpkg.com/msw/-/msw-2.10.5.tgz#3e43f12e97581c260bf38d8817732b9fec3bfdb0"
+  integrity sha512-0EsQCrCI1HbhpBWd89DvmxY6plmvrM96b0sCIztnvcNHQbXn5vqwm1KlXslo6u4wN9LFGLC1WFjjgljcQhe40A==
   dependencies:
     "@bundled-es-modules/cookie" "^2.0.1"
     "@bundled-es-modules/statuses" "^1.0.1"
@@ -2735,6 +2737,6 @@ yocto-queue@^0.1.0:
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
 yoctocolors-cjs@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/yoctocolors-cjs/-/yoctocolors-cjs-2.1.2.tgz#f4b905a840a37506813a7acaa28febe97767a242"
-  integrity sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/yoctocolors-cjs/-/yoctocolors-cjs-2.1.3.tgz#7e4964ea8ec422b7a40ac917d3a344cfd2304baa"
+  integrity sha512-U/PBtDf35ff0D8X8D0jfdzHYEPFxAI7jJlxZXwCSez5M3190m+QobIfh+sWDWSHMCWWJN2AWamkegn6vr6YBTw==

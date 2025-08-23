@@ -39,10 +39,17 @@ async function build() {
     
     // Step 6: Bundle and minify JavaScript
     console.log('📦 Bundling and minifying JavaScript...');
-    
+
+    // Step 6.1: Create production index.html pointing to bundled files
+    console.log('📝 fixing environment variables...');
+    let indexJs = await fs.readFile(path.join(distDir, 'index.js'), 'utf8');
+
+    // Replace module scripts with bundled version
+    indexJs = indexJs.replace( /import.meta.env\?.DEV/g, 'true' );
+    await fs.writeFile(path.join(distDir, 'index.js'), indexJs);
     // Find all JavaScript files in assets and entry point
     const entryPoints = [
-      path.join(sourceDir, 'index.js'),
+      path.join(distDir, 'index.js'),
       // ...globSync(path.join(sourceDir, 'assets/scripts/**/*.js')),
     ];
     
@@ -78,6 +85,7 @@ async function build() {
       );
       console.log('✅ Bundle created successfully!');
     });
+
 
     // Step 7: Create production index.html pointing to bundled files
     console.log('🔄 Creating production index.html...');
