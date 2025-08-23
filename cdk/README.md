@@ -25,7 +25,7 @@ This CDK project deploys the CodeFreeze Board UI to AWS using S3 + CloudFront.
 
 3. Configure AWS credentials:
    ```bash
-   aws configure
+   aws configure sso
    ```
 
 ## Deployment
@@ -37,7 +37,11 @@ This CDK project deploys the CodeFreeze Board UI to AWS using S3 + CloudFront.
 
 2. Deploy the stack:
    ```bash
-   yarn deploy
+   ./deploy.sh
+   ```
+   or 
+   ```
+   ./deploy-amplify.sh
    ```
 
 3. View the deployed URL in the CDK outputs.
@@ -54,6 +58,8 @@ This CDK project deploys the CodeFreeze Board UI to AWS using S3 + CloudFront.
 ### Environment Variables
 - `CDK_DEFAULT_ACCOUNT` - AWS account ID
 - `CDK_DEFAULT_REGION` - AWS region
+
+## notes from AI
 
 ### Stack Configuration
 Edit `lib/codefreeze-board-stack.ts` to modify:
