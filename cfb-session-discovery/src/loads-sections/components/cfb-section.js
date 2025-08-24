@@ -100,7 +100,7 @@ export class CfbSection extends HTMLElement {
   #render() {
     const name = this.#name || 'Untitled'
 
-    this.innerHTML = `<cfb-column-title>
+    this.innerHTML = `<cfb-column-title data-name="${this.#name}">
         <h2 class="cfb-column__title">${name}</h2>
       </cfb-column-title>
       <section class="cfb-column" role="region" aria-label="${name} column"></section>`
