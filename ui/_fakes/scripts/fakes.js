@@ -8,7 +8,7 @@ export class FakeModule {
     // customElements.define('cfb-section', CFBSection)
     // customElements.define('cfb-session', CFBSession)
     customElements.define('cfb-drop-area', CFBDropArea)
-    customElements.define('cfb-column-title', CFBColumnTitle)
+    // customElements.define('cfb-column-title', CFBColumnTitle)
   }
 
   activate() {

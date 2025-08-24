@@ -1,5 +1,3 @@
-import {CFBSession} from './fake-session.js'
-
 export class CFBDropArea extends HTMLElement {
   constructor() {
     super()
