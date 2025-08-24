@@ -4,7 +4,7 @@
 
 export class CfbColumnTitleElement extends HTMLElement {
   static elementName = 'cfb-column-title'
-  static definedAttributes = { name: 'name' }
+  static definedAttributes = {name: 'name'}
   #name = undefined
   #dragCounter = 0
 
@@ -54,19 +54,18 @@ export class CfbColumnTitleElement extends HTMLElement {
 
   #handleDragOver = e => {
     e.preventDefault()
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move'
+    }
   }
 
   #handleDrop = () => {
     this.#dragCounter = 0
   }
 
-  #handleDragEnter = e => {
+  #handleDragEnter = () => {
     this.#dragCounter++
     if (this.#dragCounter === 1) {
-      this.isDragging = true
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = 'move'
-      }
 
       // Dispatch on-top event
       const onTopEvent = new CustomEvent('cfb-session-on-top-title', {

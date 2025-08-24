@@ -1,5 +1,27 @@
 import {expect} from 'chai'
 import {CfbColumnTitleElement} from '../../src/loads-sections/components/cfb-column-title.js'
+import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+
+const newDragEnterEvent = () => new DragEvent('dragenter', {
+  bubbles: true,
+  cancelable: true,
+  dataTransfer: new DataTransfer(),
+})
+const newDragOverEvent = () => new DragEvent('dragover', {
+  bubbles: true,
+  cancelable: true,
+  dataTransfer: new DataTransfer(),
+})
+const newDropEvent = () => new DragEvent('drop', {
+  bubbles: true,
+  cancelable: true,
+  dataTransfer: new DataTransfer(),
+})
+const newDragLeaveEvent = () => new DragEvent('dragleave', {
+  bubbles: true,
+  cancelable: true,
+  dataTransfer: new DataTransfer(),
+})
 
 describe('CfbColumnTitleElement', () => {
   let testRoot = null
@@ -44,13 +66,24 @@ describe('CfbColumnTitleElement', () => {
   })
 
   describe('Drag and Drop Functionality', () => {
-    it('should dispatch an event when a draggable CfbSession is dragged over the component', async () => {
+    it('should dispatch cfb-session-on-top-title event when dragged over', async () => {
       const sut = createCfbColumnTitleElement('Test Column')
       const callOrder = []
 
-      sut.addEventListener('cfb-column-title-dragover', event => {
-        callOrder.push('dragover-event-dispatched')
+      testRoot.addEventListener('cfb-session-on-top-title', event => {
+        expect(event.detail.target.outerHTML).to.eql(sut.outerHTML)
+        callOrder.push('on-top-event-dispatched')
       })
+
+      sut.dispatchEvent(newDragEnterEvent())
+      await waitUntil(() => callOrder.length > 0 )
+
+      expect(callOrder).to.include('on-top-event-dispatched')
+    })
+
+    it('should prevent default on dragover', async () => {
+      const sut = createCfbColumnTitleElement('Test Column')
+      const callOrder = []
 
       const dragoverEvent = new DragEvent('dragover', {
         bubbles: true,
@@ -58,75 +91,161 @@ describe('CfbColumnTitleElement', () => {
         dataTransfer: new DataTransfer(),
       })
 
-      // Simulate dragging a CfbSession (we'll need to set up the dataTransfer appropriately)
-      dragoverEvent.dataTransfer.setData('text/plain', 'cfb-session-data')
-
+      const originalPreventDefault = dragoverEvent.preventDefault
+      dragoverEvent.preventDefault = () => {
+        callOrder.push('prevent-default-called')
+      }
       sut.dispatchEvent(dragoverEvent)
+      dragoverEvent.preventDefault = originalPreventDefault
 
-      expect(callOrder).to.include('dragover-event-dispatched')
+      expect(callOrder).to.include('prevent-default-called')
     })
 
-    it('should not dispatch an event when a non-draggable element is dragged over', async () => {
+    it('should handle drag counter correctly for multiple dragenter/dragleave events', async () => {
       const sut = createCfbColumnTitleElement('Test Column')
       const callOrder = []
 
-      sut.addEventListener('cfb-column-title-dragover', event => {
-        callOrder.push('dragover-event-dispatched')
+      sut.addEventListener('cfb-session-on-top-title', () => {
+        callOrder.push('on-top-event-dispatched')
       })
 
-      const dragoverEvent = new DragEvent('dragover', {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer: new DataTransfer(),
-      })
+      const dragEnterEvent = newDragEnterEvent()
+      const dragLeaveEvent = newDragLeaveEvent()
 
-      // Simulate dragging a non-CfbSession element
-      dragoverEvent.dataTransfer.setData('text/plain', 'other-data')
+      // First dragenter should dispatch event
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(1)
 
-      sut.dispatchEvent(dragoverEvent)
+      // Second dragenter should not dispatch another event
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(1)
 
-      expect(callOrder).to.not.include('dragover-event-dispatched')
-    })
+      // First dragleave should not reset
+      sut.dispatchEvent(dragLeaveEvent)
+      expect(callOrder).to.have.length(1)
 
-    it('should handle multiple drag over events correctly', async () => {
-      const sut = createCfbColumnTitleElement('Test Column')
-      const callOrder = []
+      // Second dragleave should reset counter
+      sut.dispatchEvent(dragLeaveEvent)
+      expect(callOrder).to.have.length(1)
 
-      sut.addEventListener('cfb-column-title-dragover', event => {
-        callOrder.push('dragover-event-dispatched')
-      })
-
-      const dragoverEvent1 = new DragEvent('dragover', {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer: new DataTransfer(),
-      })
-      dragoverEvent1.dataTransfer.setData('text/plain', 'cfb-session-data')
-
-      const dragoverEvent2 = new DragEvent('dragover', {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer: new DataTransfer(),
-      })
-      dragoverEvent2.dataTransfer.setData('text/plain', 'cfb-session-data')
-
-      sut.dispatchEvent(dragoverEvent1)
-      sut.dispatchEvent(dragoverEvent2)
-
+      // Another dragenter should dispatch event again
+      sut.dispatchEvent(dragEnterEvent)
       expect(callOrder).to.have.length(2)
-      expect(callOrder[0]).to.eql('dragover-event-dispatched')
-      expect(callOrder[1]).to.eql('dragover-event-dispatched')
+    })
+
+    it('should reset drag counter on drop', async () => {
+      const sut = createCfbColumnTitleElement('Test Column')
+      const callOrder = []
+
+      sut.addEventListener('cfb-session-on-top-title', () => {
+        callOrder.push('on-top-event-dispatched')
+      })
+
+      const dragEnterEvent = newDragEnterEvent()
+      const dropEvent = newDropEvent()
+
+      // Drag enter to set counter
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(1)
+
+      // Drop should reset counter
+      sut.dispatchEvent(dropEvent)
+
+      // Another drag enter should dispatch event again (counter was reset)
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(2)
     })
   })
 
   describe('Event Handling', () => {
-    it('should prevent default behavior on dragover events')
+    it('should prevent default behavior on dragover events', async () => {
+      const sut = createCfbColumnTitleElement('Test Column')
+      const callOrder = []
 
-    it('should handle dragenter events appropriately')
+      const dragoverEvent = newDragOverEvent()
 
-    it('should handle dragleave events appropriately')
+      const originalPreventDefault = dragoverEvent.preventDefault
+      dragoverEvent.preventDefault = () => {
+        callOrder.push('prevent-default-called')
+      }
 
-    it('should handle drop events appropriately')
+      sut.dispatchEvent(dragoverEvent)
+      dragoverEvent.preventDefault = originalPreventDefault
+
+      expect(callOrder).to.include('prevent-default-called')
+    })
+
+    it('should handle dragenter events appropriately', async () => {
+      const sut = createCfbColumnTitleElement('Test Column')
+      const callOrder = []
+
+      sut.addEventListener('cfb-session-on-top-title', () => {
+        callOrder.push('on-top-event-dispatched')
+      })
+
+      const dragEnterEvent = newDragEnterEvent()
+
+      sut.dispatchEvent(dragEnterEvent)
+
+      expect(callOrder).to.include('on-top-event-dispatched')
+    })
+
+    it('should handle dragleave events appropriately', async () => {
+      const sut = createCfbColumnTitleElement('Test Column')
+      const callOrder = []
+
+      sut.addEventListener('cfb-session-on-top-title', () => {
+        callOrder.push('on-top-event-dispatched')
+      })
+
+      const dragEnterEvent = newDragEnterEvent()
+
+      const dragLeaveEvent = new DragEvent('dragleave', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer: new DataTransfer(),
+      })
+
+      // First dragenter
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(1)
+
+      // First dragleave (should not reset counter yet)
+      sut.dispatchEvent(dragLeaveEvent)
+      expect(callOrder).to.have.length(1)
+
+      // Second dragleave (should reset counter)
+      sut.dispatchEvent(dragLeaveEvent)
+      expect(callOrder).to.have.length(1)
+    })
+
+    it('should handle drop events appropriately', async () => {
+      const sut = createCfbColumnTitleElement('Test Column')
+      const callOrder = []
+
+      sut.addEventListener('cfb-session-on-top-title', () => {
+        callOrder.push('on-top-event-dispatched')
+      })
+
+      const dragEnterEvent = newDragEnterEvent()
+
+      const dropEvent = new DragEvent('drop', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer: new DataTransfer(),
+      })
+
+      // Drag enter to set counter
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(1)
+
+      // Drop should reset counter
+      sut.dispatchEvent(dropEvent)
+
+      // Another drag enter should dispatch event again (counter was reset)
+      sut.dispatchEvent(dragEnterEvent)
+      expect(callOrder).to.have.length(2)
+    })
   })
 
   describe('Component Lifecycle', () => {
