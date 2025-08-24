@@ -6,7 +6,10 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'A demonstration of the IndexedDB storage functionality for schedule sections. This shows how to add, retrieve, and manage schedule sections with event IDs.'
+        component: 'A demonstration of the IndexedDB storage functionality for schedule sections. ' +
+          'This shows how to add, retrieve, and manage schedule sections with event IDs.' +
+          'To remove a section, click "clear storage". ' +
+          'To add a new section, use \'Schedule loader\' to use mock data to add sections to db.'
       }
     }
   }

@@ -1,9 +1,9 @@
-import {render, renderInteractive} from './cfb-session.render'
-import {exampleSessionEntry, day0Entries, day1Entries} from './mock-data.js'
+import {render} from './cfb-session.render'
+import {day0Entries, day1Entries} from './mock-data.js'
 
 // Register the custom element
 export default {
-  title: 'Session Discovery/CFB Components/Session',
+  title: '  CFB Session Discovery/Session',
   parameters: {
     docs: {
       description: {
@@ -16,42 +16,42 @@ export default {
       control: 'text',
       description: 'Unique identifier for the session',
       table: {
-        type: { summary: 'string' }
+        type: {summary: 'string'}
       }
     },
     'data-name': {
       control: 'text',
       description: 'The name/title of the session',
       table: {
-        type: { summary: 'string' }
+        type: {summary: 'string'}
       }
     },
     'data-description': {
       control: 'text',
       description: 'Description of the session',
       table: {
-        type: { summary: 'string' }
+        type: {summary: 'string'}
       }
     },
     'data-tags': {
       control: 'object',
       description: 'Array of tags with name and type properties',
       table: {
-        type: { summary: 'array' }
+        type: {summary: 'array'}
       }
     },
     'data-speakers': {
       control: 'object',
       description: 'Array of speakers with name and initial/initials properties',
       table: {
-        type: { summary: 'array' }
+        type: {summary: 'array'}
       }
     },
     'data-order': {
       control: 'number',
       description: 'Order/position of the session',
       table: {
-        type: { summary: 'number' }
+        type: {summary: 'number'}
       }
     }
   }
@@ -68,7 +68,7 @@ export const Default = {
       {name: 'Beginner', type: 'green'}
     ],
     'data-speakers': [
-      {name: 'John Doe', initial: 'JD'},
+      {name: 'John Doe', initials: 'JD'},
       {name: 'Jane Smith', initials: 'JS'}
     ],
     'data-order': 0
@@ -126,29 +126,11 @@ export const LongDescription = {
       {name: 'Demo', type: 'yellow'}
     ],
     'data-speakers': [
-      {name: 'Alice Johnson', initial: 'AJ'},
+      {name: 'Alice Johnson', initials: 'AJ'},
       {name: 'Bob Wilson', initials: 'BW'},
-      {name: 'Carol Davis', initial: 'CD'}
+      {name: 'Carol Davis', initials: 'CD'}
     ],
     'data-order': 1
   },
   render
 }
-
-// Interactive story
-export const Interactive = {
-  args: {
-    'data-session-id': 'interactive-session',
-    'data-name': 'Interactive Session',
-    'data-description': 'Edit the fields below to see how the session component updates in real-time.',
-    'data-tags': [
-      {name: 'Interactive', type: 'blue'},
-      {name: 'Demo', type: 'green'}
-    ],
-    'data-speakers': [
-      {name: 'Demo User', initial: 'DU'}
-    ],
-    'data-order': 0
-  },
-  render: renderInteractive
-} 

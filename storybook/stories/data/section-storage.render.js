@@ -1,8 +1,6 @@
 import cfbScheduleStorage
   from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
 
-
-
 function getEventIds(storage) {
   storage.getAllEventIds = function(){
     return new Promise((resolve, reject) => {

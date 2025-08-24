@@ -1,4 +1,7 @@
 import {CfbScheduleLoader} from '@rinkkasatiainen/cfb-session-discovery'
+import {getAllSectionsByEventId} from '../data/get-all-sections-by-event-id'
+import cfbScheduleStorage
+  from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
 
 export function renderScheduleLoader(args) {
   const element = document.createElement(CfbScheduleLoader.elementName)
@@ -42,6 +45,8 @@ export function renderScheduleLoaderInteractive(args) {
   
   const element = document.createElement(CfbScheduleLoader.elementName)
   element.setAttribute('data-event-id', args['data-event-id'])
+
+  cfbScheduleStorage.init()
   
   const status = document.createElement('div')
   status.id = 'status'
@@ -76,6 +81,11 @@ export function renderScheduleLoaderInteractive(args) {
             status.textContent = `Status: Schedule loaded for event ${newEventId} (check IndexedDB)`
             status.style.backgroundColor = '#d4edda'
             status.style.borderColor = '#c3e6cb'
+
+            getAllSectionsByEventId(cfbScheduleStorage).then(sections => {
+              console.log('Found sections:', sections)
+              status.textContent += `\nFound ${sections[newEventId].length} sections`
+            })
           }, 1000)
         }
       }
