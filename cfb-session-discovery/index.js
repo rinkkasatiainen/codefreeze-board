@@ -6,6 +6,7 @@ import {CfbSessionScheduler} from './src/loads-sections/components/cfb-session-s
 import {CfbSession} from './src/loads-sections/components/cfb-session.js'
 import cfbScheduleStorage from './src/loads-sections/ports/cfb-schedule-storage.js'
 import {CfbScheduleOrchestratorElement} from './src/scheduler/components/cfb-schedule-orchestrator.js'
+import {CfbColumnTitleElement} from './src/loads-sections/components/cfb-column-title.js'
 
 export class SessionDiscoveryModule {
   // TODO: later - use features here
@@ -24,6 +25,7 @@ export class SessionDiscoveryModule {
     customElements.define(CfbSessionLoader.elementName, CfbSessionLoader)
     customElements.define(CfbSessionScheduler.elementName, CfbSessionScheduler)
     customElements.define(CfbScheduleOrchestratorElement.elementName, CfbScheduleOrchestratorElement)
+    customElements.define(CfbColumnTitleElement.elementName, CfbColumnTitleElement)
   }
 }
 

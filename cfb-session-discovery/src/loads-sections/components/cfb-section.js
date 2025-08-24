@@ -23,11 +23,11 @@ export class CfbSection extends HTMLElement {
 
   constructor() {
     super()
-    this.addEventListener('cfb-moved-session', this.handleSessionMoved.bind(this))
-    this.addEventListener('cfb-session-on-top', this.addADropArea.bind(this))
-    this.addEventListener('cfb-session-on-top-title', this.addADropAreaTitle.bind(this))
-    this.addEventListener('mouseleave', this.handleSessionHoverOff.bind(this))
-    this.addEventListener('mouseout', this.handleSessionHoverOff.bind(this))
+    this.#setupEventListeners()
+  }
+
+  disconnectedCallback() {
+    this.#removeEventListeners()
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -48,6 +48,55 @@ export class CfbSection extends HTMLElement {
     }
   }
 
+  #setupEventListeners() {
+    this.addEventListener('cfb-moved-session', this.handleSessionMoved.bind(this))
+    this.addEventListener('cfb-session-on-top', this.addADropArea.bind(this))
+    this.addEventListener('cfb-session-on-top-title', this.addADropAreaTitle.bind(this))
+    this.addEventListener('dragenter', this.#handleDragEnterToSection.bind(this))
+    this.addEventListener('dragleave', this.#handleDragLeaveFromSection.bind(this))
+    this.addEventListener('drop', this.#handleDrop.bind(this))
+    this.addEventListener('dragover', this.#handleDragOver)
+    // this.addEventListener('mouseleave', this.handleSessionHoverOff.bind(this))
+    // this.addEventListener('mouseout', this.handleSessionHoverOff.bind(this))
+  }
+
+  #removeEventListeners() {
+    this.removeEventListener('cfb-moved-session', this.handleSessionMoved.bind(this))
+    this.removeEventListener('cfb-session-on-top', this.addADropArea.bind(this))
+    this.removeEventListener('cfb-session-on-top-title', this.addADropAreaTitle.bind(this))
+    this.removeEventListener('cfb-session-on-top', this.addADropArea.bind(this))
+    this.removeEventListener('drop', this.#handleDrop.bind(this))
+    this.removeEventListener('dragover', this.#handleDragOver.bind(this))
+    // this.removeEventListener('mouseleave', this.handleSessionHoverOff.bind(this))
+    // this.removeEventListener('mouseout', this.handleSessionHoverOff.bind(this))
+  }
+
+  #dragCounter = 0
+
+  #handleDragEnterToSection(){
+    this.#dragCounter++
+    if (this.#dragCounter === 1) {
+      this.isDragging = true
+    }
+  }
+
+  #handleDragLeaveFromSection(){
+    this.#dragCounter--
+    if (this.#dragCounter === 0) {
+      this.isDragging = false
+      this.removeDropArea()
+    }
+  }
+
+  #handleDrop = () => {
+    this.#dragCounter = 0
+    this.isDragging = false
+  }
+
+  #handleDragOver(e) {
+    e.preventDefault()
+  }
+
   #render() {
     const name = this.#name || 'Untitled'
 
@@ -55,11 +104,6 @@ export class CfbSection extends HTMLElement {
         <h2 class="cfb-column__title">${name}</h2>
       </cfb-column-title>
       <section class="cfb-column" role="region" aria-label="${name} column"></section>`
-
-    // Add event listeners to the newly created elements
-    this.querySelectorAll('section.cfb-column').forEach(e =>
-      e.addEventListener('dragleave', this.handleSessionHoverOff.bind(this)),
-    )
   }
 
   handleSessionMoved(e) {
