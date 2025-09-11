@@ -25,79 +25,69 @@ else
 fi
 
 # Find all directories that start with 'cfb-'
-for dir in cfb-*/; do
-    if [ -d "$dir" ]; then
-        package_name=$(basename "$dir")
-        total_tests=$((total_tests + 1))
-        
-        # Check if package.json exists and has a test script
-        if [ -f "$dir/package.json" ]; then
-            if [ "$QUIET" = false ]; then
-                echo -n "Testing $package_name... "
-            fi
-            
-            # Run npm test in the directory
-            if [ "$QUIET" = true ]; then
-                # Quiet mode: suppress output
-                cd "$dir" > /dev/null 2>&1
-                npm run test > /dev/null 2>&1
-                exit_code=$?
-                cd .. > /dev/null 2>&1
-            else
-                # Detailed mode: capture output
-                cd "$dir"
-                output=$(npm run test 2>&1)
-                exit_code=$?
-                cd ..
-            fi
-            
-            # Extract test stats from output if available
-            test_stats=""
-            if [ "$QUIET" = false ]; then
-                # Look for pattern like "X passed, Y failed"
-                if echo "$output" | grep -q '[0-9]\+ passed, [0-9]\+ failed'; then
-                    test_stats=$(echo "$output" | grep -o '[0-9]\+ passed, [0-9]\+ failed' | tail -1)
-                fi
-                if echo "$output" | grep -q '[0-9]\+ passing ([0-9]\+'; then
-                    passing=$(echo "$output" | grep '[0-9]\+ passing' | tail -1)
-                    failing=$(echo "$output" | grep '[0-9]\+ failing' | tail -1 || echo "0 failing")
-                    test_stats="${passing}, ${failing}"
-                fi
-            fi
-            
-            if [ $exit_code -eq 0 ]; then
-                if [ "$QUIET" = true ]; then
-                    echo -e "${GREEN}✅ $package_name${NC}"
-                else
-                    if [ -n "$test_stats" ]; then
-                        echo -e "${GREEN}✅ PASSED${NC} (${YELLOW}$test_stats${NC})"
-                    else
-                        echo -e "${GREEN}✅ PASSED${NC}"
-                    fi
-                fi
-                passed_tests=$((passed_tests + 1))
-            else
-                if [ "$QUIET" = true ]; then
-                    echo -e "${RED}❌ $package_name${NC}"
-                else
-                    if [ -n "$test_stats" ]; then
-                        echo -e "${RED}❌ FAILED${NC} ($test_stats)"
-                    else
-                        echo -e "${RED}❌ FAILED${NC}"
-                    fi
-                    echo -e "${YELLOW}Error output:${NC}"
-                    echo "$output" | sed 's/^/  /'
-                    echo ""
-                fi
-                failed_tests+=("$package_name")
-            fi
+for pkg_json in $(find cfb-* -name "node_modules" -prune -o -name "package.json" -type f -print); do
+    dir=$(dirname "$pkg_json")
+    package_name="$dir" # Use the full directory path for clarity in logs
+    total_tests=$((total_tests + 1))
+
+    if [ "$QUIET" = false ]; then
+        echo -n "Testing $package_name... "
+    fi
+
+    # Run npm test in the directory. Use pushd/popd for safe directory switching.
+    if [ "$QUIET" = true ]; then
+        # Quiet mode: suppress output
+        pushd "$dir" > /dev/null 2>&1
+        npm run test > /dev/null 2>&1
+        exit_code=$?
+        popd > /dev/null 2>&1
+    else
+        # Detailed mode: capture output
+        pushd "$dir" > /dev/null
+        output=$(npm run test 2>&1)
+        exit_code=$?
+        popd > /dev/null
+    fi
+
+    # Extract test stats from output if available
+    test_stats=""
+    if [ "$QUIET" = false ]; then
+        # Look for pattern like "X passed, Y failed"
+        if echo "$output" | grep -q '[0-9]\+ passed, [0-9]\+ failed'; then
+            test_stats=$(echo "$output" | grep -o '[0-9]\+ passed, [0-9]\+ failed' | tail -1)
+        fi
+        if echo "$output" | grep -q '[0-9]\+ passing ([0-9]\+'; then
+            passing=$(echo "$output" | grep '[0-9]\+ passing' | tail -1)
+            failing=$(echo "$output" | grep '[0-9]\+ failing' | tail -1 || echo "0 failing")
+            test_stats="${passing}, ${failing}"
+        fi
+    fi
+
+    if [ $exit_code -eq 0 ]; then
+        if [ "$QUIET" = true ]; then
+            echo -e "${GREEN}✅ $package_name${NC}"
         else
-            if [ "$QUIET" = true ]; then
-                echo -e "${YELLOW}⚠️  $package_name (no package.json)${NC}"
+            if [ -n "$test_stats" ]; then
+                echo -e "${GREEN}✅ PASSED${NC} (${YELLOW}$test_stats${NC})"
             else
-                echo -e "${YELLOW}⚠️  No package.json found${NC}"
+                echo -e "${GREEN}✅ PASSED${NC}"
             fi
         fi
+        passed_tests=$((passed_tests + 1))
+    else
+        if [ "$QUIET" = true ]; then
+            echo -e "${RED}❌ $package_name${NC}"
+        else
+            if [ -n "$test_stats" ]; then
+                echo -e "${RED}❌ FAILED${NC} ($test_stats)"
+            else
+                echo -e "${RED}❌ FAILED${NC}"
+            fi
+            echo -e "${YELLOW}Error output:${NC}"
+            echo "$output" | sed 's/^/  /'
+            echo ""
+        fi
+        failed_tests+=("$package_name")
     fi
 done
 
