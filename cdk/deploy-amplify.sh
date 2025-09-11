@@ -34,7 +34,7 @@ echo "🚀 Deploying Amplify stack..."
 yarn cdk:run deploy --app "npx ts-node --prefer-ts-exts bin/cfb-amplify-cdk.ts" --profile PowerUserAccess-094009463545
 
 echo "✅ Amplify deployment complete!"
-echo "🌐 Your site will be available at: https://demo.rinkkasatiainen.dev"
+echo "🌐 Your site will be available at: https://demo.cfb.rinkkasatiainen.dev"
 echo "📝 Note: You'll need to:"
 echo "   1. Create a GitHub token in AWS Secrets Manager"
 echo "   2. Update the githubRepo in the deployment"

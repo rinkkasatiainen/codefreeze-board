@@ -8,6 +8,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as path from 'path';
 
 export interface CodefreezeBoardStackProps extends cdk.StackProps {
@@ -22,11 +24,15 @@ export class CodefreezeBoardStack extends cdk.Stack {
     // S3 bucket for hosting the static website
     const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
       bucketName: `codefreeze-board-${this.account}-${this.region}`,
+
+/*
       // accessControl: s3.BucketAccessControl.PRIVATE,
       // websiteIndexDocument: 'index.html',
       // websiteErrorDocument: 'index.html',
-      publicReadAccess: false, // We'll use CloudFront for access
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+*/
+
+      // publicReadAccess: false, // We'll use CloudFront for access
+      // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // For development - change for production
       autoDeleteObjects: true, // For development - change for production
     });
@@ -46,36 +52,92 @@ export class CodefreezeBoardStack extends cdk.Stack {
       principals: [new iam.CanonicalUserPrincipal(originAccessIdentity.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
     }));
 
+    // Create Lambda function for sections API
+    const sectionsLambda = new lambda.Function(this, 'SectionsLambda', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.sectionsHandler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../cfb-session-discovery/functions/dist')),
+      environment: {
+        NODE_ENV: 'production',
+      },
+      timeout: cdk.Duration.seconds(30),
+      // Enable ES modules support
+      architecture: lambda.Architecture.X86_64,
+    });
+
+    // Create API Gateway
+    const api = new apigateway.RestApi(this, 'CodefreezeBoardApi', {
+      restApiName: 'Codefreeze Board API',
+      description: 'API for Codefreeze Board session discovery',
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token'],
+      },
+    });
+
+    // Create /api/sections endpoint
+    const sectionsResource = api.root.addResource('api').addResource('sections');
+    sectionsResource.addMethod('GET', new apigateway.LambdaIntegration(sectionsLambda));
+
+    /*
+    sectionsResource.addMethod('OPTIONS', new apigateway.MockIntegration({
+      integrationResponses: [{
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+          'method.response.header.Access-Control-Allow-Origin': "'*'",
+          'method.response.header.Access-Control-Allow-Methods': "'GET,OPTIONS'",
+        },
+      }],
+      requestTemplates: {
+        'application/json': '{"statusCode": 200}',
+      },
+    }), {
+      methodResponses: [{
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Methods': true,
+        },
+      }],
+    });
+    */
+
     // Certificate and domain setup
     let certificate: acm.ICertificate | undefined;
     let hostedZone: route53.IHostedZone | undefined;
-    
-    if (props?.domainName && props?.hostedZoneId) {
+    let apiDomain: apigateway.DomainName | undefined;
+    certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', "arn:aws:acm:us-east-1:094009463545:certificate/b4304a02-8a24-45b6-b704-31f00a08c197");
+
+    if (!certificate && props?.domainName && props?.hostedZoneId) {
       // Import existing hosted zone
       hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
         zoneName: props.domainName,
         hostedZoneId: props.hostedZoneId,
       });
 
-      certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', "arn:aws:acm:us-east-1:094009463545:certificate/b4304a02-8a24-45b6-b704-31f00a08c197");
       // Request certificate for the domain
-      // certificate = new acm.Certificate(this, 'Certificate', {
-      //   domainName: props.domainName,
-      //   subjectAlternativeNames: [`*.${props.domainName}`],
-      //   validation: acm.CertificateValidation.fromDns(hostedZone),
-      // });
+      certificate = new acm.Certificate(this, 'Certificate', {
+        domainName: props.domainName,
+        subjectAlternativeNames: [`*.${props.domainName}`],
+        validation: acm.CertificateValidation.fromDns(hostedZone),
+      });
     }
-
     if (!certificate) {
+      console.error('!!!!!No certificate provided!!!!!!', certificate, props?.domainName, props?.hostedZoneId);
+      throw new Error('Either domainName and hostedZoneId must be provided or certificate must be provided');
       // require certificate
       return
     }
-    // CloudFront distribution
+
+    // No need for custom API domain - we'll route through CloudFront
+
+    // CloudFront distribution with API routing
     const distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
-        origin: new origins.S3Origin(websiteBucket, {
-          originAccessIdentity,
-        }),
+        origin: origins.S3BucketOrigin.withOriginAccessControl(websiteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         responseHeadersPolicy: new cloudfront.ResponseHeadersPolicy(this, 'MainResponseHeadersPolicy', {
@@ -89,6 +151,33 @@ export class CodefreezeBoardStack extends cdk.Stack {
             xssProtection: { protection: true, modeBlock: true, override: true },
           },
         }),
+      },
+      additionalBehaviors: {
+        '/api/*': {
+          origin: new origins.RestApiOrigin(api),
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED, // Don't cache API responses
+          allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+          responseHeadersPolicy: new cloudfront.ResponseHeadersPolicy(this, 'ApiResponseHeadersPolicy', {
+            responseHeadersPolicyName: 'CodefreezeBoardApiHeaders',
+            comment: 'Headers for CodeFreeze Board API',
+            corsBehavior: {
+              accessControlAllowCredentials: false,
+              accessControlAllowHeaders: ['*'],
+              accessControlAllowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+              accessControlAllowOrigins: ['*'],
+              accessControlExposeHeaders: ['*'],
+              accessControlMaxAge: cdk.Duration.seconds(600),
+              originOverride: true,
+            },
+            securityHeadersBehavior: {
+              contentTypeOptions: { override: true },
+              frameOptions: { frameOption: cloudfront.HeadersFrameOption.DENY, override: true },
+              referrerPolicy: { referrerPolicy: cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN, override: true },
+              strictTransportSecurity: { accessControlMaxAge: cdk.Duration.seconds(31536000), includeSubdomains: true, override: true },
+            },
+          }),
+        },
       },
       defaultRootObject: 'index.html',
       domainNames: certificate ? [props!.domainName!] : undefined,
@@ -157,6 +246,24 @@ export class CodefreezeBoardStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'DistributionId', {
       value: distribution.distributionId,
       description: 'CloudFront Distribution ID',
+    });
+
+    // Output the API Gateway URL
+    new cdk.CfnOutput(this, 'ApiGatewayUrl', {
+      value: api.url,
+      description: 'API Gateway URL',
+    });
+
+    // Output the sections API endpoint
+    new cdk.CfnOutput(this, 'SectionsApiEndpoint', {
+      value: `${api.url}api/sections`,
+      description: 'Sections API Endpoint (Direct API Gateway)',
+    });
+
+    // Output the CloudFront API endpoint
+    new cdk.CfnOutput(this, 'CloudFrontApiEndpoint', {
+      value: certificate ? `https://${props!.domainName}/api/sections` : `https://${distribution.distributionDomainName}/api/sections`,
+      description: 'Sections API Endpoint (via CloudFront)',
     });
   }
 } 
