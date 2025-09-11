@@ -1,7 +1,9 @@
+const cfbRoot = 'https://cfb.rinkkasatiainen.dev/api'
+
 class CfbRetrievesSchedules {
   async getScheduleSections(eventId) {
     try {
-      const response = await fetch('/schedules', {
+      const response = await fetch(`${cfbRoot}/sections`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +38,7 @@ class CfbRetrievesSchedules {
   async getScheduleSessions(eventId) {
     // TODO: test-drive this.
     try {
-      const response = await fetch('/sessions', {
+      const response = await fetch(`${cfbRoot}/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

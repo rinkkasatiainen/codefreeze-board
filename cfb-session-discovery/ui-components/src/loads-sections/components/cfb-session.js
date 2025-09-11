@@ -144,7 +144,10 @@ export class CfbSession extends HTMLElement {
   }
 
   // Touch event handlers for mobile devices
-  #handleTouchStart = (e) => {
+  #handleTouchStart = e => {
+    // Prevent default immediately to stop iOS Safari's drag-to-search behavior
+    e.preventDefault()
+    
     if (e.touches.length !== 1) {
       return // Only handle single touch
     }
@@ -154,12 +157,9 @@ export class CfbSession extends HTMLElement {
     this.touchStartY = touch.clientY
     this.isTouchDragging = false
     this.touchDragDirection = null
-
-    // Prevent default to avoid scrolling while dragging
-    e.preventDefault()
   }
 
-  #handleTouchMove = (e) => {
+  #handleTouchMove = e => {
     if (e.touches.length !== 1 || !this.touchStartX) {
       return
     }
@@ -191,7 +191,7 @@ export class CfbSession extends HTMLElement {
     }
   }
 
-  #handleTouchEnd = (e) => {
+  #handleTouchEnd = e => {
     if (!this.isTouchDragging) {
       return
     }
@@ -199,17 +199,17 @@ export class CfbSession extends HTMLElement {
     this.#endTouchDrag(e)
   }
 
-  #handleTouchCancel = (e) => {
+  #handleTouchCancel = e => {
     if (this.isTouchDragging) {
       this.#endTouchDrag(e)
     }
   }
 
-  #startTouchDrag = (e) => {
+  #startTouchDrag = e => {
     // Create a visual clone for dragging feedback
     this.style.position = 'relative'
     this.style.zIndex = '1000'
-    
+
     // Dispatch drag start event
     const dragStartEvent = new CustomEvent('cfb-touch-drag-start', {
       bubbles: true,
@@ -217,20 +217,20 @@ export class CfbSession extends HTMLElement {
       detail: {
         target: this,
         sessionId: this.#sessionId,
-        touch: e.touches[0]
-      }
+        touch: e.touches[0],
+      },
     })
     this.dispatchEvent(dragStartEvent)
   }
 
-  #endTouchDrag = (e) => {
+  #endTouchDrag = e => {
     // Reset visual state
     this.style.transform = ''
     this.style.opacity = ''
     this.style.position = ''
     this.style.zIndex = ''
     this.classList.remove('touch-dragging')
-    
+
     // Reset touch state
     this.isTouchDragging = false
     this.touchStartX = 0
@@ -244,8 +244,8 @@ export class CfbSession extends HTMLElement {
       detail: {
         target: this,
         sessionId: this.#sessionId,
-        touch: e.changedTouches ? e.changedTouches[0] : null
-      }
+        touch: e.changedTouches ? e.changedTouches[0] : null,
+      },
     })
     this.dispatchEvent(dragEndEvent)
   }
