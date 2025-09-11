@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "description": "Session discovery module for CFB. Handles session discovery related functions",
   "main": "./dist/index.js",
