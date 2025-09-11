@@ -20,8 +20,9 @@ export default class Shell {
     this.#features = []
     
     await Promise.all(modulesToConfigure.map(async module => {
-      await module.configure()
+      const promise = module.configure()
       this.#configuredModules.push(module)
+      return promise
     }))
   }
 
@@ -30,8 +31,9 @@ export default class Shell {
     this.#configuredModules = []
     
     await Promise.all(modulesToActivate.map(async module => {
-      await module.activate()
+      const promise = module.activate()
       this.#activatedModules.push(module)
+      return promise
     }))
   }
 
@@ -40,8 +42,9 @@ export default class Shell {
     this.#activatedModules = []
     
     await Promise.all(modulesToRun.map(async module => {
-      await module.run()
+      const promise = module.run()
       this.#startedModules.push(module)
+      return promise
     }))
   }
 }
