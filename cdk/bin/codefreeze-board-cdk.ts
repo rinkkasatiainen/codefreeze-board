@@ -9,6 +9,10 @@ const app = new cdk.App();
 const domainName = app.node.tryGetContext('domainName') || process.env.DOMAIN_NAME;
 const hostedZoneId = app.node.tryGetContext('hostedZoneId') || process.env.HOSTED_ZONE_ID;
 
+if (!domainName || !hostedZoneId) {
+  throw new Error('Domain name and hosted zone id must be provided as context or environment variables')
+}
+
 new CodefreezeBoardStack(app, 'CodefreezeBoardStack', {
   stackName: 'codefreeze-board',
   env: { 

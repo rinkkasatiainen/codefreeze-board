@@ -8,6 +8,8 @@ cfb-session {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    /* Prevent iOS Safari's drag-to-search behavior */
+    touch-action: none;
 }
 
 cfb-session.dragging {

@@ -70,7 +70,7 @@ export class CodefreezeBoardStack extends cdk.Stack {
       restApiName: 'Codefreeze Board API',
       description: 'API for Codefreeze Board session discovery',
       defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowOrigins: apigateway.Cors.ALL_ORIGINS, // TODO: FIX when getting more real
         allowMethods: apigateway.Cors.ALL_METHODS,
         allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token'],
       },
@@ -216,6 +216,12 @@ export class CodefreezeBoardStack extends cdk.Stack {
         ),
         recordName: props!.domainName,
       });
+    } else {
+      console.warn('******');
+      console.warn('******');
+      console.warn('No Route53 hosted zone or certificate provided - skipping Route53 record creation');
+      console.warn('******');
+      console.warn('******');
     }
 
     // Output the CloudFront URL
