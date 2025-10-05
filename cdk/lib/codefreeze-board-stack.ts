@@ -56,7 +56,7 @@ export class CodefreezeBoardStack extends cdk.Stack {
     const sectionsLambda = new lambda.Function(this, 'SectionsLambda', {
       runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.sectionsHandler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../cfb-session-discovery/functions/dist')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../node_modules/@rinkkasatiainen/cfb-session-discovery-functions/dist')),
       environment: {
         NODE_ENV: 'production',
       },
