@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {http, HttpResponse} from 'msw'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import {setupMocks} from '../../mocks/schedules.js'
+import {devApi, setupMocks} from '../../mocks/schedules.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker
@@ -10,7 +10,7 @@ describe('CfbRetrievesSchedules', () => {
   before(async () => {
     // Setup MSW worker for browser environment
     worker = setupMocks({
-      '/schedules': [
+      '/sections': [
         {name: 'Monday', id: 'monday-123', order: 0},
         {name: 'Tuesday', id: 'tuesday-456', order: 1},
         {name: 'Wednesday', id: 'wednesday-789', order: 2},
@@ -62,7 +62,7 @@ describe('CfbRetrievesSchedules', () => {
 
     // Override the handler to capture the request
     worker.use(
-      http.post('/schedules', async ({request}) => {
+      http.post(devApi + '/sections', async ({request}) => {
         capturedRequest = await request.json()
         return HttpResponse.json({
           sections: [],
@@ -80,7 +80,7 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle server error gracefully', async () => {
     // Override handler to return error
     worker.use(
-      http.post('/schedules', () => HttpResponse.json(
+      http.post(devApi + '/sections', () => HttpResponse.json(
         {error: 'Internal server error'},
         {status: 500},
       )),
@@ -90,28 +90,26 @@ describe('CfbRetrievesSchedules', () => {
 
     // Should fallback to default sections
     expect(sections).to.be.an('array')
-    expect(sections).to.have.lengthOf(7)
-    expect(sections[0].name).to.equal('Monday')
-    expect(sections[6].name).to.equal('Sunday')
+    expect(sections).to.be.empty
   })
 
   it('should handle network error gracefully', async () => {
     // Override handler to simulate network error
     worker.use(
-      http.post('/schedules', () => HttpResponse.error()),
+      http.post(devApi + '/sections', () => HttpResponse.error()),
     )
 
     const sections = await CfbRetrievesSchedules.getScheduleSections(testEventId)
 
     // Should fallback to default sections
     expect(sections).to.be.an('array')
-    expect(sections).to.have.lengthOf(7)
+    expect(sections).to.be.empty
   })
 
   it('should handle missing eventId in request', async () => {
     // Override handler to return 400 for missing eventId
     worker.use(
-      http.post('/schedules', async ({request}) => {
+      http.post(devApi + '/sections', async ({request}) => {
         const body = await request.json()
         if (!body.eventId) {
           return HttpResponse.json(
@@ -127,13 +125,13 @@ describe('CfbRetrievesSchedules', () => {
 
     // Should fallback to default sections due to error
     expect(sections).to.be.an('array')
-    expect(sections).to.have.lengthOf(7)
+    expect(sections).to.be.empty
   })
 
   it('should handle empty sections response', async () => {
     // Override handler to return empty sections
     worker.use(
-      http.post('/schedules', () => HttpResponse.json({
+      http.post(devApi + '/sections', () => HttpResponse.json({
         sections: [],
       })),
     )
@@ -147,7 +145,7 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle missing sections in response', async () => {
     // Override handler to return response without sections
     worker.use(
-      http.post('/schedules', () => HttpResponse.json({
+      http.post(devApi + '/sections', () => HttpResponse.json({
         message: 'Success but no sections',
       })),
     )

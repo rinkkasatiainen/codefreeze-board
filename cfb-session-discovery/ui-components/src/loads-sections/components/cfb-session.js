@@ -147,7 +147,7 @@ export class CfbSession extends HTMLElement {
   #handleTouchStart = e => {
     // Prevent default immediately to stop iOS Safari's drag-to-search behavior
     e.preventDefault()
-    
+
     if (e.touches.length !== 1) {
       return // Only handle single touch
     }

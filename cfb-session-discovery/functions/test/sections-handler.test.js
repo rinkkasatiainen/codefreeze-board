@@ -58,3 +58,4 @@ describe('Sections Handler', () => {
     expect(body).to.have.property('error', 'Method not allowed')
   })
 })
+

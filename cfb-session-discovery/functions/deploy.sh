@@ -14,3 +14,4 @@ npm run lint
 
 echo "Lambda function is ready for deployment!"
 echo "The function will be deployed when you run 'cdk deploy' from the cdk directory."
+

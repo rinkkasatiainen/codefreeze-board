@@ -4,7 +4,7 @@ import {CfbSessionScheduler} from '../../src/loads-sections/components/cfb-sessi
 import {ensureSingle} from '../test-helpers.js'
 import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {stub} from 'sinon'
-import {exampleSessionEntry} from '../../contracts/session-entry.js'
+import {exampleSessionEntry} from '../../../contracts/session-entry.js'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
 import {mockSessionWith} from './cfb-section-models.js'
 

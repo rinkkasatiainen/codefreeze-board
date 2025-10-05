@@ -1,13 +1,14 @@
 import {setupWorker} from 'msw/browser'
 import {http, HttpResponse} from 'msw'
-import {codefreeze2025} from '../contracts/section-entry.js'
+import {codefreeze2025} from '../../contracts/section-entry.js'
 
-export const scheduleMocks = (examples = {}) => {
-  const defaultData = { '/schedules': codefreeze2025 }
+export const devApi = 'https://cfb.rinkkasatiainen.dev/api'
+const scheduleMocks = (examples = {}) => {
+  const defaultData = { '/sections': codefreeze2025 }
   const data = {...defaultData, ...examples}
 
   return [
-    http.post('/schedules', async ({request}) => {
+    http.post(devApi+'/sections', async ({request}) => {
       const body = await request.json()
 
       // Validate request body
@@ -20,14 +21,14 @@ export const scheduleMocks = (examples = {}) => {
 
       // Mock successful response
       return HttpResponse.json({
-        sections: data['/schedules'] || [],
+        sections: data['/sections'] || [],
       })
     }),
   ]
 }
 
 export function setupMocks(examples = {}) {
-  const defaultData = {'/schedules': codefreeze2025}
+  const defaultData = {'/sections': codefreeze2025}
 
   const data = {...defaultData, ...examples}
 

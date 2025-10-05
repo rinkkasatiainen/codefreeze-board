@@ -32,7 +32,6 @@ export class CfbScheduleLoader extends HTMLElement {
   }
 
   async #loadSections(eventId) {
-    await tick(100)
     return await CfbRetrievesSchedules.getScheduleSections(eventId)
   }
 
@@ -55,8 +54,8 @@ export class CfbScheduleLoader extends HTMLElement {
   }
 }
 
-async function tick(timeoutInMs = 100) {
-  return new Promise(resolve => {
-    setTimeout( resolve, timeoutInMs)
-  })
-}
+// async function tick(timeoutInMs = 100) {
+//   return new Promise(resolve => {
+//     setTimeout( resolve, timeoutInMs)
+//   })
+// }

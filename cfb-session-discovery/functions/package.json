@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery-functions",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
   "description": "Session discovery module for CFB. Has all functions to be deployed to AWS",
   "main": "./dist/index.js",
@@ -15,9 +15,9 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
-    "test": "mocha",
+    "test": "cp -r ../contracts ./_contracts && mocha",
     "clean": "rm -rf dist",
-    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp -r contracts dist/ && cp package.json dist/",
+    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp -r ../contracts dist/_contracts && cp package.json dist/",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run lint",
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
@@ -32,7 +32,6 @@
     "eslint-plugin-mocha": "^11.0.0",
     "eslint-plugin-prettier": "^5.4.0",
     "mocha": "^11.7.2",
-    "msw": "^2.10.2",
     "prettier": "^3.5.3",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.0"
@@ -43,7 +42,6 @@
     "contracts"
   ],
   "dependencies": {
-    "@rinkkasatiainen/cfb-observability": "^0.0.1"
   },
   "msw": {
     "workerDirectory": [

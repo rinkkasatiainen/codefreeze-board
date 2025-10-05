@@ -1,12 +1,12 @@
-import { codefreeze2025 } from '../contracts/section-entry.js'
+import { codefreeze2025 } from '../_contracts/section-entry.js'
 
 /**
  * AWS Lambda handler for retrieving section entries
  * @param {Object} event - API Gateway event
- * @param {Object} context - Lambda context
+ * @param {Object} _context - Lambda context
  * @returns {Object} API Gateway response
  */
-export const handler = async (event, context) => {
+export const handler = async (event, _context) => {
   try {
     // Set CORS headers
     const headers = {
@@ -44,7 +44,8 @@ export const handler = async (event, context) => {
       body: JSON.stringify({ error: 'Method not allowed' }),
     }
   } catch (error) {
-    console.error('Error in sections handler:', error)
+    // TODO: AkS: add observability here
+    console.error('Error in sections handler:', error) // eslint-disable-line no-console
 
     return {
       statusCode: 500,
@@ -59,3 +60,4 @@ export const handler = async (event, context) => {
     }
   }
 }
+

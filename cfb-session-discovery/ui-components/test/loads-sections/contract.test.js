@@ -3,7 +3,7 @@ import {CfbSchedule} from '../../src/loads-sections/components/cfb-schedule.js'
 import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {withClearableStorage} from '../test-helpers.js'
 import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
-import {codefreeze2025} from '../../contracts/section-entry.js'
+import {codefreeze2025} from '../../../contracts/section-entry.js'
 
 describe('CfbSchedule', () => {
   let testRoot = null
