@@ -5,18 +5,17 @@ import {devApi, setupMocks} from '../../mocks/schedules.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker
-  let testEventId
+  const testEventId = 'test-event-123'
+  const sectionsUrl = devApi + `/event/${testEventId}/sections`
 
   before(async () => {
-    // Setup MSW worker for browser environment
-    worker = setupMocks({
+    worker = setupMocks(testEventId, {
       '/sections': [
         {name: 'Monday', id: 'monday-123', order: 0},
         {name: 'Tuesday', id: 'tuesday-456', order: 1},
         {name: 'Wednesday', id: 'wednesday-789', order: 2},
       ],
     })
-
     // Start the worker
     await worker.start({quiet: true})
   })
@@ -27,7 +26,6 @@ describe('CfbRetrievesSchedules', () => {
   })
 
   beforeEach(async () => {
-    testEventId = 'test-event-123'
   })
 
   afterEach(async () => {
@@ -57,30 +55,10 @@ describe('CfbRetrievesSchedules', () => {
     })
   })
 
-  it('should send correct request body with eventId', async () => {
-    let capturedRequest = null
-
-    // Override the handler to capture the request
-    worker.use(
-      http.post(devApi + '/sections', async ({request}) => {
-        capturedRequest = await request.json()
-        return HttpResponse.json({
-          sections: [],
-        })
-      }),
-    )
-
-    await CfbRetrievesSchedules.getScheduleSections(testEventId)
-
-    expect(capturedRequest).to.deep.equal({
-      eventId: testEventId,
-    })
-  })
-
   it('should handle server error gracefully', async () => {
     // Override handler to return error
     worker.use(
-      http.post(devApi + '/sections', () => HttpResponse.json(
+      http.get(sectionsUrl, () => HttpResponse.json(
         {error: 'Internal server error'},
         {status: 500},
       )),
@@ -96,7 +74,7 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle network error gracefully', async () => {
     // Override handler to simulate network error
     worker.use(
-      http.post(devApi + '/sections', () => HttpResponse.error()),
+      http.get(sectionsUrl, () => HttpResponse.error()),
     )
 
     const sections = await CfbRetrievesSchedules.getScheduleSections(testEventId)
@@ -109,7 +87,7 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle missing eventId in request', async () => {
     // Override handler to return 400 for missing eventId
     worker.use(
-      http.post(devApi + '/sections', async ({request}) => {
+      http.get(sectionsUrl, async ({request}) => {
         const body = await request.json()
         if (!body.eventId) {
           return HttpResponse.json(
@@ -131,7 +109,7 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle empty sections response', async () => {
     // Override handler to return empty sections
     worker.use(
-      http.post(devApi + '/sections', () => HttpResponse.json({
+      http.get(sectionsUrl, () => HttpResponse.json({
         sections: [],
       })),
     )
@@ -145,7 +123,7 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle missing sections in response', async () => {
     // Override handler to return response without sections
     worker.use(
-      http.post(devApi + '/sections', () => HttpResponse.json({
+      http.get(sectionsUrl, () => HttpResponse.json({
         message: 'Success but no sections',
       })),
     )

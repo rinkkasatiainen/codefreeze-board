@@ -3,18 +3,14 @@ const cfbRoot = 'https://cfb.rinkkasatiainen.dev/api'
 
 class CfbRetrievesSchedules {
   async getScheduleSections(eventId) {
+    if(!eventId){
+      // TODO: AkS: Add error handling here
+      console.warn('No event id provided, returning empty array')
+      return []
+    }
     try {
-      const response = await fetch(`${cfbRoot}/sections`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          eventId,
-          // TODO: Add user token here later
-          // token: userToken
-        }),
-      })
+      // TODO: AkS: Add user token here later
+      const response = await fetch(`${cfbRoot}/event/${eventId}/sections`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -31,17 +27,8 @@ class CfbRetrievesSchedules {
   async getScheduleSessions(eventId) {
     // TODO: test-drive this.
     try {
-      const response = await fetch(`${cfbRoot}/sessions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          eventId,
-          // TODO: Add user token here later
-          // token: userToken
-        }),
-      })
+      // TODO: Add user token here later
+      const response = await fetch(`${cfbRoot}/event/${eventId}/sessions`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
