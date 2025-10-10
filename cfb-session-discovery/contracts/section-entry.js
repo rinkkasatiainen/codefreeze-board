@@ -1,9 +1,3 @@
-export const exampleSectionEntry = {
-  id: crypto.randomUUID(),
-  name: 'Monday',
-  order: 0,
-}
-
 export const codefreeze2025 = [
   {
     id: '00000000-0000-0000-0000-000000000000',

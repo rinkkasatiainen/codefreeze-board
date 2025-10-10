@@ -2,12 +2,7 @@ import {importMapsPlugin} from '@web/dev-server-import-maps'
 
 // Define test-specific module mappings
 const testImportMappings = {
-  // Map observability module to testing utilities for test environment
-  // '@rinkkasatiainen/cfb-observability': '@rinkkasatiainen/cfb-testing-utils/dist/index.js', // should not work ever
   '@rinkkasatiainen/cfb-observability': '../node_modules/@rinkkasatiainen/cfb-testing-utils/dist/index.js',
-
-  // Map service worker for testing
-  // '/mockServiceWorker.js': './mockServiceWorker-foo.js',
 }
 
 // Web server plugins configuration

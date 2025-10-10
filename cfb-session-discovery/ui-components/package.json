@@ -15,17 +15,18 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
+    "pretest": "mkdir -p test/_contracts && cp -r ../contracts/* test/_contracts",
     "test": "web-test-runner \"test/**/*.test.js\" --node-resolve --config test/web-test-runner.config.mjs",
     "test:manual": "web-test-runner \"test/**/*.test.js\" --node-resolve --config test/web-test-runner.config.mjs --manual",
     "test:specific": "web-test-runner --files=test/**/*${PATTERN:-*}*.test.js --node-resolve --config test/web-test-runner.config.mjs",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && rm -rf test/_contracts",
     "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp -r css dist/",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run lint",
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@rinkkasatiainen/cfb-testing-utils": "^0.1.1",
+    "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
     "@rinkkasatiainen/eslint-config": "^1.0.4",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@web/dev-server-import-maps": "^0.2.1",

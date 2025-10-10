@@ -4,8 +4,7 @@ import {codefreeze2025} from '../../contracts/section-entry.js'
 
 export const devApi = 'https://cfb.rinkkasatiainen.dev/api'
 const scheduleMocks = (eventId, examples = {}) => {
-  const defaultData = {'/sections': codefreeze2025}
-  const data = {...defaultData, ...examples}
+  const data = examples
 
   const url = devApi + `/event/${eventId}/sections`
 
@@ -23,6 +22,14 @@ export function setupMocks(eventId, examples = {}) {
   const defaultData = {'/sections': codefreeze2025}
 
   const data = {...defaultData, ...examples}
+
+  return setupWorker(
+    ...scheduleMocks(eventId, data),
+  )
+}
+
+export function withSections(eventId, examples) {
+  const data = {...examples}
 
   return setupWorker(
     ...scheduleMocks(eventId, data),

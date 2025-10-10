@@ -15,7 +15,8 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
-    "test": "cp -r ../contracts ./_contracts && mocha",
+    "pretest": "cp -r ../contracts ./_contracts",
+    "test": "mocha test/*.test.js test/**/*.test.js",
     "clean": "rm -rf dist",
     "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp -r ../contracts dist/_contracts && cp package.json dist/",
     "prepare": "npm run build",
@@ -32,6 +33,7 @@
     "eslint-plugin-mocha": "^11.0.0",
     "eslint-plugin-prettier": "^5.4.0",
     "mocha": "^11.7.2",
+    "path": "^0.12.7",
     "prettier": "^3.5.3",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.0"
@@ -41,8 +43,7 @@
     "mocks",
     "contracts"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "msw": {
     "workerDirectory": [
       "test",

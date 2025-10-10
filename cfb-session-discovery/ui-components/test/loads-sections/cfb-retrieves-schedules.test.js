@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {http, HttpResponse} from 'msw'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import {devApi, setupMocks} from '../../mocks/schedules.js'
+import {devApi, setupMocks} from '../../mocks/schedules_mocks.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker
