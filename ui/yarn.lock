@@ -79,10 +79,10 @@
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-observability/0.1.0/a00e9fd95141f1e132038150614c516365083ce3"
   integrity sha512-Fa9uqfjS9QjLbAnpL9CBmTGISjq2qvE0U8f04umVwtkekHDctXwGtv4X45yI22ZcpL8zh9VmNdlKNNr9TcKvPQ==
 
-"@rinkkasatiainen/cfb-session-discovery@^0.1.7":
-  version "0.1.8"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-session-discovery/0.1.8/e0617831c9a9a08fb89a55b0a9f007cb509d5a95#e0617831c9a9a08fb89a55b0a9f007cb509d5a95"
-  integrity sha512-e103pE3tIr/VTi0PETXG3g75UfQnysunfdMYaSJc/IQ5Fo6VU55UV1JisJ26VhInst+JnqtxDTbuoFIl1lPg6A==
+"@rinkkasatiainen/cfb-session-discovery@^0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-session-discovery/0.2.0/363107a278669d8a8fa24ed80df8dbbc691d78b8#363107a278669d8a8fa24ed80df8dbbc691d78b8"
+  integrity sha512-OE6/Q5hoeWDeadUDS5sqDbN3mDRNEVdjw4hv6zWVdGRjFyF9Ej82XzVtbqVYYMSJ6yBbNafqlrUSBSj+hUCnFg==
   dependencies:
     "@rinkkasatiainen/cfb-observability" "^0.0.1"
 
