@@ -666,7 +666,7 @@
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-shell/0.2.0/a67c6285ff30e8aae3207a905d4d6d1d52461a0e#a67c6285ff30e8aae3207a905d4d6d1d52461a0e"
   integrity sha512-7QGrmeHUwNZxwrCJIkOUxXSrfvxHk+hRS9DG/dCNX9WbTMiDafZ+thkvMQRTQtt3aC+8oDDW5NV104V02QryZw==
 
-"@rinkkasatiainen/cfb-ui@^0.1.2":
+"@rinkkasatiainen/cfb-ui@^0.1.3":
   version "0.1.3"
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-ui/0.1.3/1c2f16c39bdbac2eedf849c21dd02e84611995a0#1c2f16c39bdbac2eedf849c21dd02e84611995a0"
   integrity sha512-87RopzlY9De/Iih6fZfCAiMy65qATBXVnOkMAO2v2ORHJM+awoqMLC7zxg87Yo8/ZP5EJt3LHr/bQIlY6oHEZw==
