@@ -1,6 +1,6 @@
 {
   "name": "build-codefreeze-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Builds Codefreeze Board UI for publishing",
   "main": "build.js",
   "author": "Aki Salmi",
@@ -10,7 +10,7 @@
     "build": "node build.js"
   },
   "dependencies": {
-    "@rinkkasatiainen/cfb-ui": "^0.1.0"
+    "@rinkkasatiainen/cfb-ui": "^0.1.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
