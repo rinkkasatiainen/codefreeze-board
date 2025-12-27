@@ -31,7 +31,7 @@ export const handler = async (event, _context) => {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          sections: allSessions,
+          sessions: Object.values( allSessions).reduce( (acc, curr) => [...acc, ...curr], []),
           eventId: 'codefreeze2025',
         }),
       }

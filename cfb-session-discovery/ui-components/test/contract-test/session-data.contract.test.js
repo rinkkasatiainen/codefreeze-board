@@ -1,40 +1,83 @@
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import {expect} from 'chai'
 import * as chai from 'chai'
-import {withSections} from '../../mocks/schedules_mocks.js'
+import {expect} from 'chai'
+import {startTestWorker, withSections, withSessions} from '../../mocks/schedules_mocks.js'
 import {schemaMatcher} from '@rinkkasatiainen/cfb-testing-utils'
-import {sectionSchema} from '../_contracts/section-schema.js'
+import {sectionSchema, sessionSchema} from '../_contracts/section-schema.js'
+import {mockSessionWith, withSection} from '../loads-sections/cfb-section-models.js'
 
 chai.use(schemaMatcher)
 
 describe('Session Data Contract', () => {
-  describe('session-loader', () => {
+  let worker
 
+  before(async () => {
+    worker = startTestWorker() // withSections(testEventId, {'/sections': contract}, {})
+    await worker.start({quiet: true})
   })
 
-  describe('retrieves-schedules', () => {
+  after(async () => {
+    await worker.stop()
+  })
 
-    let worker
+  describe('builders', () => {
+    it('sessionBuilder', () => {
+      const session = mockSessionWith()
+
+      expect(session).to.matchSchema(sessionSchema)
+    })
+
+    it('sectionBuilder', () => {
+      const session = withSection()
+
+      expect(session).to.matchSchema(sectionSchema)
+    })
+  })
+
+  describe('session-loader', () => {
+    let contract
     const testEventId = 'test-event-123'
 
     before(async () => {
-      const response = await fetch('test/_contracts/codefreeze2025-sections.json', {})
-      const contract = await response.json()
-      worker = withSections(testEventId, {'/sections': contract}, {})
-      // Start the worker
-      await worker.start({quiet: true})
+      const response = await fetch('test/_contracts/codefreeze2025-sessions.json', {})
+      contract = await response.json()
     })
 
-    after(async () => {
-      // Clean up
-      await worker.stop()
-    })
-
-    beforeEach(async () => {
+    beforeEach(() => {
+      withSessions(testEventId, {'/sessions': contract}, {})
     })
 
     afterEach(async () => {
-      // Reset handlers after each test
+      worker.resetHandlers()
+    })
+
+    it('should retrieve schedule sessions successfully', async () => {
+      const sessions = await CfbRetrievesSchedules.getScheduleSessions(testEventId)
+
+      expect(sessions).to.be.an('array')
+      expect(sessions).to.have.lengthOf(2)
+      expect(sessions[0].id).to.eql( 'ecea7799-2a69-4b05-86f5-5113f3428382')
+
+      sessions.forEach(section => {
+        expect(section).to.matchSchema(sessionSchema)
+      })
+    })
+  })
+
+  describe('retrieves sections', () => {
+    const testEventId = 'test-event-123'
+    let contract
+
+    before(async () => {
+      const response = await fetch('test/_contracts/codefreeze2025-sections.json', {})
+      contract = await response.json()
+    })
+
+    beforeEach(async () => {
+      withSections(testEventId, {'/sections': contract}, {})
+    })
+
+    afterEach(async () => {
       worker.resetHandlers()
     })
 
@@ -53,7 +96,7 @@ describe('Session Data Contract', () => {
       sections.forEach(section => {
         expect(section).to.matchSchema(sectionSchema)
       })
-
     })
+
   })
 })

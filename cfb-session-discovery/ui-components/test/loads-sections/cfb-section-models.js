@@ -19,7 +19,7 @@ export function randomFromList(list) {
 }
 
 export function withSection(mockWith = {}) {
-  const example = {id: randomId(), name: randomString(10) , order: 0}
+  const example = {id: randomId(), name: randomString(10) , order: 0, date: '2025-01-12'}
   return {...example, ...mockWith}
 }
 
@@ -31,7 +31,7 @@ export function mockSessionWith(mockWith = {}) {
     sectionId: crypto.randomUUID(),
     order: 0,
     tags: [{name: 'Test', type: 'blue'}],
-    speakers: [{name: 'Test Speaker', initial: 'TS'}],
+    speakers: [{name: 'Test Speaker', initials: 'TS'}],
   }
   return {...example, ...mockWith}
 }

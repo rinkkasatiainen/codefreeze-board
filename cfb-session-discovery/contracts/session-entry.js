@@ -14,13 +14,13 @@ const sectionIdForDay0 = '00000000-0000-0000-0000-000000000000'
 const sectionIdForDay1 = '00000001-0000-0000-0000-000000000000'
 export const day0Entries = [
   {
-    id: crypto.randomUUID(),
+    id: 'ecea7799-2a69-4b05-86f5-5113f3428382',
     name: 'AY601 HEL - IVL 6:45 - 8:30',
     description: '',
     sectionId: sectionIdForDay0,
     order: 0,
     tags: [{name: 'Travel', type: 'yellow'} ],
-    speakers: [{name: 'John Doe', initial: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
+    speakers: [{name: 'John Doe', initials: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
   },
 ]
 
@@ -37,7 +37,7 @@ Ice baths are thought to offer several potential benefits, primarily centered ar
     sectionId: sectionIdForDay1,
     order: 0,
     tags: [{name: 'Outdoor Activity', type: 'cyan'} ],
-    speakers: [{name: 'John Doe', initial: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
+    speakers: [{name: 'John Doe', initials: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
   },
 ]
 

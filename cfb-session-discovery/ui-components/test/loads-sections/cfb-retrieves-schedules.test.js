@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {http, HttpResponse} from 'msw'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import {devApi, setupMocks} from '../../mocks/schedules_mocks.js'
+import {devApi, startTestWorker, withSections} from '../../mocks/schedules_mocks.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker
@@ -9,23 +9,22 @@ describe('CfbRetrievesSchedules', () => {
   const sectionsUrl = devApi + `/event/${testEventId}/sections`
 
   before(async () => {
-    worker = setupMocks(testEventId, {
+    worker = startTestWorker()
+    await worker.start({quiet: true})
+  })
+
+  after(async () => {
+    await worker.stop()
+  })
+
+  beforeEach(async () => {
+    withSections(testEventId, {
       '/sections': [
         {name: 'Monday', id: 'monday-123', order: 0},
         {name: 'Tuesday', id: 'tuesday-456', order: 1},
         {name: 'Wednesday', id: 'wednesday-789', order: 2},
       ],
     })
-    // Start the worker
-    await worker.start({quiet: true})
-  })
-
-  after(async () => {
-    // Clean up
-    await worker.stop()
-  })
-
-  beforeEach(async () => {
   })
 
   afterEach(async () => {

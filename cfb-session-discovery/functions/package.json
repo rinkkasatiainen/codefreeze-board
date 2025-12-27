@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery-functions",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Session discovery module for CFB. Has all functions to be deployed to AWS",
   "main": "./dist/index.js",
@@ -24,6 +24,7 @@
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
+    "@rinkkasatiainen/cfb-testing-utils": "file:../../cfb-testing-utils/rinkkasatiainen-cfb-testing-utils-0.2.1.tgz",
     "@rinkkasatiainen/eslint-config": "^1.0.4",
     "@stylistic/eslint-plugin": "^5.1.0",
     "chai": "^5.2.0",
@@ -43,7 +44,6 @@
     "mocks",
     "contracts"
   ],
-  "dependencies": {},
   "msw": {
     "workerDirectory": [
       "test",

@@ -1,37 +1,39 @@
 import {setupWorker} from 'msw/browser'
 import {http, HttpResponse} from 'msw'
-import {codefreeze2025} from '../../contracts/section-entry.js'
+
+const testWorker = setupWorker(...[])
 
 export const devApi = 'https://cfb.rinkkasatiainen.dev/api'
-const scheduleMocks = (eventId, examples = {}) => {
+const scheduleMocks = resourceName => (eventId, examples = {}) => {
   const data = examples
 
-  const url = devApi + `/event/${eventId}/sections`
+  const url = devApi + `/event/${eventId}/${resourceName}`
 
   return [
     http.get(url, async () =>
-      // Mock successful response
       HttpResponse.json({
-        sections: data['/sections'] || [],
+        [resourceName]: data[`/${resourceName}`] || [],
       }),
     ),
   ]
 }
 
-export function setupMocks(eventId, examples = {}) {
-  const defaultData = {'/sections': codefreeze2025}
+export function startTestWorker() {
+  return testWorker
+}
 
-  const data = {...defaultData, ...examples}
+export function withSessions(eventId, examples) {
+  const data = {...examples}
 
-  return setupWorker(
-    ...scheduleMocks(eventId, data),
+  testWorker.use(
+    ...scheduleMocks('sessions')(eventId, data),
   )
 }
 
 export function withSections(eventId, examples) {
   const data = {...examples}
 
-  return setupWorker(
-    ...scheduleMocks(eventId, data),
+  testWorker.use(
+    ...scheduleMocks('sections')(eventId, data),
   )
 }

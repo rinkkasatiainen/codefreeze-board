@@ -5,7 +5,6 @@ class CfbRetrievesSchedules {
   async getScheduleSections(eventId) {
     if(!eventId){
       // TODO: AkS: Add error handling here
-      console.warn('No event id provided, returning empty array')
       return []
     }
     try {
@@ -35,6 +34,7 @@ class CfbRetrievesSchedules {
       }
 
       const data = await response.json()
+
       return data.sessions || []
     } catch {
       // Fallback to default sessions for now

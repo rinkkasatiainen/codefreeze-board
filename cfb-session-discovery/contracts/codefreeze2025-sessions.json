@@ -1,0 +1,48 @@
+[
+  {
+    "id": "ecea7799-2a69-4b05-86f5-5113f3428382",
+    "name": "AY601 HEL - IVL 6:45 - 8:30",
+    "description": "",
+    "sectionId": "00000000-0000-0000-0000-000000000000",
+    "order": 0,
+    "tags": [
+      {
+        "name": "Travel",
+        "type": "yellow"
+      }
+    ],
+    "speakers": [
+      {
+        "name": "John Doe",
+        "initials": "JD"
+      },
+      {
+        "name": "Jane Smith",
+        "initials": "JS"
+      }
+    ]
+  },
+  {
+    "id": "aff62c8d-7326-4fb2-9141-36e2d366bec2",
+    "name": "800 | The Morning Dip | Hotel Ground Floor",
+    "description": "Never ice bathe alone.\nUse the rails: The icy surface can be slippery, and falling in makes getting out extremely difficult.\nKeep your head above water (especially if you're a beginner): Submerging your head can restrict blood flow to the brain and cause you to faint. This also applies to applying ice to your head or neck in a sauna—avoid doing so.\nRelax and breathe: The initial shock subsides quickly.\n# Why Ice Bathing?\nIce baths are thought to offer several potential benefits, primarily centered around aiding recovery and influencing physiological processes. They may help reduce muscle soreness and inflammation by constricting blood vessels, limiting inflammatory response. Ice baths can also impact the central nervous system, potentially improving sleep, and the sudden exposure to cold triggers the release of endorphins, which can lead to improved mood. Some proponents suggest potential benefits like enhanced circulation and a boosted immune system, though more research is needed to confirm these.",
+    "sectionId": "00000001-0000-0000-0000-000000000000",
+    "order": 0,
+    "tags": [
+      {
+        "name": "Outdoor Activity",
+        "type": "cyan"
+      }
+    ],
+    "speakers": [
+      {
+        "name": "John Doe",
+        "initials": "JD"
+      },
+      {
+        "name": "Jane Smith",
+        "initials": "JS"
+      }
+    ]
+  }
+]
