@@ -13,3 +13,4 @@ export const createTestLogger = testLogger
 export { waitUntil } from './src/wait-until.js'
 export { tick } from './src/tick.js'
 export { todo, testList } from './src/test-list.js'
+export { schemaMatcher } from './src/chai-helpers.js'
