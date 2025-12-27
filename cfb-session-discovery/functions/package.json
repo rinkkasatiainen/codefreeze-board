@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery-functions",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "type": "module",
   "description": "Session discovery module for CFB. Has all functions to be deployed to AWS",
   "main": "./dist/index.js",
@@ -15,9 +15,9 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
-    "pretest": "cp -r ../contracts ./_contracts",
+    "pretest": "mkdir -p _contracts && cp -r ../contracts/* _contracts",
     "test": "mocha test/*.test.js test/**/*.test.js",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && rm -rf test/_contracts",
     "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp -r ../contracts dist/_contracts && cp package.json dist/",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run lint",

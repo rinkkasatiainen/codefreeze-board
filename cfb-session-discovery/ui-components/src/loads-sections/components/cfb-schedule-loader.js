@@ -46,10 +46,10 @@ export class CfbScheduleLoader extends HTMLElement {
   }
 
   #updateChildren(){
-    const timestamp = new Date().toISOString()
-    this.querySelectorAll('.listens-session-updates').forEach(e => {
-      e.setAttribute('data-updated-at', timestamp)
-    })
+    // const timestamp = new Date().toISOString()
+    // this.querySelectorAll('.listens-session-updates').forEach(e => {
+    //   e.setAttribute('data-updated-at', timestamp)
+    // })
     this.dispatchEvent(sectionsLoaded(this.#eventId))
   }
 }

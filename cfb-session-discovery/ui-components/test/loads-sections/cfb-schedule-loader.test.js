@@ -76,7 +76,8 @@ describe('CfbScheduleLoader', () => {
     expect(storedSections).to.deep.equal(sections)
   })
 
-  it('should update data-last-updated-at for all children', async () => {
+  // TODO: This is old behavior and should be removed
+  it.skip('should update data-last-updated-at for all children', async () => {
     const child1 = document.createElement('div')
     child1.classList.add('listens-session-updates')
     const child2 = document.createElement('div')
