@@ -1,12 +1,12 @@
 import {expect} from 'chai'
+import {stub} from 'sinon'
 import {createTestLogger, tick, waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
+
+import {buildSessionWith} from '@rinkkasatiainen/cfb-session-discovery-contracts'
 import {CfbSessionScheduler} from '../../src/loads-sections/components/cfb-session-scheduler.js'
 import {ensureSingle} from '../test-helpers.js'
 import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
-import {stub} from 'sinon'
-import {exampleSessionEntry} from '../../../contracts/session-entry.js'
-import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
-import {mockSessionWith} from './cfb-section-models.js'
 
 const noop = () => { /* noop */
 }
@@ -14,6 +14,8 @@ const todo = testName => {
   // eslint-disable-next-line mocha/no-pending-tests
   xit(testName, noop)
 }
+
+const exampleSessionEntry = buildSessionWith()
 
 describe('CfbSessionScheduler', () => {
   let testRoot = null
@@ -111,7 +113,7 @@ describe('CfbSessionScheduler', () => {
       expect(sut.querySelectorAll('cfb-session').length).to.eql(0)
     })
 
-    const randomSessionForSection = () => mockSessionWith({sectionId: exampleSessionEntry.sectionId})
+    const randomSessionForSection = () => buildSessionWith({sectionId: exampleSessionEntry.sectionId})
 
     it('Should clear existing sessions before adding new ones', async () => {
       cfbScheduleStorage.getAllSessionsForSection.resolves([randomSessionForSection()])

@@ -1,12 +1,13 @@
 import {expect} from 'chai'
-import {CfbSessionLoader} from '../../src/loads-sections/components/cfb-session-loader.js'
-import * as sinon from 'sinon'
-import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
-import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
+import { stub } from 'sinon'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
-import {mockSessionWith} from './cfb-section-models.js'
 import {todo, waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+import {buildSessionWith} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+
+import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
+import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
+import {CfbSessionLoader} from '../../src/loads-sections/components/cfb-session-loader.js'
 import {EventTypes, isSessionsLoaded} from '../../src/events/events-loaded.js'
 import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
 
@@ -43,7 +44,7 @@ describe('CfbSessionLoader', () => {
     testFailLogger = createLogger()
     testFailLogger.expect.warn(true, Times.once)
     document.body.appendChild(testRoot)
-    getScheduleSessionsStub = sinon.stub()
+    getScheduleSessionsStub = stub()
     getScheduleSessionsStub.resolves([])
     CfbRetrievesSchedules.getScheduleSessions = getScheduleSessionsStub
     element = document.createElement('cfb-session-loader')
@@ -60,7 +61,7 @@ describe('CfbSessionLoader', () => {
       element.setAttribute(CfbSessionLoader.definedAttributes.eventId, eventId)
       await tick()
 
-      const sessions = [mockSessionWith()]
+      const sessions = [buildSessionWith()]
       getScheduleSessionsStub.resolves(sessions)
       // update listens-to-schedule-updates
       element.setAttribute(CfbSessionLoader.definedAttributes.updatedAt, Date.now().toString())
@@ -81,7 +82,7 @@ describe('CfbSessionLoader', () => {
 
     it('should store session data in storage when event ID changes', async () => {
       const sessions = [
-        mockSessionWith({order: 0}),
+        buildSessionWith({order: 0}),
       ]
       getScheduleSessionsStub.resolves(sessions)
 
@@ -101,7 +102,7 @@ describe('CfbSessionLoader', () => {
       element.appendChild(child2)
 
       const sessions = [
-        mockSessionWith({order: 0}), mockSessionWith({order: 1}),
+        buildSessionWith({order: 0}), buildSessionWith({order: 1}),
       ]
       getScheduleSessionsStub.resolves(sessions)
 
@@ -118,7 +119,7 @@ describe('CfbSessionLoader', () => {
       element.appendChild(child2)
 
       const sessions = [
-        mockSessionWith({order: 0}),
+        buildSessionWith({order: 0}),
       ]
       getScheduleSessionsStub.resolves(sessions)
 
@@ -140,7 +141,7 @@ describe('CfbSessionLoader', () => {
       element.appendChild(child3)
 
       const sessions = [
-        mockSessionWith({order: 0}), mockSessionWith({order: 1}),
+        buildSessionWith({order: 0}), buildSessionWith({order: 1}),
       ]
       getScheduleSessionsStub.resolves(sessions)
 
@@ -165,7 +166,7 @@ describe('CfbSessionLoader', () => {
       }
       testRoot.addEventListener(EventTypes.SESSIONS_LOADED, listener)
 
-      getScheduleSessionsStub.resolves([mockSessionWith({order: 0})])
+      getScheduleSessionsStub.resolves([buildSessionWith({order: 0})])
 
       element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
       await waitUntil(() => called, 200)

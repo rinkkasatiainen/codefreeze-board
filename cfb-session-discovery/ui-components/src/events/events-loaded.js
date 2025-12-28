@@ -10,6 +10,7 @@ export const sessionsLoaded = eventId => new CustomEvent(EventTypes.SESSIONS_LOA
   detail: {eventId, _type: EventTypes.SESSIONS_LOADED},
 })
 
+
 export const isSessionsLoaded = evt =>
 // eslint-disable-next-line no-underscore-dangle
   evt instanceof CustomEvent && evt.detail?._type === EventTypes.SESSIONS_LOADED

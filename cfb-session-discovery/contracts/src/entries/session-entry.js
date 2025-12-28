@@ -1,4 +1,6 @@
 /* eslint-disable @stylistic/max-len */
+const sectionIdForDay0 = '00000000-0000-0000-0000-000000000000'
+const sectionIdForDay1 = '00000001-0000-0000-0000-000000000000'
 
 export const exampleSessionEntry = {
   id: crypto.randomUUID(),
@@ -10,8 +12,6 @@ export const exampleSessionEntry = {
   speakers: [{name: 'John Doe', initials: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
 }
 
-const sectionIdForDay0 = '00000000-0000-0000-0000-000000000000'
-const sectionIdForDay1 = '00000001-0000-0000-0000-000000000000'
 export const day0Entries = [
   {
     id: 'ecea7799-2a69-4b05-86f5-5113f3428382',
@@ -26,7 +26,7 @@ export const day0Entries = [
 
 export const day1Entries = [
   {
-    id: crypto.randomUUID(),
+    id: 'cc28e252-93c2-415c-baeb-6f12f3847bf7',
     name: '800 | The Morning Dip | Hotel Ground Floor',
     description: `Never ice bathe alone.
 Use the rails: The icy surface can be slippery, and falling in makes getting out extremely difficult.

@@ -1,12 +1,16 @@
-import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import * as chai from 'chai'
-import {expect} from 'chai'
-import {startTestWorker, withSections, withSessions} from '../../mocks/schedules_mocks.js'
+import {use, expect} from 'chai'
 import {schemaMatcher} from '@rinkkasatiainen/cfb-testing-utils'
-import {sectionSchema, sessionSchema} from '../_contracts/section-schema.js'
-import {mockSessionWith, withSection} from '../loads-sections/cfb-section-models.js'
+import {
+  sectionSchema,
+  sessionSchema,
+  buildSectionWith,
+  buildSessionWith,
+} from '@rinkkasatiainen/cfb-session-discovery-contracts'
 
-chai.use(schemaMatcher)
+import {startTestWorker, withSections, withSessions} from '../../mocks/schedules_mocks.js'
+import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
+
+use(schemaMatcher)
 
 describe('Session Data Contract', () => {
   let worker
@@ -22,13 +26,13 @@ describe('Session Data Contract', () => {
 
   describe('builders', () => {
     it('sessionBuilder', () => {
-      const session = mockSessionWith()
+      const session = buildSessionWith()
 
       expect(session).to.matchSchema(sessionSchema)
     })
 
     it('sectionBuilder', () => {
-      const session = withSection()
+      const session = buildSectionWith()
 
       expect(session).to.matchSchema(sectionSchema)
     })
@@ -39,7 +43,8 @@ describe('Session Data Contract', () => {
     const testEventId = 'test-event-123'
 
     before(async () => {
-      const response = await fetch('test/_contracts/codefreeze2025-sessions.json', {})
+      const response = await fetch('node_modules/@rinkkasatiainen/cfb-session-discovery-contracts' +
+        '/be-responses/codefreeze2025-sessions.json', {})
       contract = await response.json()
     })
 
@@ -56,7 +61,7 @@ describe('Session Data Contract', () => {
 
       expect(sessions).to.be.an('array')
       expect(sessions).to.have.lengthOf(2)
-      expect(sessions[0].id).to.eql( 'ecea7799-2a69-4b05-86f5-5113f3428382')
+      expect(sessions[0].id).to.eql('ecea7799-2a69-4b05-86f5-5113f3428382')
 
       sessions.forEach(section => {
         expect(section).to.matchSchema(sessionSchema)
@@ -69,7 +74,8 @@ describe('Session Data Contract', () => {
     let contract
 
     before(async () => {
-      const response = await fetch('test/_contracts/codefreeze2025-sections.json', {})
+      const response = await fetch('node_modules/@rinkkasatiainen/cfb-session-discovery-contracts' +
+        '/be-responses/codefreeze2025-sections.json', {})
       contract = await response.json()
     })
 

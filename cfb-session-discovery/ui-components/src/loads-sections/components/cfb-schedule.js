@@ -2,8 +2,8 @@
  * A schedule component that displays sections from IndexDB
  */
 
-import cfbScheduleStorage from '../ports/cfb-schedule-storage.js'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import cfbScheduleStorage from '../ports/cfb-schedule-storage.js'
 import {sectionsAddedToDom} from '../../events/events-loaded.js'
 
 export class CfbSchedule extends HTMLElement {

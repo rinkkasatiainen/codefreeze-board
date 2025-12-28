@@ -1,11 +1,12 @@
-import {it} from 'mocha'
-import {handler} from '../../src/sections-handler.js'
 import fs from 'fs'
 import path, {dirname} from 'path'
 import {fileURLToPath} from 'url'
-import {AssertionError, expect, use} from 'chai'
-import { schemaMatcher } from '@rinkkasatiainen/cfb-testing-utils'
-import {sectionSchema} from '../../_contracts/section-schema.js'
+import {it} from 'mocha'
+import {expect, use} from 'chai'
+import {schemaMatcher} from '@rinkkasatiainen/cfb-testing-utils'
+import {sectionSchema} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+
+import {handler} from '../../src/sections-handler.js'
 
 use(schemaMatcher)
 
@@ -15,7 +16,7 @@ const contractFilePath = fileName => {
    */
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = dirname(__filename)
-  const p = path.join(__dirname, '..', '..', '..', 'contracts', fileName)
+  const p = path.join(__dirname, '..', '..', '..', 'fe-contracts', fileName)
   return p
 }
 
@@ -35,11 +36,9 @@ describe('Get Sections', () => {
     const sections = (await JSON.parse(await result.body)).sections
 
     const p = contractFilePath('codefreeze2025-sections.json')
-    fs.writeFile(p, JSON.stringify(sections, null, 2), err => {
-      if (err) {
-        throw new AssertionError(`writing to file failed: ${err.message}` )
-      }
-    })
+    const expected = fs.readFileSync(p, 'utf8')
+
+    expect(expected).to.eql(JSON.stringify(sections, null, 2))
   })
 
   it('follows the schema', async () => {

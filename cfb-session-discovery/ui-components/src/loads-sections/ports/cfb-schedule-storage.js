@@ -37,17 +37,17 @@ class CfbScheduleStorage {
 
         if (!db.objectStoreNames.contains(this.storeName)) {
           // this.#logger.info('Creating sections store...')
-          const store = db.createObjectStore(this.storeName, { keyPath: ['eventId', 'id'] })
-          store.createIndex('eventId', 'eventId', { unique: false })
-          store.createIndex('order', 'order', { unique: false })
+          const store = db.createObjectStore(this.storeName, {keyPath: ['eventId', 'id']})
+          store.createIndex('eventId', 'eventId', {unique: false})
+          store.createIndex('order', 'order', {unique: false})
         }
         if (!db.objectStoreNames.contains(this.sessionsStoreName)) {
           // this.#logger.info('Creating sessions store...')
-          const sessionsDb = db.createObjectStore(this.sessionsStoreName, { keyPath: ['eventId', 'sectionId', 'id'] })
-          sessionsDb.createIndex('eventId', 'eventId', { unique: false })
-          sessionsDb.createIndex('sectionId', 'sectionId', { unique: false })
-          sessionsDb.createIndex('eventSection', ['eventId', 'sectionId'], { unique: false })
-          sessionsDb.createIndex('order', 'order', { unique: false })
+          const sessionsDb = db.createObjectStore(this.sessionsStoreName, {keyPath: ['eventId', 'sectionId', 'id']})
+          sessionsDb.createIndex('eventId', 'eventId', {unique: false})
+          sessionsDb.createIndex('sectionId', 'sectionId', {unique: false})
+          sessionsDb.createIndex('eventSection', ['eventId', 'sectionId'], {unique: false})
+          sessionsDb.createIndex('order', 'order', {unique: false})
           sessionsDb.createIndex('eventSessionId', ['eventId', 'id'], {unique: true})
         }
       }
@@ -58,7 +58,7 @@ class CfbScheduleStorage {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
-      const sectionWithEventId = { ...section, eventId }
+      const sectionWithEventId = {...section, eventId}
       const request = store.add(sectionWithEventId)
 
       request.onsuccess = () => resolve(section)
@@ -78,7 +78,7 @@ class CfbScheduleStorage {
       request.onsuccess = () => {
         const result = request.result
         if (result) {
-          const { eventId: _, ...sectionWithoutEventId } = result
+          const {eventId: _, ...sectionWithoutEventId} = result
           resolve(sectionWithoutEventId)
         } else {
           resolve(undefined)
@@ -99,7 +99,9 @@ class CfbScheduleStorage {
       const request = index.getAll(IDBKeyRange.only(eventId))
 
       request.onsuccess = () => {
-        const sections = request.result.map(({ eventId: _, ...section }) => section)
+        const sections = request.result
+          .map(({eventId: _, ...section}) => section)
+          .sort((a, b) => a.order - b.order)
         resolve(sections)
       }
       request.onerror = event => {
@@ -129,7 +131,7 @@ class CfbScheduleStorage {
 
     return Promise.all(
       sections.map((section, index) => new Promise((resolve, reject) => {
-        const sectionWithEventId = { ...section, eventId, order: index }
+        const sectionWithEventId = {...section, eventId, order: index}
         const request = store.put(sectionWithEventId)
         request.onsuccess = () => resolve(section)
         request.onerror = event => {
@@ -144,7 +146,7 @@ class CfbScheduleStorage {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.sessionsStoreName], 'readwrite')
       const store = transaction.objectStore(this.sessionsStoreName)
-      const sessionWithKeys = { ...session, eventId, sectionId: session.sectionId }
+      const sessionWithKeys = {...session, eventId, sectionId: session.sectionId}
 
       // this.#logger.info('Adding session with keys:', {eventId, sectionId: session.sectionId, id: session.id})
 
@@ -166,7 +168,8 @@ class CfbScheduleStorage {
       const request = index.getAll(IDBKeyRange.only(eventId))
 
       request.onsuccess = () => {
-        const sessions = request.result.map(({ eventId: _, ...session }) => session)
+        const sessions = request.result
+          .map(({eventId: _, ...session}) => session)
         resolve(sessions)
       }
       request.onerror = event => {
@@ -184,7 +187,8 @@ class CfbScheduleStorage {
       const request = index.getAll(IDBKeyRange.only([eventId, sectionId]))
 
       request.onsuccess = () => {
-        const sessions = request.result.map(({ eventId: _, ...session }) => session)
+        const sessions = request.result
+          .map(({eventId: _, ...session}) => session)
         resolve(sessions)
       }
       request.onerror = event => {

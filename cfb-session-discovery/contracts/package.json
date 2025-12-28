@@ -1,8 +1,8 @@
 {
-  "name": "@rinkkasatiainen/cfb-session-discovery-functions",
-  "version": "0.2.1",
+  "name": "@rinkkasatiainen/cfb-session-discovery-contracts",
+  "version": "0.2.2",
   "type": "module",
-  "description": "Session discovery module for CFB. Has all functions to be deployed to AWS",
+  "description": "Session discovery module contracts for CFB. This is modified by BE, used by FE",
   "main": "./dist/index.js",
   "license": "MIT",
   "publishConfig": {
@@ -15,15 +15,15 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
+    "pretest": "cp -r ../fe-contracts/* be-responses/",
     "test": "mocha test/*.test.js test/**/*.test.js",
-    "clean": "rm -rf dist && rm -rf test/_contracts",
+    "clean": "rm -rf dist",
     "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp package.json dist/",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run lint",
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.2.2",
     "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
     "@rinkkasatiainen/eslint-config.js": "^0.2.4",
     "@stylistic/eslint-plugin": "^5.1.0",
@@ -38,7 +38,7 @@
     "sinon-chai": "^4.0.0"
   },
   "files": [
-    "dist"
-  ],
-  "dependencies": {}
+    "dist",
+    "be-responses"
+  ]
 }

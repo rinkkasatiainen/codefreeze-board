@@ -1,11 +1,12 @@
 import {expect} from 'chai'
-import {CfbSchedule} from '../../src/loads-sections/components/cfb-schedule.js'
-import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
-import {ensureSingle, withClearableStorage} from '../test-helpers.js'
-import {withSection} from './cfb-section-models.js'
 import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+import {buildSectionWith} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+
+import {CfbSchedule} from '../../src/loads-sections/components/cfb-schedule.js'
+import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
+import {ensureSingle, withClearableStorage} from '../test-helpers.js'
 
 describe('CfbSchedule', () => {
   let testRoot = null
@@ -42,7 +43,7 @@ describe('CfbSchedule', () => {
 
     it('should render a single section when one section in storage', async () => {
       // Add a test section to storage
-      const testSection = withSection({order: 0})
+      const testSection = buildSectionWith({order: 0})
       const sut = await scheduleWithASection(testSection)
 
       await waitUntil(sut.whenNoOfSectionsIs(1))
@@ -54,12 +55,12 @@ describe('CfbSchedule', () => {
 
     it('should update when data-updated-at attribute changes', async () => {
       // Add initial sections
-      const section1 = withSection({order: 0})
+      const section1 = buildSectionWith({order: 0})
       const sut = await scheduleWithASection(section1)
 
       await waitUntil(sut.whenNoOfSectionsIs(1))
 
-      await cfbScheduleStorage.addSection(eventId, withSection({order: 1}))
+      await cfbScheduleStorage.addSection(eventId, buildSectionWith({order: 1}))
       sut.setAttribute(CfbSchedule.definedAttributes.updatedAt, Date.now().toString())
 
       await waitUntil(sut.whenNoOfSectionsIs(2))
@@ -68,13 +69,13 @@ describe('CfbSchedule', () => {
     })
 
     it('should not update when data-updated-at attribute is the same', async () => {
-      const sut = await scheduleWithASection(withSection(), {'data-updated-at': '123'})
+      const sut = await scheduleWithASection(buildSectionWith(), {'data-updated-at': '123'})
 
       await waitUntil(sut.whenNoOfSectionsIs(1))
       const initialChildrenCount = sut.getSections().length
 
       // Add a section to DB - rerender would change the
-      const section = withSection()
+      const section = buildSectionWith()
       await cfbScheduleStorage.addSection(eventId, section)
       // Set the same attribute value
       sut.setAttribute(CfbSchedule.definedAttributes.updatedAt, '123')
@@ -102,9 +103,9 @@ describe('CfbSchedule', () => {
     })
 
     it('should order sections by order', async () => {
-      await cfbScheduleStorage.addSection(eventId, withSection({order: 3, name: 'Section 3'}))
-      await cfbScheduleStorage.addSection(eventId, withSection({order: 1, name: 'Section 1'}))
-      const section2 = withSection({order: 2, name: 'Section 2'})
+      await cfbScheduleStorage.addSection(eventId, buildSectionWith({order: 3, name: 'Section 3'}))
+      await cfbScheduleStorage.addSection(eventId, buildSectionWith({order: 1, name: 'Section 1'}))
+      const section2 = buildSectionWith({order: 2, name: 'Section 2'})
 
       const sut = await scheduleWithASection(section2)
       await waitUntil(sut.whenNoOfSectionsIs(3))
@@ -121,7 +122,7 @@ describe('CfbSchedule', () => {
     })
   }
 
-  const scheduleWithASection = async (section = withSection(), params = {}) => {
+  const scheduleWithASection = async (section = buildSectionWith(), params = {}) => {
     await cfbScheduleStorage.addSection(eventId, section)
 
     const sut = document.createElement(CfbSchedule.elementName)

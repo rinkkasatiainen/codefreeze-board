@@ -1,4 +1,4 @@
-import { codefreeze2025 } from '../_contracts/section-entry.js'
+import {codefreeze2025} from '../mocks/section-entry.js'
 
 /**
  * AWS Lambda handler for retrieving section entries
@@ -24,6 +24,7 @@ export const handler = async (event, _context) => {
         body: '',
       }
     }
+    const sections = Object.values(codefreeze2025)
 
     // Handle GET request
     if (event.httpMethod === 'GET') {
@@ -31,7 +32,7 @@ export const handler = async (event, _context) => {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          sections: codefreeze2025,
+          sections,
           eventId: 'codefreeze2025',
         }),
       }
@@ -41,7 +42,7 @@ export const handler = async (event, _context) => {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' }),
+      body: JSON.stringify({error: 'Method not allowed'}),
     }
   } catch (error) {
     // TODO: AkS: add observability here

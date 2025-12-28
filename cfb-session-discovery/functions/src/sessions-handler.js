@@ -1,4 +1,4 @@
-import { allSessions } from '../_contracts/session-entry.js'
+import { allSessions } from '../mocks/session-entry.js'
 
 /**
  * AWS Lambda handler for retrieving section entries

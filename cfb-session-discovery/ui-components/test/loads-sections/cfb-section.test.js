@@ -1,6 +1,7 @@
 import {expect} from 'chai'
-import {CfbSection} from '../../src/loads-sections/components/cfb-section.js'
 import {todo} from '@rinkkasatiainen/cfb-testing-utils'
+
+import {CfbSection} from '../../src/loads-sections/components/cfb-section.js'
 
 describe('CfbSection', () => {
   let testRoot = null

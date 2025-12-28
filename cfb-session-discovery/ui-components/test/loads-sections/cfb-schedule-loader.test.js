@@ -1,13 +1,14 @@
 import {expect} from 'chai'
-import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
-import * as sinon from 'sinon'
-import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
-import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
+import { stub } from 'sinon'
 import {createLogger} from '@rinkkasatiainen/cfb-observability'
 import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
-import {withSection} from './cfb-section-models.js'
-import {EventTypes, isSectionsLoaded} from '../../src/events/events-loaded.js'
 import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+import {buildSectionWith} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+
+import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
+import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
+import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
+import {EventTypes, isSectionsLoaded} from '../../src/events/events-loaded.js'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
@@ -42,7 +43,7 @@ describe('CfbScheduleLoader', () => {
     testFailLogger = createLogger()
     testFailLogger.expect.warn(true, Times.once)
     document.body.appendChild(testRoot)
-    getScheduleSectionsStub = sinon.stub()
+    getScheduleSectionsStub = stub()
     CfbRetrievesSchedules.getScheduleSections = getScheduleSectionsStub
     element = document.createElement('cfb-schedule-loader')
     testRoot.appendChild(element)
@@ -64,7 +65,7 @@ describe('CfbScheduleLoader', () => {
 
   it('should store schedule sections in storage when event ID changes', async () => {
     const sections = [
-      withSection({order: 0}),
+      buildSectionWith({order: 0}),
     ]
     getScheduleSectionsStub.resolves(sections)
 
@@ -86,7 +87,7 @@ describe('CfbScheduleLoader', () => {
     element.appendChild(child2)
 
     const sections = [
-      withSection({order: 0}), withSection({order: 1}),
+      buildSectionWith({order: 0}), buildSectionWith({order: 1}),
     ]
     getScheduleSectionsStub.resolves(sections)
 
@@ -107,7 +108,7 @@ describe('CfbScheduleLoader', () => {
     }
     testRoot.addEventListener(EventTypes.SECTIONS_LOADED, listener)
 
-    getScheduleSectionsStub.resolves([withSection()])
+    getScheduleSectionsStub.resolves([buildSectionWith()])
 
     element.setAttribute(CfbScheduleLoader.definedAttributes.eventId, eventId)
     await waitUntil(() => called, 200)

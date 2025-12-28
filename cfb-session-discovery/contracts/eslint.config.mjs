@@ -4,4 +4,8 @@ export default [
   {
     ...eslintConfig,
   },
+  {
+    rules: {
+    }
+  }
 ]

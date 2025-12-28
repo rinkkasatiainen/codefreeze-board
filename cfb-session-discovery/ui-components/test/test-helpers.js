@@ -1,5 +1,9 @@
 import {AssertionError} from 'chai'
 
+function isArray(value) {
+  return Array.isArray(value)
+}
+
 export const withClearableStorage = storage => {
   storage.clearAll = async function(eventId) {
     const sections = [...await this.getAllSections(eventId)]
@@ -20,10 +24,6 @@ export const withClearableStorage = storage => {
     delete storage.clearAll
   }
   return storage
-}
-
-function isArray(value) {
-  return Array.isArray(value)
 }
 
 export function ensureSingle(arr, predicate = () => true) {

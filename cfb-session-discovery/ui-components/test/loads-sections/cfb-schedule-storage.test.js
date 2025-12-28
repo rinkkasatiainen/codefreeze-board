@@ -1,9 +1,10 @@
 import {expect} from 'chai'
-import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import {createLogger, LOG_LEVELS} from '@rinkkasatiainen/cfb-observability'
-import {withClearableStorage} from '../test-helpers.js'
-import {mockSessionWith} from './cfb-section-models.js'
 import {todo} from '@rinkkasatiainen/cfb-testing-utils'
+import {buildSectionWith, buildSessionWith} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+
+import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
+import {withClearableStorage} from '../test-helpers.js'
 
 describe('CFBStorage', () => {
   let failTestlogger
@@ -26,7 +27,7 @@ describe('CFBStorage', () => {
   describe('adding sections', () => {
 
     it('should add and retrieve a section', async () => {
-      const section = {id: 'test-1', title: 'Test Section', order: 0}
+      const section = buildSectionWith({id: 'test-1'})
       await cfbStorage.addSection(testEventId, section)
 
       const retrieved = await cfbStorage.getSection(testEventId, 'test-1')
@@ -35,8 +36,8 @@ describe('CFBStorage', () => {
 
     it('should get all sections', async () => {
       const sections = [
-        {id: 'test-3', title: 'Section 1', order: 0},
-        {id: 'test-4', title: 'Section 2', order: 1},
+        buildSectionWith({id: 'test-4', name: 'Section 2', order: 1}),
+        buildSectionWith({id: 'test-3', name: 'Section 1', order: 0}),
       ]
 
       await Promise.all(sections.map(section => cfbStorage.addSection(testEventId, section)))
@@ -47,7 +48,7 @@ describe('CFBStorage', () => {
     })
 
     it('should delete a section', async () => {
-      const section = {id: 'test-5', title: 'Test Section', order: 0}
+      const section = buildSectionWith({id: 'test-5'})
       await cfbStorage.addSection(testEventId, section)
 
       await cfbStorage.deleteSection(testEventId, 'test-5')
@@ -58,8 +59,8 @@ describe('CFBStorage', () => {
 
     it('should reorder sections', async () => {
       const sections = [
-        {id: 'test-6', title: 'Section 1', order: 0},
-        {id: 'test-7', title: 'Section 2', order: 1},
+        buildSectionWith({id: 'test-6', name: 'Section 1', order: 0}),
+        buildSectionWith({id: 'test-7', name: 'Section 2', order: 1}),
       ]
 
       await Promise.all(sections.map(section => cfbStorage.addSection(testEventId, section)))
@@ -68,7 +69,7 @@ describe('CFBStorage', () => {
       const reordered = [...sections].reverse()
       await cfbStorage.reorderSections(testEventId, reordered)
 
-      const retrieved = (await cfbStorage.getAllSections(testEventId)).sort((a, b) => a.order - b.order)
+      const retrieved = (await cfbStorage.getAllSections(testEventId))// .sort((a, b) => a.order - b.order)
       expect(retrieved[0].id).to.equal('test-7')
       expect(retrieved[0].order).to.equal(0)
       expect(retrieved[1].id).to.equal('test-6')
@@ -79,7 +80,7 @@ describe('CFBStorage', () => {
   describe('sessions', () => {
     describe('basic flow for finding all sessions', () => {
       it('Should add and retrieve a session', async () => {
-        const session = mockSessionWith()
+        const session = buildSessionWith()
 
         await cfbStorage.addSession(testEventId, session)
 
@@ -90,8 +91,8 @@ describe('CFBStorage', () => {
       })
 
       it('Should get all sessions for a specific event and section', async () => {
-        const session1 = mockSessionWith()
-        const session2 = mockSessionWith({sectionId: session1.sectionId, order: session1.order + 1})
+        const session1 = buildSessionWith()
+        const session2 = buildSessionWith({sectionId: session1.sectionId, order: session1.order + 1})
 
         await cfbStorage.addSession(testEventId, session1)
         await cfbStorage.addSession(testEventId, session2)
@@ -108,7 +109,7 @@ describe('CFBStorage', () => {
       })
 
       it('Should delete a session by eventId and sessionId', async () => {
-        const session = mockSessionWith({id: '1', sectionId: 'not-used' })
+        const session = buildSessionWith({id: '1', sectionId: 'not-used' })
         await cfbStorage.addSession(testEventId, session)
 
         // Verify session exists
@@ -126,11 +127,11 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle multiple sessions in same section', async () => {
-        const sessionWith = mockSessionWith()
+        const sessionWith = buildSessionWith()
         const sessions = [
           sessionWith,
-          mockSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 1}),
-          mockSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 2}),
+          buildSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 1}),
+          buildSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 2}),
         ]
 
         await Promise.all(sessions.map(session => cfbStorage.addSession(testEventId, session)))
@@ -143,12 +144,12 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle sessions across different sections', async () => {
-        const session1 = mockSessionWith({
+        const session1 = buildSessionWith({
           sectionId: 'section-a',
           order: 0,
         })
 
-        const session2 = mockSessionWith({
+        const session2 = buildSessionWith({
           sectionId: 'section-b',
           order: 0,
         })
@@ -171,12 +172,12 @@ describe('CFBStorage', () => {
         const event1 = 'event-1'
         const event2 = 'event-2'
 
-        const session1 = mockSessionWith({
+        const session1 = buildSessionWith({
           sectionId: 'section-1',
           order: 0,
         })
 
-        const session2 = mockSessionWith({
+        const session2 = buildSessionWith({
           sectionId: 'section-1',
           order: 0,
         })
@@ -196,7 +197,7 @@ describe('CFBStorage', () => {
 
     describe('basic flow', () => {
       it('Should add and retrieve a session', async () => {
-        const session = mockSessionWith()
+        const session = buildSessionWith()
 
         await cfbStorage.addSession(testEventId, session)
 
@@ -206,8 +207,8 @@ describe('CFBStorage', () => {
       })
 
       it('Should get all sessions for a specific event and section', async () => {
-        const session1 = mockSessionWith()
-        const session2 = mockSessionWith({sectionId: session1.sectionId, order: session1.order + 1})
+        const session1 = buildSessionWith()
+        const session2 = buildSessionWith({sectionId: session1.sectionId, order: session1.order + 1})
 
         await cfbStorage.addSession(testEventId, session1)
         await cfbStorage.addSession(testEventId, session2)
@@ -223,7 +224,7 @@ describe('CFBStorage', () => {
       })
 
       it('Should delete a session by eventId and sessionId', async () => {
-        const session = mockSessionWith({id: '1', sectionId: 'not-used' })
+        const session = buildSessionWith({id: '1', sectionId: 'not-used' })
         await cfbStorage.addSession(testEventId, session)
 
         // Verify session exists
@@ -239,11 +240,11 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle multiple sessions in same section', async () => {
-        const sessionWith = mockSessionWith()
+        const sessionWith = buildSessionWith()
         const sessions = [
           sessionWith,
-          mockSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 1}),
-          mockSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 2}),
+          buildSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 1}),
+          buildSessionWith({sectionId: sessionWith.sectionId, order: sessionWith.order + 2}),
         ]
 
         await Promise.all(sessions.map(session => cfbStorage.addSession(testEventId, session)))
@@ -255,11 +256,11 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle sessions across different sections', async () => {
-        const session1 = mockSessionWith({
+        const session1 = buildSessionWith({
           sectionId: 'section-a',
           order: 0,
         })
-        const session2 = mockSessionWith({
+        const session2 = buildSessionWith({
           sectionId: 'section-b',
           order: 0,
         })
@@ -281,12 +282,12 @@ describe('CFBStorage', () => {
         const event1 = 'event-10'
         const event2 = 'event-11'
 
-        const session1 = mockSessionWith({
+        const session1 = buildSessionWith({
           sectionId: 'section-1',
           order: 0,
         })
 
-        const session2 = mockSessionWith({
+        const session2 = buildSessionWith({
           sectionId: 'section-1',
           order: 0,
         })
@@ -306,7 +307,7 @@ describe('CFBStorage', () => {
 
     describe('data', () => {
       it('Should handle session data with tags correctly', async () => {
-        const session = mockSessionWith({
+        const session = buildSessionWith({
           tags: [
             {name: 'Frontend', type: 'blue'},
             {name: 'React', type: 'purple'},
@@ -322,7 +323,7 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle session data with speakers correctly', async () => {
-        const session = mockSessionWith({
+        const session = buildSessionWith({
           speakers: [
             {name: 'John Doe', initial: 'JD'},
             {name: 'Jane Smith', initials: 'JS'},
@@ -338,9 +339,9 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle session data with order correctly', async () => {
-        const session1 = mockSessionWith({order: 0})
-        const session2 = mockSessionWith({order: 1, sectionId: session1.sectionId})
-        const session3 = mockSessionWith({order: 2, sectionId: session1.sectionId})
+        const session1 = buildSessionWith({order: 0})
+        const session2 = buildSessionWith({order: 1, sectionId: session1.sectionId})
+        const session3 = buildSessionWith({order: 2, sectionId: session1.sectionId})
 
         await cfbStorage.addSession(testEventId, session1)
         await cfbStorage.addSession(testEventId, session2)
@@ -358,7 +359,7 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle session data with description correctly', async () => {
-        const session = mockSessionWith({
+        const session = buildSessionWith({
           description: `This is a detailed description of the session 
           with multiple lines 
           and special characters: !@#$%^&*()`,
@@ -373,7 +374,7 @@ describe('CFBStorage', () => {
       })
 
       it('Should handle session data with sectionId correctly', async () => {
-        const session = mockSessionWith({
+        const session = buildSessionWith({
           sectionId: 'special-section-id-with-dashes-and-underscores',
         })
 

@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Session discovery module for CFB. Handles session discovery related functions",
   "main": "./dist/index.js",
@@ -15,7 +15,6 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
-    "pretest": "mkdir -p test/_contracts && cp -r ../contracts/* test/_contracts",
     "test": "web-test-runner \"test/**/*.test.js\" --node-resolve --config test/web-test-runner.config.mjs",
     "test:manual": "web-test-runner \"test/**/*.test.js\" --node-resolve --config test/web-test-runner.config.mjs --manual",
     "test:specific": "web-test-runner --files=test/**/*${PATTERN:-*}*.test.js --node-resolve --config test/web-test-runner.config.mjs",
@@ -26,8 +25,9 @@
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
+    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.2.2",
     "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
-    "@rinkkasatiainen/eslint-config": "^1.0.4",
+    "@rinkkasatiainen/eslint-config.js": "^0.2.4",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@web/dev-server-import-maps": "^0.2.1",
     "@web/test-runner": "^0.16.0",
@@ -37,11 +37,9 @@
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",
     "eslint": "^9.26.0",
-    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-mocha": "^11.0.0",
-    "eslint-plugin-prettier": "^5.4.0",
     "msw": "^2.10.2",
-    "prettier": "^3.5.3",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.0"
   },
@@ -50,7 +48,7 @@
     "mocks",
     "contracts"
   ],
-  "dependencies": {
+  "peerDependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.0.1"
   },
   "msw": {

@@ -1,5 +1,6 @@
-import {CfbScheduleOrchestratorElement} from '../../../src/scheduler/components/cfb-schedule-orchestrator.js'
 import {todo} from '@rinkkasatiainen/cfb-testing-utils'
+
+import {CfbScheduleOrchestratorElement} from '../../../src/scheduler/components/cfb-schedule-orchestrator.js'
 
 describe('CfbScheduleOrchestratorElement', () => {
   let testRoot = null
