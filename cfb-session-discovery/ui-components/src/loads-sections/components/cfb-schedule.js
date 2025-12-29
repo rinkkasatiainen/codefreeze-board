@@ -25,21 +25,21 @@ export class CfbSchedule extends HTMLElement {
   connectedCallback() {
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  async attributeChangedCallback(name, oldValue, newValue) {
     if (newValue === oldValue) {
       return
     }
     if (name === CfbSchedule.definedAttributes.updatedAt) {
       this.#updatedAt = newValue
-      this.#render()
+      await this.#render()
     }
     if (name === CfbSchedule.definedAttributes.eventId) {
       this.#eventId = newValue
-      this.#render()
+      await this.#render()
     }
     // TODO: AkS: test this
     if(this.#eventId !== undefined && this.#updatedAt !== undefined) {
-      this.#render()
+      await this.#render()
       this.dispatchEvent(sectionsAddedToDom(this.#eventId))
     }
   }

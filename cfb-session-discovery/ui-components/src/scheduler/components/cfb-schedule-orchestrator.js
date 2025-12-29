@@ -8,8 +8,8 @@ export class CfbScheduleOrchestratorElement extends HTMLElement {
   static elementName = 'cfb-schedule-orchestrator'
   static definedAttributes = {}
 
-  #sessionsLoaded = false
-  #sectionsLoaded = false
+  #sessionsLoadedToIndexDb = false
+  #sectionsLoadedToIndexDb = false
   #sectionsOnDom = false
   #eventHandler = null
 
@@ -38,27 +38,28 @@ export class CfbScheduleOrchestratorElement extends HTMLElement {
 
   #handleEvents(event) {
     if (isSessionsLoaded(event)) {
-      this.#sessionsLoaded = true
-      this.#updateSections()
-    } else if (isSectionsLoaded(event)) {
-      this.#sectionsLoaded = true
+      this.#sessionsLoadedToIndexDb = true
       this.#checkAndUpdateChildren()
+    } else if (isSectionsLoaded(event)) {
+      this.#sectionsLoadedToIndexDb = true
+      this.#updateSections(event.detail.eventId)
     } else if (isSectionsAddedToDom(event)) {
       this.#sectionsOnDom = true
       this.#checkAndUpdateChildren()
     }
   }
 
-  #updateSections() {
+  #updateSections(eventId) {
     const childrenToUpdate = this.querySelectorAll('.listens-schedule-updates')
     const timestamp = Date.now()
 
     childrenToUpdate.forEach(child => {
       child.setAttribute('data-updated-at', timestamp.toString())
+      child.setAttribute('data-event-id', eventId)
     })
   }
   #checkAndUpdateChildren() {
-    if (this.#sessionsLoaded && this.#sectionsOnDom) {
+    if (this.#sessionsLoadedToIndexDb && this.#sectionsOnDom) {
       this.updateSessions()
     }
   }

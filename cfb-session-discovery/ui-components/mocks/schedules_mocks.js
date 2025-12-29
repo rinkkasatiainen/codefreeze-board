@@ -8,12 +8,22 @@ const scheduleMocks = resourceName => (eventId, examples = {}) => {
   const data = examples
 
   const url = devApi + `/event/${eventId}/${resourceName}`
+  console.log('setting handler for ' + url)
 
   return [
     http.get(url, async () =>
       HttpResponse.json({
-        [resourceName]: data[`/${resourceName}`] || [],
-      }),
+          [resourceName]: data[`/${resourceName}`] || [],
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*', // Allow any origin
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          }
+        }
+      ),
     ),
   ]
 }
@@ -36,4 +46,8 @@ export function withSections(eventId, examples) {
   testWorker.use(
     ...scheduleMocks('sections')(eventId, data),
   )
+}
+
+export function getRegisteredHandlers() {
+  return testWorker.listHandlers()
 }
