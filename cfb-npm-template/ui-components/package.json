@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-npm-template",
-  "version": "0.0.3",
+  "version": "0.2.0",
   "type": "module",
   "description": "Scaffolding Template for cfb- based npm modules.",
   "main": "./dist/index.js",
@@ -25,7 +25,9 @@
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@rinkkasatiainen/eslint-config": "^1.0.2",
+    "@rinkkasatiainen/cfb-eslint": "^1.0.0",
+    "@rinkkasatiainen/cfb-npm-template-contracts": "^0.2.1",
+    "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@web/dev-server-import-maps": "^0.2.1",
     "@web/test-runner": "^0.16.0",
@@ -34,15 +36,16 @@
     "@web/test-runner-playwright": "^0.11.0",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",
-    "eslint": "^9.26.0",
-    "eslint-config-prettier": "^10.1.2",
-    "eslint-plugin-mocha": "^11.0.0",
-    "eslint-plugin-prettier": "^5.4.0",
-    "prettier": "^3.5.3",
+    "msw": "^2.12.7",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.0"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "msw": {
+    "workerDirectory": [
+      ""
+    ]
+  }
 }

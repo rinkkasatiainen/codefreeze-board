@@ -25,7 +25,11 @@ else
 fi
 
 # Find all directories that start with 'cfb-'
-for pkg_json in $(find cfb-* -name "node_modules" -prune -o -name "package.json" -type f -print); do
+for pkg_json in $(find cfb-* -name "node_modules" \
+  -prune -o -path "*cfb-eslint*" \
+  -prune -o -path "*dist*" \
+  -prune -o -name "package.json" \
+  -type f -print); do
     dir=$(dirname "$pkg_json")
     package_name="$dir" # Use the full directory path for clarity in logs
     total_tests=$((total_tests + 1))

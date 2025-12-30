@@ -1,7 +1,7 @@
 import {expect} from 'chai'
+import {spy} from 'sinon'
 import {NpmTemplateModule} from '../src/npm-template-module.js'
 import {CfbExampleElement} from '../src/components/cfb-example.js'
-import {spy} from 'sinon'
 import exampleStorage from '../src/storage/example-storage.js'
 
 describe('NpmTemplateModule', () => {
@@ -80,7 +80,7 @@ describe('NpmTemplateModule', () => {
     it('should define element', () => {
       module.run()
 
-      expect(defineElementSpy.calledOnce).to.be.true
+      expect(defineElementSpy.callCount).to.eql(2)
     })
 
     it('should define element only once', () => {

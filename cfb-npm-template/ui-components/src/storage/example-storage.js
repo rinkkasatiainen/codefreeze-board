@@ -4,8 +4,11 @@ class ExampleStorage {
 
   constructor() {
     this.#logger = {
+      // eslint-disable-next-line no-console
       warn: (message, data) => console.warn(message, data),
+      // eslint-disable-next-line no-console
       error: (message, data) => console.error(message, data),
+      // eslint-disable-next-line no-console
       info: (message, data) => console.info(message, data),
     }
     this.dbName = 'cfb-example-db'

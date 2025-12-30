@@ -1,0 +1,45 @@
+{
+  "name": "@rinkkasatiainen/cfb-npm-template-functions",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "NPM template module for CFB. Has all functions to be deployed to AWS",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rinkkasatiainen/codefreeze-board.git"
+  },
+  "scripts": {
+    "lint": "eslint -- src test",
+    "lint:fix": "eslint --fix -- src test",
+    "test": "mocha test/*.test.js test/**/*.test.js",
+    "clean": "rm -rf dist && rm -rf test/_contracts",
+    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp package.json dist/",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test && npm run lint",
+    "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "@rinkkasatiainen/cfb-eslint": "^1.0.0",
+    "@rinkkasatiainen/cfb-npm-template-contracts": "^0.2.1",
+    "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
+    "@rinkkasatiainen/eslint-config.js": "^0.2.4",
+    "@stylistic/eslint-plugin": "^5.1.0",
+    "chai": "^5.2.0",
+    "chai-as-promised": "^8.0.1",
+    "eslint": "^9.26.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-mocha": "^11.0.0",
+    "mocha": "^11.7.2",
+    "path": "^0.12.7",
+    "sinon": "^20.0.0",
+    "sinon-chai": "^4.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {}
+}
