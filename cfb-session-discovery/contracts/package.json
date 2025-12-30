@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery-contracts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "type": "module",
   "description": "Session discovery module contracts for CFB. This is modified by BE, used by FE",
   "main": "./dist/index.js",
