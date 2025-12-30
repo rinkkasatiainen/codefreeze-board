@@ -1,4 +1,6 @@
 export function render(args) {
+  const name = args['data-name']
+
   const tagsHtml = args['data-tags'].map(tag =>
     `<span class="cfb-tag cfb-tag--${tag.type}">${tag.name}</span>`
   ).join('')
@@ -14,7 +16,7 @@ export function render(args) {
   >
    <article class="cfb-card cfb-card--travel" role="article">
         <header class="cfb-card__header">
-          <span class="cfb-card__title">Session name</span>
+          <span class="cfb-card__title">${name}</span>
           <button class="cfb-card__menu" aria-label="Card options">
             <span class="cfb-card__menu-icon"></span>
           </button>

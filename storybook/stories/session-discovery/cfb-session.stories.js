@@ -3,7 +3,7 @@ import {day0Entries, day1Entries} from './mock-data.js'
 
 // Register the custom element
 export default {
-  title: '  CFB Session Discovery/Session',
+  title: 'Session Discovery/Components/Session',
   parameters: {
     docs: {
       description: {

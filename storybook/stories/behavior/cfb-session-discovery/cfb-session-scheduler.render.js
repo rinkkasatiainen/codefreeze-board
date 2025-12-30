@@ -4,10 +4,15 @@ import cfbScheduleStorage from '@rinkkasatiainen/cfb-session-discovery/dist/src/
 export function renderSessionScheduler(args) {
   const html = `
     <cfb-session-scheduler 
-      data-event-id="${args['data-event-id']}"
+        data-event-id="${args['data-event-id']}"
+        data-section-id="${args['data-section-id']}"
+        data-updated-at="${args['data-updated-at']}"
+    > <cfb-section
+      data-name="${args['data-section-name']}"
       data-section-id="${args['data-section-id']}"
-      data-updated-at="${args['data-updated-at']}"
-    ></cfb-session-scheduler> 
+      data-event-id="${args['data-event-id']}" 
+      ></cfb-section>
+    </cfb-session-scheduler> 
   `
   return html
 

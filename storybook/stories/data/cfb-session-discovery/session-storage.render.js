@@ -1,6 +1,9 @@
-import {day0Entries, day1Entries} from '@rinkkasatiainen/cfb-session-discovery/contracts/session-entry.js'
+import {WellKnown} from '@rinkkasatiainen/cfb-session-discovery-contracts'
 import cfbScheduleStorage
   from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
+
+
+const {day0Entries, day1Entries} = WellKnown.sessions
 
 function getAllSectionsByEventId(storage) {
   storage.getAllSectionsByEvents = function () {

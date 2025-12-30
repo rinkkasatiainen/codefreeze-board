@@ -1,7 +1,7 @@
 import {renderSchedule, renderScheduleInteractive} from './cfb-schedule.render.js'
 
 export default {
-  title: 'CFB Session Discovery/Schedule',
+  title: 'Session Discovery/Components/Schedule',
   parameters: {
     docs: {
       description: {

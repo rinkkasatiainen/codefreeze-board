@@ -1,7 +1,7 @@
-import {renderSection, renderSectionWithContent, renderSectionInteractive} from './cfb-section.render.js'
+import {renderSection, renderSectionWithContent} from './cfb-section.render.js'
 
 export default {
-  title: '  CFB Session Discovery/Section',
+  title: 'Session Discovery/Components/Section',
   parameters: {
     docs: {
       description: {
@@ -38,29 +38,5 @@ export const WithContent = {
     'data-name': 'Conference Sessions',
     'data-section-id': 'conference-sessions',
     'data-event-id': 'demo-event-123'
-  }
-}
-
-// Interactive story with controls
-export const Interactive = {
-  render: renderSectionInteractive,
-  args: {
-    'data-name': 'Interactive Section',
-    'data-section-id': 'section-1',
-    'data-event-id': 'demo-event-123'
-  },
-  argTypes: {
-    'data-name': {
-      control: 'text',
-      description: 'The name/title of the section'
-    },
-    'data-section-id': {
-      control: 'text',
-      description: 'Unique identifier for the section'
-    },
-    'data-event-id': {
-      control: 'text',
-      description: 'Event ID that this section belongs to'
-    }
   }
 }

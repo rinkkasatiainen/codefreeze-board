@@ -1,5 +1,7 @@
-import {CfbColumnTitleElement} from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/components/cfb-column-title'
-import {render, renderInteractive, renderWithDragAndDrop} from './cfb-column-title.render.js'
+import {
+  CfbColumnTitleElement
+} from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/components/cfb-column-title'
+import {render} from './cfb-column-title.render.js'
 
 // Register the custom element
 if (!customElements.get(CfbColumnTitleElement.elementName)) {
@@ -7,7 +9,8 @@ if (!customElements.get(CfbColumnTitleElement.elementName)) {
 }
 
 export default {
-  title: 'Session Discovery/CFB Components/Column Title',
+  render: render,
+  title: 'Session Discovery/Components/Column Title',
   component: CfbColumnTitleElement.elementName,
   parameters: {
     docs: {
@@ -30,7 +33,7 @@ export default {
 
 // Default story
 export const Default = {
-  args: {},
+  args: {name: 'Section title'},
   render
 }
 
@@ -53,23 +56,7 @@ export const LongTitle = {
 // Story with empty title
 export const EmptyTitle = {
   args: {
-    name: ''
+    'data-name': ''
   },
   render
-}
-
-// Interactive story
-export const Interactive = {
-  args: {
-    name: 'Interactive Column'
-  },
-  render: renderInteractive
-}
-
-// Drag and drop story
-export const WithDragAndDrop = {
-  args: {
-    name: 'Drag Over Me'
-  },
-  render: renderWithDragAndDrop
 }

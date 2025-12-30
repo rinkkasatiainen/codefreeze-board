@@ -50,6 +50,8 @@
     
     // Configure, activate, and run the shell
     await shell.configure();
+    // Note: MSW is handled by msw-storybook-addon, no need to startTestWorker here
+
     await shell.activate();
     console.log('Activated shell.')
     await shell.run();

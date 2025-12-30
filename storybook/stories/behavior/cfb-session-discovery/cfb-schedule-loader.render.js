@@ -1,26 +1,18 @@
 import {CfbScheduleLoader} from '@rinkkasatiainen/cfb-session-discovery'
-import {day0Entries, day1Entries} from '@rinkkasatiainen/cfb-session-discovery/contracts/session-entry.js'
+import {getAllSectionsByEventId} from '../../data/cfb-session-discovery/get-all-sections-by-event-id'
 import cfbScheduleStorage
   from '@rinkkasatiainen/cfb-session-discovery/dist/src/loads-sections/ports/cfb-schedule-storage'
 
-export function renderFlowOfLoadingSchedule(args) {
-  const eventId = args['data-event-id'] || 'demo-event-123'
-  day0Entries.forEach(async (e) => {
-    await cfbScheduleStorage.addSession(eventId, e)
-  })
-  day1Entries.forEach(async (e) => {
-    await cfbScheduleStorage.addSession(eventId, e)
-  })
-
-  return `
-  <div class="cfb-board" role="region" aria-label="Task board">
-    <cfb-schedule-loader data-event-id="${eventId}">
-      <cfb-session-loader data-event-id="${eventId}" data-section-id="${day0Entries[0].sectionId}" class="listens-schedule-updates">
-        <cfb-schedule data-event-id="${eventId}">
-        </cfb-schedule>
-      </cfb-session-loader>
-    </cfb-schedule-loader>
-  </div>`
+export function renderScheduleLoader(args) {
+  const element = document.createElement(CfbScheduleLoader.elementName)
+  if (args['data-event-id']) {
+    element.setAttribute('data-event-id', args['data-event-id'])
+  }
+  const x = `<p>This component only loads data to IndexDB. Check the interactive component</p>`
+  const container = document.createElement('div')
+  container.innerHTML = x
+  container.appendChild(element)
+  return container
 }
 
 export function renderScheduleLoaderInteractive(args) {
@@ -57,6 +49,8 @@ export function renderScheduleLoaderInteractive(args) {
   
   const element = document.createElement(CfbScheduleLoader.elementName)
   element.setAttribute('data-event-id', args['data-event-id'])
+
+  cfbScheduleStorage.init()
   
   const status = document.createElement('div')
   status.id = 'status'
@@ -91,6 +85,11 @@ export function renderScheduleLoaderInteractive(args) {
             status.textContent = `Status: Schedule loaded for event ${newEventId} (check IndexedDB)`
             status.style.backgroundColor = '#d4edda'
             status.style.borderColor = '#c3e6cb'
+
+            getAllSectionsByEventId(cfbScheduleStorage).then(sections => {
+              console.log('Found sections:', sections)
+              status.textContent += `\nFound ${sections[newEventId].length} sections`
+            })
           }, 1000)
         }
       }

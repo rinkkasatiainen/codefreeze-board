@@ -1,30 +1,36 @@
-import { exampleSessionEntry, day0Entries, day1Entries } from '@rinkkasatiainen/cfb-session-discovery/contracts/session-entry.js'
+import {buildSectionWith, buildSessionWith, WellKnown} from '@rinkkasatiainen/cfb-session-discovery-contracts'
 
 // Export the mock data for use in handlers
-export { exampleSessionEntry, day0Entries, day1Entries }
+const {day0Entries, day1Entries} = WellKnown.sessions
+const exampleSessionEntry = buildSessionWith()
 
-// Additional mock data for Storybook
-export const mockEventId = 'codefreeze-2024'
-export const mockSectionId = 'day-1'
+export {exampleSessionEntry, day0Entries, day1Entries}
 
-// Mock storage data for IndexDB simulation
-export const mockStorageData = {
-  sections: [
-    {
-      id: 'day-0',
-      name: 'Day 0 - Travel',
-      order: 0,
-      eventId: mockEventId
-    },
-    {
-      id: 'day-1',
-      name: 'Day 1 - Activities', 
-      order: 1,
-      eventId: mockEventId
-    }
-  ],
-  sessions: {
-    'day-0': day0Entries,
-    'day-1': day1Entries
-  }
-} 
+
+export const sectionsForDemo = [
+  buildSectionWith({
+    'id': 'section-1',
+    'name': 'Monday',
+    'order': 0
+  }),
+  buildSectionWith({
+    'id': 'section-2',
+    'name': 'Tuesday',
+    'order': 1
+  }),
+  buildSectionWith({
+    'id': 'section-3',
+    'name': 'Wednesday',
+    'order': 2
+  }),
+  buildSectionWith({
+    'id': 'section-4',
+    'name': 'Thursday',
+    'order': 3
+  }),
+  buildSectionWith({
+    'id': 'section-5',
+    'name': 'Friday',
+    'order': 4
+  })
+]

@@ -28,7 +28,8 @@
   "dependencies": {
     "@rinkkasatiainen/cfb-npm-template": "^0.0.3",
     "@rinkkasatiainen/cfb-observability": "^0.1.0",
-    "@rinkkasatiainen/cfb-session-discovery": "^0.1.5",
+    "@rinkkasatiainen/cfb-session-discovery": "^0.2.4",
+    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.2.3",
     "@rinkkasatiainen/cfb-shell": "^0.2.0"
   },
   "msw": {

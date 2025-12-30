@@ -2,7 +2,7 @@ import {renderSectionStorageDemo} from './section-storage.render'
 import {renderSessionStorageDemo} from './session-storage.render'
 
 export default {
-  title: 'Data/Cfb Session Discovery/Storage',
+  title: 'Session Discovery/Data/Storage',
   parameters: {
     docs: {
       description: {

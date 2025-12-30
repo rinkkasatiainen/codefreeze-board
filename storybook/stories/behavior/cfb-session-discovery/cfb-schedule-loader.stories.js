@@ -1,8 +1,10 @@
 import {renderScheduleLoader, renderScheduleLoaderInteractive} from './cfb-schedule-loader.render.js'
-import {scheduleMocks} from '@rinkkasatiainen/cfb-session-discovery/mocks/schedules.js'
+import {createSectionHandlers} from '@rinkkasatiainen/cfb-session-discovery/mocks/schedules_mocks'
+import {WellKnown} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+import {sectionsForDemo} from '../../session-discovery/mock-data'
 
 export default {
-  title: 'Behavior/Cfb Session Discovery/Schedule Loader',
+  title: 'Session Discovery/Behavior/Schedule Loader',
   parameters: {
     docs: {
       description: {
@@ -11,26 +13,22 @@ export default {
     },
     msw: {
       handlers: [
-        scheduleMocks()
+        ...createSectionHandlers('demo-event-123', {'/sections': sectionsForDemo}),
+        ...createSectionHandlers('codefreeze-2024', {'/sections': []}),
+        ...createSectionHandlers('codefreeze-2025', {'/sections': WellKnown.section.codefreeze2025}),
       ],
     },
   },
-
+  argTypes: {
+    'data-event-id': { control: {type: 'select'}, options: ['demo-event-123', 'codefreeze-2025']},
+  },
 }
 
-// Default story - basic component
+// Load for event:
 export const Default = {
   render: renderScheduleLoader,
   args: {
     'data-event-id': 'demo-event-123'
-  }
-}
-
-// Story with specific event ID
-export const WithEventId = {
-  render: renderScheduleLoader,
-  args: {
-    'data-event-id': 'codefreeze-2024'
   }
 }
 
@@ -39,11 +37,5 @@ export const Interactive = {
   render: renderScheduleLoaderInteractive,
   args: {
     'data-event-id': 'demo-event-123'
-  },
-  argTypes: {
-    'data-event-id': {
-      control: 'text',
-      description: 'Event ID to load schedule sections for'
-    }
   }
-} 
+}
