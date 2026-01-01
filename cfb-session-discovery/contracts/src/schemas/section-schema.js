@@ -1,4 +1,4 @@
-import {expect} from 'chai'
+import { expect } from 'chai'
 
 export const sectionSchema = {
   id: value => expect(value).to.be.a('string').and.not.be.empty,

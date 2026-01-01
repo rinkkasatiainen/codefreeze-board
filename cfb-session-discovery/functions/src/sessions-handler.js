@@ -1,7 +1,8 @@
 import { allSessions } from '../mocks/session-entry.js'
+import { verifyAccessToken, extractAccessToken } from './auth-utilities.js'
 
 /**
- * AWS Lambda handler for retrieving section entries
+ * AWS Lambda handler for retrieving session entries
  * @param {Object} event - API Gateway event
  * @param {Object} _context - Lambda context
  * @returns {Object} API Gateway response
@@ -25,6 +26,15 @@ export const handler = async (event, _context) => {
       }
     }
 
+    // Verify authentication token
+    const accessToken = extractAccessToken(event)
+    const userPoolId = process.env.USER_POOL_ID
+    let authorized = false
+
+    if (accessToken && userPoolId) {
+      authorized = await verifyAccessToken(accessToken, userPoolId)
+    }
+
     // Handle GET request
     if (event.httpMethod === 'GET') {
       return {
@@ -33,6 +43,7 @@ export const handler = async (event, _context) => {
         body: JSON.stringify({
           sessions: Object.values( allSessions).reduce( (acc, curr) => [...acc, ...curr], []),
           eventId: 'codefreeze2025',
+          authorized,
         }),
       }
     }

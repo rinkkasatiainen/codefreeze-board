@@ -1,4 +1,5 @@
-import {codefreeze2025} from '../mocks/section-entry.js'
+import { codefreeze2025 } from '../mocks/section-entry.js'
+import { verifyAccessToken, extractAccessToken } from './auth-utilities.js'
 
 /**
  * AWS Lambda handler for retrieving section entries
@@ -24,6 +25,16 @@ export const handler = async (event, _context) => {
         body: '',
       }
     }
+
+    // Verify authentication token
+    const accessToken = extractAccessToken(event)
+    const userPoolId = process.env.USER_POOL_ID
+    let authorized = false
+
+    if (accessToken && userPoolId) {
+      authorized = await verifyAccessToken(accessToken, userPoolId)
+    }
+
     const sections = Object.values(codefreeze2025)
 
     // Handle GET request
@@ -34,6 +45,7 @@ export const handler = async (event, _context) => {
         body: JSON.stringify({
           sections,
           eventId: 'codefreeze2025',
+          authorized,
         }),
       }
     }
@@ -42,7 +54,7 @@ export const handler = async (event, _context) => {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({error: 'Method not allowed'}),
+      body: JSON.stringify({ error: 'Method not allowed' }),
     }
   } catch (error) {
     // TODO: AkS: add observability here

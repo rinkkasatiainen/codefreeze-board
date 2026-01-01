@@ -1,12 +1,12 @@
 import fs from 'fs'
-import path, {dirname} from 'path'
-import {fileURLToPath} from 'url'
-import {it} from 'mocha'
-import {expect, use} from 'chai'
-import {schemaMatcher} from '@rinkkasatiainen/cfb-testing-utils'
-import {sectionSchema} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { it } from 'mocha'
+import { expect, use } from 'chai'
+import { schemaMatcher } from '@rinkkasatiainen/cfb-testing-utils'
+import { sectionSchema } from '@rinkkasatiainen/cfb-session-discovery-contracts'
 
-import {handler} from '../../src/sections-handler.js'
+import { handler } from '../../src/sections-handler.js'
 
 use(schemaMatcher)
 

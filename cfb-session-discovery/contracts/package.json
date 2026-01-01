@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery-contracts",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "type": "module",
   "description": "Session discovery module contracts for CFB. This is modified by BE, used by FE",
   "main": "./dist/index.js",
@@ -25,13 +25,9 @@
   },
   "devDependencies": {
     "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
-    "@rinkkasatiainen/eslint-config.js": "^0.2.4",
-    "@stylistic/eslint-plugin": "^5.1.0",
+    "@rinkkasatiainen/cfb-eslint": "^1.0.1",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",
-    "eslint": "^9.26.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-mocha": "^11.0.0",
     "mocha": "^11.7.2",
     "path": "^0.12.7",
     "sinon": "^20.0.0",

@@ -1,12 +1,12 @@
 import fs from 'fs'
-import {fileURLToPath} from 'url'
-import path, {dirname} from 'path'
-import {expect, use} from 'chai'
-import {schemaMatcher} from '@rinkkasatiainen/cfb-testing-utils'
+import { fileURLToPath } from 'url'
+import path, { dirname } from 'path'
+import { expect, use } from 'chai'
+import { schemaMatcher } from '@rinkkasatiainen/cfb-testing-utils'
 
-import {codeFreeze2025Sections} from '../src/entries/well-known-section.js'
-import {buildSectionWith} from '../src/builders/cfb-section-models.js'
-import {sectionSchema} from '../src/schemas/section-schema.js'
+import { codeFreeze2025Sections } from '../src/entries/well-known-section.js'
+import { buildSectionWith } from '../src/builders/cfb-section-models.js'
+import { sectionSchema } from '../src/schemas/section-schema.js'
 
 use(schemaMatcher)
 
@@ -23,7 +23,7 @@ const contractFilePath = fileName => {
 describe('mockSectionWith', () => {
 
   it('a well known section matches to what BE returns', async () => {
-    const wellKnown = buildSectionWith({...codeFreeze2025Sections.Sat})
+    const wellKnown = buildSectionWith({ ...codeFreeze2025Sections.Sat })
 
     const filePath = contractFilePath('codefreeze2025-sections.json')
 

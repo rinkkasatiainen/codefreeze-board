@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery-functions",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "description": "Session discovery module for CFB. Has all functions to be deployed to AWS",
   "main": "./dist/index.js",
@@ -23,15 +23,11 @@
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.2.2",
+    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.3.0",
     "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
-    "@rinkkasatiainen/eslint-config.js": "^0.2.4",
-    "@stylistic/eslint-plugin": "^5.1.0",
+    "@rinkkasatiainen/cfb-eslint": "^1.0.1",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",
-    "eslint": "^9.26.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-mocha": "^11.0.0",
     "mocha": "^11.7.2",
     "path": "^0.12.7",
     "sinon": "^20.0.0",
@@ -40,5 +36,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.700.0"
+  }
 }

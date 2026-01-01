@@ -1,5 +1,6 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
+import { WellKnown } from '@rinkkasatiainen/cfb-session-discovery-contracts'
 import { handler } from '../src/sections-handler.js'
 
 describe('Sections Handler', () => {
@@ -16,15 +17,16 @@ describe('Sections Handler', () => {
     expect(result.headers['Content-Type']).to.equal('application/json')
     expect(result.headers['Access-Control-Allow-Origin']).to.equal('*')
 
+    const expected = {
+      sections: WellKnown.section.codefreeze2025,
+      authorized: false,
+      eventId: 'codefreeze2025',
+    }
+
     const body = JSON.parse(result.body)
-    expect(body).to.have.property('sections')
     expect(body).to.have.property('eventId', 'codefreeze2025')
-    expect(body.sections).to.be.an('array')
-    expect(body.sections).to.have.length.greaterThan(0)
-    expect(body.sections[0]).to.have.property('id')
-    expect(body.sections[0]).to.have.property('name')
-    expect(body.sections[0]).to.have.property('date')
-    expect(body.sections[0]).to.have.property('order')
+    expect(body).to.have.property('authorized', false)
+    expect(body).to.eql(expected)
   })
 
   it('should handle OPTIONS request for CORS preflight', async () => {

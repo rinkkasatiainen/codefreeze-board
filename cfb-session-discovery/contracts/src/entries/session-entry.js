@@ -8,8 +8,8 @@ export const exampleSessionEntry = {
   description: 'Description 1',
   sectionId: crypto.randomUUID(),
   order: 0,
-  tags: [{name: 'tag1', type: 'purple'}, {name: 'tag2', type: 'blue'}],
-  speakers: [{name: 'John Doe', initials: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
+  tags: [{ name: 'tag1', type: 'purple' }, { name: 'tag2', type: 'blue' }],
+  speakers: [{ name: 'John Doe', initials: 'JD' }, { name: 'Jane Smith', initials: 'JS' }],
 }
 
 export const day0Entries = [
@@ -19,8 +19,8 @@ export const day0Entries = [
     description: '',
     sectionId: sectionIdForDay0,
     order: 0,
-    tags: [{name: 'Travel', type: 'yellow'} ],
-    speakers: [{name: 'John Doe', initials: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
+    tags: [{ name: 'Travel', type: 'yellow' } ],
+    speakers: [{ name: 'John Doe', initials: 'JD' }, { name: 'Jane Smith', initials: 'JS' }],
   },
 ]
 
@@ -36,8 +36,8 @@ Relax and breathe: The initial shock subsides quickly.
 Ice baths are thought to offer several potential benefits, primarily centered around aiding recovery and influencing physiological processes. They may help reduce muscle soreness and inflammation by constricting blood vessels, limiting inflammatory response. Ice baths can also impact the central nervous system, potentially improving sleep, and the sudden exposure to cold triggers the release of endorphins, which can lead to improved mood. Some proponents suggest potential benefits like enhanced circulation and a boosted immune system, though more research is needed to confirm these.`,
     sectionId: sectionIdForDay1,
     order: 0,
-    tags: [{name: 'Outdoor Activity', type: 'cyan'} ],
-    speakers: [{name: 'John Doe', initials: 'JD'}, {name: 'Jane Smith', initials: 'JS'}],
+    tags: [{ name: 'Outdoor Activity', type: 'cyan' } ],
+    speakers: [{ name: 'John Doe', initials: 'JD' }, { name: 'Jane Smith', initials: 'JS' }],
   },
 ]
 

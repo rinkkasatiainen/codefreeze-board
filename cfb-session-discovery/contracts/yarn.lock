@@ -110,14 +110,21 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@rinkkasatiainen/cfb-eslint@^1.0.1":
+  version "1.0.1"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-eslint/1.0.1/98433e25ab55288de90afd98959175ba766c4be3#98433e25ab55288de90afd98959175ba766c4be3"
+  integrity sha512-nPJpvmB2Zr0fUyx5W4/+yHiZlXbFysWHasEJxTd3tA8bhpsq2C0lFymv8PDHgtCJ2l+oCgGEiysQzOxdAHYu6Q==
+  dependencies:
+    "@rinkkasatiainen/eslint-config.js" "^0.2.5"
+    "@stylistic/eslint-plugin" "^5.1.0"
+    eslint "^9.26.0"
+    eslint-plugin-import "^2.32.0"
+    eslint-plugin-mocha "^11.0.0"
+
 "@rinkkasatiainen/cfb-observability@^0.0.1":
   version "0.0.1"
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-observability/0.0.1/34146258245662cc29cb0715d81a9d2e1eda1bdb#34146258245662cc29cb0715d81a9d2e1eda1bdb"
   integrity sha512-sN/p0JOy5/P+ed67QsRtBV9gJRWw7w1YdNOyULOQNK8mXegR+xqwrBVYbMaSGclPRzl35aO4fKjSDHwAtip1HQ==
-
-"@rinkkasatiainen/cfb-session-discovery-contracts@../contracts/rinkkasatiainen-cfb-session-discovery-contracts-v0.2.1.tgz":
-  version "0.2.1"
-  resolved "../contracts/rinkkasatiainen-cfb-session-discovery-contracts-v0.2.1.tgz#e75673f56bae5d0bf304746ba6cf202de8d7f9ab"
 
 "@rinkkasatiainen/cfb-testing-utils@^0.2.1":
   version "0.2.1"
@@ -126,10 +133,10 @@
   dependencies:
     "@rinkkasatiainen/cfb-observability" "^0.0.1"
 
-"@rinkkasatiainen/eslint-config.js@^0.2.4":
-  version "0.2.4"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config.js/0.2.4/cad4f189f800ec293a958bfbf13a2a5b4fd4891d#cad4f189f800ec293a958bfbf13a2a5b4fd4891d"
-  integrity sha512-qWZD7q09E8r8MgLFJ6rkeRmi6qQcMr1mByMCyCKSLg7kXLHghWW91xVWGO/P6Ize7esohBjB4sdf99yEuqdn3Q==
+"@rinkkasatiainen/eslint-config.js@^0.2.5":
+  version "0.2.5"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config.js/0.2.5/49aea12465c21b08f4278bd14495077a16ea421d#49aea12465c21b08f4278bd14495077a16ea421d"
+  integrity sha512-tGzu+RLBItzT3qnStar+fGEcPyFDVEZYbKFCQpJ7yxsbF9XlwnIUO8ZN1GUfKAYeOMyd0kP9zsV07JkNPnxvvA==
 
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
