@@ -1,0 +1,51 @@
+import authStorage from '../storage/auth-storage.js'
+import {refreshAccessToken} from './refresh-access-token.js'
+
+/**
+ * Authorized fetch wrapper that adds Authorization header and handles token refresh on 401
+ * @param {string} url - The URL to fetch
+ * @param {object} options - Fetch options
+ * @returns {Promise<Response>} - Fetch response
+ */
+export async function authorizedFetch(url, options = {}) {
+  // Get access token
+  let accessToken = await authStorage.getAccessToken()
+
+  // Prepare headers
+  const headers = new Headers(options.headers || {})
+  if (accessToken) {
+    headers.set('Authorization', `Bearer ${accessToken}`)
+  }
+
+  // Make initial request
+  let response = await fetch(url, {
+    ...options,
+    headers,
+  })
+
+  // Handle 401 Unauthorized - try to refresh token and retry once
+  if (response.status === 401 && accessToken) {
+    try {
+      // Try to refresh the token
+      accessToken = await refreshAccessToken()
+
+      // Update Authorization header with new token
+      headers.set('Authorization', `Bearer ${accessToken}`)
+
+      // Retry the request with new token
+      response = await fetch(url, {
+        ...options,
+        headers,
+      })
+    } catch (_refreshError) { // eslint-disable-line no-unused-vars
+      // Refresh failed - clear tokens and return original 401 response
+      await authStorage.clearTokens()
+      // Dispatch event to notify app of authentication failure
+      window.dispatchEvent(new CustomEvent('cfb-auth-failed'))
+      return response
+    }
+  }
+
+  return response
+}
+
