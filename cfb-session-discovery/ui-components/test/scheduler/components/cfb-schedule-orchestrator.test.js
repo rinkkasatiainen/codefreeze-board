@@ -1,6 +1,6 @@
-import {todo} from '@rinkkasatiainen/cfb-testing-utils'
+import { todo } from '@rinkkasatiainen/cfb-testing-utils'
 
-import {CfbScheduleOrchestratorElement} from '../../../src/scheduler/components/cfb-schedule-orchestrator.js'
+import { CfbScheduleOrchestratorElement } from '../../../src/scheduler/components/cfb-schedule-orchestrator.js'
 
 describe('CfbScheduleOrchestratorElement', () => {
   let testRoot = null

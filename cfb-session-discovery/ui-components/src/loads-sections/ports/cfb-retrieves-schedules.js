@@ -1,15 +1,15 @@
+import { authorizedFetch } from '@rinkkasatiainen/cfb-authorization'
 // TODO: AkS: Fix to take from a json config file
-const cfbRoot = 'https://cfb.rinkkasatiainen.dev/api'
+const cfbRoot = '/api'
 
 class CfbRetrievesSchedules {
   async getScheduleSections(eventId) {
-    if(!eventId){
+    if (!eventId) {
       // TODO: AkS: Add error handling here
       return []
     }
     try {
-      // TODO: AkS: Add user token here later
-      const response = await fetch(`${cfbRoot}/event/${eventId}/sections`)
+      const response = await authorizedFetch(`${cfbRoot}/event/${eventId}/sections`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -24,10 +24,8 @@ class CfbRetrievesSchedules {
   }
 
   async getScheduleSessions(eventId) {
-    // TODO: test-drive this.
     try {
-      // TODO: Add user token here later
-      const response = await fetch(`${cfbRoot}/event/${eventId}/sessions`)
+      const response = await authorizedFetch(`${cfbRoot}/event/${eventId}/sessions`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

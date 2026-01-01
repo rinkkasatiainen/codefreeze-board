@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.3.0",
-    "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
+    "@rinkkasatiainen/cfb-testing-utils": "^0.3.0",
     "@rinkkasatiainen/cfb-eslint": "^1.0.1",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",

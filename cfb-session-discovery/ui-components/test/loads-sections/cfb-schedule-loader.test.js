@@ -1,14 +1,14 @@
-import {expect} from 'chai'
+import { expect } from 'chai'
 import { stub } from 'sinon'
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
-import {Times} from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
-import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
-import {buildSectionWith} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
+import { Times } from '@rinkkasatiainen/cfb-testing-utils/dist/src/test-logger.js'
+import { waitUntil } from '@rinkkasatiainen/cfb-testing-utils'
+import { buildSectionWith } from '@rinkkasatiainen/cfb-session-discovery-contracts'
 
-import {CfbScheduleLoader} from '../../src/loads-sections/components/cfb-schedule-loader.js'
+import { CfbScheduleLoader } from '../../src/loads-sections/components/cfb-schedule-loader.js'
 import cfbStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import {EventTypes, isSectionsLoaded} from '../../src/events/events-loaded.js'
+import { EventTypes, isSectionsLoaded } from '../../src/events/events-loaded.js'
 
 const untilNotNull = async (asyncFn, predicate = x => x !== null) => {
   const startTime = Date.now()
@@ -65,7 +65,7 @@ describe('CfbScheduleLoader', () => {
 
   it('should store schedule sections in storage when event ID changes', async () => {
     const sections = [
-      buildSectionWith({order: 0}),
+      buildSectionWith({ order: 0 }),
     ]
     getScheduleSectionsStub.resolves(sections)
 
@@ -87,7 +87,7 @@ describe('CfbScheduleLoader', () => {
     element.appendChild(child2)
 
     const sections = [
-      buildSectionWith({order: 0}), buildSectionWith({order: 1}),
+      buildSectionWith({ order: 0 }), buildSectionWith({ order: 1 }),
     ]
     getScheduleSectionsStub.resolves(sections)
 

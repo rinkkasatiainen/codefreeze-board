@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "type": "module",
   "description": "Session discovery module for CFB. Handles session discovery related functions",
   "main": "./dist/index.js",
@@ -25,10 +25,9 @@
     "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.2.2",
-    "@rinkkasatiainen/cfb-testing-utils": "^0.2.1",
-    "@rinkkasatiainen/eslint-config.js": "^0.2.4",
-    "@stylistic/eslint-plugin": "^5.1.0",
+    "@rinkkasatiainen/cfb-session-discovery-contracts": "^0.3.0",
+    "@rinkkasatiainen/cfb-testing-utils": "^0.3.0",
+    "@rinkkasatiainen/cfb-eslint": "^1.0.1",
     "@web/dev-server-import-maps": "^0.2.1",
     "@web/test-runner": "^0.16.0",
     "@web/test-runner-commands": "^0.5.0",
@@ -36,9 +35,6 @@
     "@web/test-runner-playwright": "^0.11.0",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",
-    "eslint": "^9.26.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-mocha": "^11.0.0",
     "msw": "^2.10.2",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.0"
@@ -49,7 +45,8 @@
     "contracts"
   ],
   "peerDependencies": {
-    "@rinkkasatiainen/cfb-observability": "^0.1.0 || ^1.0.0"
+    "@rinkkasatiainen/cfb-observability": "^0.1.0 || ^1.0.0",
+    "@rinkkasatiainen/cfb-authorization": "^0.1.0 || ^1.0.0"
   },
   "msw": {
     "workerDirectory": [

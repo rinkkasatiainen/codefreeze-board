@@ -2,7 +2,7 @@
  * Schedule orchestrator that listens to session and section loaded events
  */
 
-import {EventTypes, isSessionsLoaded, isSectionsLoaded, isSectionsAddedToDom} from '../../events/events-loaded.js'
+import { EventTypes, isSessionsLoaded, isSectionsLoaded, isSectionsAddedToDom } from '../../events/events-loaded.js'
 
 export class CfbScheduleOrchestratorElement extends HTMLElement {
   static elementName = 'cfb-schedule-orchestrator'

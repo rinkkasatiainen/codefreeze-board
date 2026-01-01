@@ -1,10 +1,10 @@
-import {expect} from 'chai'
-import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
-import {WellKnown} from '@rinkkasatiainen/cfb-session-discovery-contracts'
+import { expect } from 'chai'
+import { waitUntil } from '@rinkkasatiainen/cfb-testing-utils'
+import { WellKnown } from '@rinkkasatiainen/cfb-session-discovery-contracts'
 
-import {CfbSchedule} from '../../src/loads-sections/components/cfb-schedule.js'
+import { CfbSchedule } from '../../src/loads-sections/components/cfb-schedule.js'
 import cfbScheduleStorage from '../../src/loads-sections/ports/cfb-schedule-storage.js'
-import {withClearableStorage} from '../test-helpers.js'
+import { withClearableStorage } from '../test-helpers.js'
 
 describe('CfbSchedule', () => {
   let testRoot = null

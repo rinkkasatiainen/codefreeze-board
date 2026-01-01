@@ -7,7 +7,7 @@ export const EventTypes = {
 export const sessionsLoaded = eventId => new CustomEvent(EventTypes.SESSIONS_LOADED, {
   bubbles: true,
   composed: true,
-  detail: {eventId, _type: EventTypes.SESSIONS_LOADED},
+  detail: { eventId, _type: EventTypes.SESSIONS_LOADED },
 })
 
 
@@ -18,7 +18,7 @@ export const isSessionsLoaded = evt =>
 export const sectionsLoaded = eventId => new CustomEvent(EventTypes.SECTIONS_LOADED, {
   bubbles: true,
   composed: true,
-  detail: {eventId, _type: EventTypes.SECTIONS_LOADED},
+  detail: { eventId, _type: EventTypes.SECTIONS_LOADED },
 })
 
 export const isSectionsLoaded = evt =>
@@ -28,7 +28,7 @@ export const isSectionsLoaded = evt =>
 export const sectionsAddedToDom = eventId => new CustomEvent(EventTypes.SECTIONS_ADDED_TO_DOM, {
   bubbles: true,
   composed: true,
-  detail: {eventId, _type: EventTypes.SECTIONS_ADDED_TO_DOM},
+  detail: { eventId, _type: EventTypes.SECTIONS_ADDED_TO_DOM },
 })
 
 export const isSectionsAddedToDom = evt =>

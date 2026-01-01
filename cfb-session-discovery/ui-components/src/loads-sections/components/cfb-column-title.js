@@ -4,7 +4,7 @@
 
 export class CfbColumnTitleElement extends HTMLElement {
   static elementName = 'cfb-column-title'
-  static definedAttributes = {name: 'data-name'}
+  static definedAttributes = { name: 'data-name' }
   #name = undefined
   #dragCounter = 0
 

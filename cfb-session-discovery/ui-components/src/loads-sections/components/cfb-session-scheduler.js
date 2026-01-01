@@ -2,7 +2,7 @@
  * A session loader component that fetches and displays sessions for a section
  */
 
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
 import cfbScheduleStorage from '../ports/cfb-schedule-storage.js'
 
 export class CfbSessionScheduler extends HTMLElement {

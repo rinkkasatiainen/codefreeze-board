@@ -4,7 +4,7 @@ import {http, HttpResponse} from 'msw'
 // Keep testWorker for backward compatibility with tests
 const testWorker = setupWorker(...[])
 
-export const devApi = 'https://cfb.rinkkasatiainen.dev/api'
+export const devApi = '/api'
 
 // Handler factory functions for use with msw-storybook-addon
 const scheduleMocks = resourceName => (eventId, examples = {}) => {

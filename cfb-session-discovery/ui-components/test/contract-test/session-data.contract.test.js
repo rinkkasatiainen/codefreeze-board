@@ -1,5 +1,5 @@
-import {use, expect} from 'chai'
-import {schemaMatcher} from '@rinkkasatiainen/cfb-testing-utils'
+import { use, expect } from 'chai'
+import { schemaMatcher } from '@rinkkasatiainen/cfb-testing-utils'
 import {
   sectionSchema,
   sessionSchema,
@@ -7,7 +7,7 @@ import {
   buildSessionWith,
 } from '@rinkkasatiainen/cfb-session-discovery-contracts'
 
-import {startTestWorker, withSections, withSessions} from '../../mocks/schedules_mocks.js'
+import { startTestWorker, withSections, withSessions } from '../../mocks/schedules_mocks.js'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
 
 use(schemaMatcher)
@@ -17,7 +17,7 @@ describe('Session Data Contract', () => {
 
   before(async () => {
     worker = startTestWorker() // withSections(testEventId, {'/sections': contract}, {})
-    await worker.start({quiet: true})
+    await worker.start({ quiet: true })
   })
 
   after(async () => {
@@ -49,7 +49,7 @@ describe('Session Data Contract', () => {
     })
 
     beforeEach(() => {
-      withSessions(testEventId, {'/sessions': contract}, {})
+      withSessions(testEventId, { '/sessions': contract }, {})
     })
 
     afterEach(async () => {
@@ -80,7 +80,7 @@ describe('Session Data Contract', () => {
     })
 
     beforeEach(async () => {
-      withSections(testEventId, {'/sections': contract}, {})
+      withSections(testEventId, { '/sections': contract }, {})
     })
 
     afterEach(async () => {

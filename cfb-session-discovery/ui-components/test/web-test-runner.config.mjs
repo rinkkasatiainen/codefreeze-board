@@ -3,6 +3,7 @@ import {importMapsPlugin} from '@web/dev-server-import-maps'
 // Define test-specific module mappings
 const testImportMappings = {
   '@rinkkasatiainen/cfb-observability': '../node_modules/@rinkkasatiainen/cfb-testing-utils/dist/index.js',
+  '@rinkkasatiainen/cfb-authorization': '../node_modules/@rinkkasatiainen/cfb-testing-utils/dist/index.js'
 }
 
 // Web server plugins configuration

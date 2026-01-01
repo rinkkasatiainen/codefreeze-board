@@ -1,7 +1,7 @@
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
 import CfbRetrievesSchedules from '../ports/cfb-retrieves-schedules.js'
 import cfbStorage from '../ports/cfb-schedule-storage.js'
-import {sectionsLoaded} from '../../events/events-loaded.js'
+import { sectionsLoaded } from '../../events/events-loaded.js'
 
 /**
  * A simple schedule loader element
@@ -9,7 +9,7 @@ import {sectionsLoaded} from '../../events/events-loaded.js'
 
 export class CfbScheduleLoader extends HTMLElement {
   static elementName = 'cfb-schedule-loader'
-  static definedAttributes = {eventId: 'data-event-id'}
+  static definedAttributes = { eventId: 'data-event-id' }
   #logger = createLogger()
 
   #eventId

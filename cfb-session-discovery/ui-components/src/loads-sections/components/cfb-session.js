@@ -2,7 +2,7 @@
  * A session component that displays individual session data
  */
 
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
 
 export class CfbSession extends HTMLElement {
   static elementName = 'cfb-session'

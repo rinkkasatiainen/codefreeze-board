@@ -1,7 +1,7 @@
-import {expect} from 'chai'
-import {waitUntil} from '@rinkkasatiainen/cfb-testing-utils'
+import { expect } from 'chai'
+import { waitUntil } from '@rinkkasatiainen/cfb-testing-utils'
 import sinon from 'sinon'
-import {CfbColumnTitleElement} from '../../src/loads-sections/components/cfb-column-title.js'
+import { CfbColumnTitleElement } from '../../src/loads-sections/components/cfb-column-title.js'
 
 const newDragEnterEvent = () => new DragEvent('dragenter', {
   bubbles: true,

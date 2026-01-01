@@ -1,4 +1,4 @@
-import {AssertionError} from 'chai'
+import { AssertionError } from 'chai'
 
 function isArray(value) {
   return Array.isArray(value)

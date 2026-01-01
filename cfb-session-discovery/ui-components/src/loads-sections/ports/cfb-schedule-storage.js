@@ -1,4 +1,4 @@
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
 
 class CfbScheduleStorage {
   #logger
@@ -21,7 +21,7 @@ class CfbScheduleStorage {
       const request = indexedDB.open(this.dbName, this.dbVersion)
 
       request.onerror = event => {
-        this.#logger.warn('Error opening database', {event})
+        this.#logger.warn('Error opening database', { event })
         reject('Error opening database')
       }
 
@@ -37,18 +37,18 @@ class CfbScheduleStorage {
 
         if (!db.objectStoreNames.contains(this.storeName)) {
           // this.#logger.info('Creating sections store...')
-          const store = db.createObjectStore(this.storeName, {keyPath: ['eventId', 'id']})
-          store.createIndex('eventId', 'eventId', {unique: false})
-          store.createIndex('order', 'order', {unique: false})
+          const store = db.createObjectStore(this.storeName, { keyPath: ['eventId', 'id'] })
+          store.createIndex('eventId', 'eventId', { unique: false })
+          store.createIndex('order', 'order', { unique: false })
         }
         if (!db.objectStoreNames.contains(this.sessionsStoreName)) {
           // this.#logger.info('Creating sessions store...')
-          const sessionsDb = db.createObjectStore(this.sessionsStoreName, {keyPath: ['eventId', 'sectionId', 'id']})
-          sessionsDb.createIndex('eventId', 'eventId', {unique: false})
-          sessionsDb.createIndex('sectionId', 'sectionId', {unique: false})
-          sessionsDb.createIndex('eventSection', ['eventId', 'sectionId'], {unique: false})
-          sessionsDb.createIndex('order', 'order', {unique: false})
-          sessionsDb.createIndex('eventSessionId', ['eventId', 'id'], {unique: true})
+          const sessionsDb = db.createObjectStore(this.sessionsStoreName, { keyPath: ['eventId', 'sectionId', 'id'] })
+          sessionsDb.createIndex('eventId', 'eventId', { unique: false })
+          sessionsDb.createIndex('sectionId', 'sectionId', { unique: false })
+          sessionsDb.createIndex('eventSection', ['eventId', 'sectionId'], { unique: false })
+          sessionsDb.createIndex('order', 'order', { unique: false })
+          sessionsDb.createIndex('eventSessionId', ['eventId', 'id'], { unique: true })
         }
       }
     })
@@ -58,12 +58,12 @@ class CfbScheduleStorage {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
-      const sectionWithEventId = {...section, eventId}
+      const sectionWithEventId = { ...section, eventId }
       const request = store.add(sectionWithEventId)
 
       request.onsuccess = () => resolve(section)
       request.onerror = event => {
-        this.#logger.warn('Error adding section', {event, section, eventId})
+        this.#logger.warn('Error adding section', { event, section, eventId })
         reject('Error adding section')
       }
     })
@@ -78,14 +78,14 @@ class CfbScheduleStorage {
       request.onsuccess = () => {
         const result = request.result
         if (result) {
-          const {eventId: _, ...sectionWithoutEventId} = result
+          const { eventId: _, ...sectionWithoutEventId } = result
           resolve(sectionWithoutEventId)
         } else {
           resolve(undefined)
         }
       }
       request.onerror = event => {
-        this.#logger.warn('Error getting section', {event, id, eventId})
+        this.#logger.warn('Error getting section', { event, id, eventId })
         reject('Error getting section')
       }
     })
@@ -100,12 +100,12 @@ class CfbScheduleStorage {
 
       request.onsuccess = () => {
         const sections = request.result
-          .map(({eventId: _, ...section}) => section)
+          .map(({ eventId: _, ...section }) => section)
           .sort((a, b) => a.order - b.order)
         resolve(sections)
       }
       request.onerror = event => {
-        this.#logger.warn('Error getting all sections', {event, eventId})
+        this.#logger.warn('Error getting all sections', { event, eventId })
         reject('Error getting all sections')
       }
     })
@@ -119,7 +119,7 @@ class CfbScheduleStorage {
 
       request.onsuccess = () => resolve()
       request.onerror = event => {
-        this.#logger.warn('Error deleting section', {event, id, eventId})
+        this.#logger.warn('Error deleting section', { event, id, eventId })
         reject('Error deleting section')
       }
     })
@@ -131,11 +131,11 @@ class CfbScheduleStorage {
 
     return Promise.all(
       sections.map((section, index) => new Promise((resolve, reject) => {
-        const sectionWithEventId = {...section, eventId, order: index}
+        const sectionWithEventId = { ...section, eventId, order: index }
         const request = store.put(sectionWithEventId)
         request.onsuccess = () => resolve(section)
         request.onerror = event => {
-          this.#logger.warn('Error reordering sections', {event, section, index, eventId})
+          this.#logger.warn('Error reordering sections', { event, section, index, eventId })
           reject('Error reordering sections')
         }
       })),
@@ -146,7 +146,7 @@ class CfbScheduleStorage {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction([this.sessionsStoreName], 'readwrite')
       const store = transaction.objectStore(this.sessionsStoreName)
-      const sessionWithKeys = {...session, eventId, sectionId: session.sectionId}
+      const sessionWithKeys = { ...session, eventId, sectionId: session.sectionId }
 
       // this.#logger.info('Adding session with keys:', {eventId, sectionId: session.sectionId, id: session.id})
 
@@ -154,7 +154,7 @@ class CfbScheduleStorage {
 
       request.onsuccess = () => resolve(session)
       request.onerror = event => {
-        this.#logger.warn('Error adding session', {event, session, eventId, sessionWithKeys})
+        this.#logger.warn('Error adding session', { event, session, eventId, sessionWithKeys })
         reject('Error adding session')
       }
     })
@@ -169,11 +169,11 @@ class CfbScheduleStorage {
 
       request.onsuccess = () => {
         const sessions = request.result
-          .map(({eventId: _, ...session}) => session)
+          .map(({ eventId: _, ...session }) => session)
         resolve(sessions)
       }
       request.onerror = event => {
-        this.#logger.warn('Error getting all sessions', {event, eventId, sectionId})
+        this.#logger.warn('Error getting all sessions', { event, eventId, sectionId })
         reject('Error getting all sessions')
       }
     })
@@ -188,11 +188,11 @@ class CfbScheduleStorage {
 
       request.onsuccess = () => {
         const sessions = request.result
-          .map(({eventId: _, ...session}) => session)
+          .map(({ eventId: _, ...session }) => session)
         resolve(sessions)
       }
       request.onerror = event => {
-        this.#logger.warn('Error getting all sessions', {event, eventId, sectionId})
+        this.#logger.warn('Error getting all sessions', { event, eventId, sectionId })
         reject('Error getting all sessions')
       }
     })
@@ -217,13 +217,13 @@ class CfbScheduleStorage {
         const deleteRequest = store.delete([eventId, session.sectionId, sessionId])
         deleteRequest.onsuccess = () => resolve()
         deleteRequest.onerror = event => {
-          this.#logger.warn('Error deleting session', {event, sessionId, eventId})
+          this.#logger.warn('Error deleting session', { event, sessionId, eventId })
           reject('Error deleting session')
         }
       }
 
       getRequest.onerror = event => {
-        this.#logger.warn('Error getting session for deletion', {event, sessionId, eventId})
+        this.#logger.warn('Error getting session for deletion', { event, sessionId, eventId })
         reject('Error getting session for deletion')
       }
     })
@@ -245,7 +245,7 @@ class CfbScheduleStorage {
       }
 
       request.onerror = event => {
-        this.#logger.warn('Error deleting database', {event})
+        this.#logger.warn('Error deleting database', { event })
         reject('Error deleting database')
       }
     })

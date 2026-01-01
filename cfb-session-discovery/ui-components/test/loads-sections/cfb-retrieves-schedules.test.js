@@ -1,7 +1,7 @@
-import {expect} from 'chai'
-import {http, HttpResponse} from 'msw'
+import { expect } from 'chai'
+import { http, HttpResponse } from 'msw'
 import CfbRetrievesSchedules from '../../src/loads-sections/ports/cfb-retrieves-schedules.js'
-import {devApi, startTestWorker, withSections} from '../../mocks/schedules_mocks.js'
+import { devApi, startTestWorker, withSections } from '../../mocks/schedules_mocks.js'
 
 describe('CfbRetrievesSchedules', () => {
   let worker
@@ -10,7 +10,7 @@ describe('CfbRetrievesSchedules', () => {
 
   before(async () => {
     worker = startTestWorker()
-    await worker.start({quiet: true})
+    await worker.start({ quiet: true })
   })
 
   after(async () => {
@@ -20,9 +20,9 @@ describe('CfbRetrievesSchedules', () => {
   beforeEach(async () => {
     withSections(testEventId, {
       '/sections': [
-        {name: 'Monday', id: 'monday-123', order: 0},
-        {name: 'Tuesday', id: 'tuesday-456', order: 1},
-        {name: 'Wednesday', id: 'wednesday-789', order: 2},
+        { name: 'Monday', id: 'monday-123', order: 0 },
+        { name: 'Tuesday', id: 'tuesday-456', order: 1 },
+        { name: 'Wednesday', id: 'wednesday-789', order: 2 },
       ],
     })
   })
@@ -58,8 +58,8 @@ describe('CfbRetrievesSchedules', () => {
     // Override handler to return error
     worker.use(
       http.get(sectionsUrl, () => HttpResponse.json(
-        {error: 'Internal server error'},
-        {status: 500},
+        { error: 'Internal server error' },
+        { status: 500 },
       )),
     )
 
@@ -86,15 +86,15 @@ describe('CfbRetrievesSchedules', () => {
   it('should handle missing eventId in request', async () => {
     // Override handler to return 400 for missing eventId
     worker.use(
-      http.get(sectionsUrl, async ({request}) => {
+      http.get(sectionsUrl, async ({ request }) => {
         const body = await request.json()
         if (!body.eventId) {
           return HttpResponse.json(
-            {error: 'eventId is required'},
-            {status: 400},
+            { error: 'eventId is required' },
+            { status: 400 },
           )
         }
-        return HttpResponse.json({sections: []})
+        return HttpResponse.json({ sections: [] })
       }),
     )
 

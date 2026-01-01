@@ -567,10 +567,10 @@
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-session-discovery-contracts/0.3.0/76a8c865ccb453105d6e67a2d5831f3049985a00#76a8c865ccb453105d6e67a2d5831f3049985a00"
   integrity sha512-MioCOKvjHal6pIz6kgrQrNyIaQAZhwZSjMtxXWqX4KG8jcM8zpz4Q2mfkg6EfonFTISqNp11cIwhaHSihq9RfQ==
 
-"@rinkkasatiainen/cfb-testing-utils@^0.2.1":
-  version "0.2.1"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-testing-utils/0.2.1/9c204d93498e3f57a05fab07d3a527f18acec893#9c204d93498e3f57a05fab07d3a527f18acec893"
-  integrity sha512-TrrWU6ld3khRXisrv6X8dZ/4CKIVfl3C8UMUH1GvmWCQUUJFPzYF1ezjae3mss5NXIdlfMhr44ZDn2MXqTeCWw==
+"@rinkkasatiainen/cfb-testing-utils@^0.3.0":
+  version "0.3.0"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-testing-utils/0.3.0/1fd2805537403eb135d8253c20106750331a7ab3#1fd2805537403eb135d8253c20106750331a7ab3"
+  integrity sha512-tjM5zcRf5aIN88FvomkVhipswCFj4Sl8QRbTRj4JXzOLCPgFKd1gAX9ubSCWf4Ttx21ZOkOCb6G2xoodyUnWiQ==
   dependencies:
     "@rinkkasatiainen/cfb-observability" "^0.0.1"
 

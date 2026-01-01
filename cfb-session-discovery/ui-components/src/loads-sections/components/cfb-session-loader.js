@@ -1,7 +1,7 @@
-import {createLogger} from '@rinkkasatiainen/cfb-observability'
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
 import CfbRetrievesSchedules from '../ports/cfb-retrieves-schedules.js'
 import cfbStorage from '../ports/cfb-schedule-storage.js'
-import {sessionsLoaded} from '../../events/events-loaded.js'
+import { sessionsLoaded } from '../../events/events-loaded.js'
 
 export class CfbSessionLoader extends HTMLElement {
   static elementName = 'cfb-session-loader'

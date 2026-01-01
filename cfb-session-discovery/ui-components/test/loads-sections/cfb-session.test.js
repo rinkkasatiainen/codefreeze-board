@@ -1,6 +1,6 @@
-import {expect} from 'chai'
-import {todo} from '@rinkkasatiainen/cfb-testing-utils'
-import {CfbSession} from '../../src/loads-sections/components/cfb-session.js'
+import { expect } from 'chai'
+import { todo } from '@rinkkasatiainen/cfb-testing-utils'
+import { CfbSession } from '../../src/loads-sections/components/cfb-session.js'
 
 describe('CfbSession', () => {
   let testRoot = null
