@@ -26,7 +26,7 @@ class AuthStorage {
       const request = indexedDB.open(this.dbName, this.dbVersion)
 
       request.onerror = event => {
-        this.#logger.warn('Error opening database', {event})
+        this.#logger.warn('Error opening database', { event })
         reject(new Error('Error opening database'))
       }
 
@@ -61,7 +61,7 @@ class AuthStorage {
 
       request.onsuccess = () => resolve(tokenData)
       request.onerror = event => {
-        this.#logger.warn('Error saving tokens', {event, tokens})
+        this.#logger.warn('Error saving tokens', { event, tokens })
         reject(new Error('Error saving tokens'))
       }
     })
@@ -77,7 +77,7 @@ class AuthStorage {
         resolve(request.result || null)
       }
       request.onerror = event => {
-        this.#logger.warn('Error getting tokens', {event})
+        this.#logger.warn('Error getting tokens', { event })
         reject(new Error('Error getting tokens'))
       }
     })
@@ -91,7 +91,7 @@ class AuthStorage {
 
       request.onsuccess = () => resolve()
       request.onerror = event => {
-        this.#logger.warn('Error clearing tokens', {event})
+        this.#logger.warn('Error clearing tokens', { event })
         reject(new Error('Error clearing tokens'))
       }
     })

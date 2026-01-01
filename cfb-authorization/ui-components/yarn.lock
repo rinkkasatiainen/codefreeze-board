@@ -698,12 +698,12 @@
     unbzip2-stream "1.4.3"
     yargs "17.7.1"
 
-"@rinkkasatiainen/cfb-eslint@^1.0.0":
-  version "1.0.0"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-eslint/1.0.0/6d7151e1bae5fa9715afef1d1a55c2530986d8e5#6d7151e1bae5fa9715afef1d1a55c2530986d8e5"
-  integrity sha512-ukIoyEOF/K1oIK/ByqBiabA0UzYqsRNbWJ+DnKPVXR3+M0GWD20mIAF/EGtP2sfVbxIKhaT9PvYTQpmGVFbQVQ==
+"@rinkkasatiainen/cfb-eslint@^1.0.1":
+  version "1.0.1"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-eslint/1.0.1/98433e25ab55288de90afd98959175ba766c4be3#98433e25ab55288de90afd98959175ba766c4be3"
+  integrity sha512-nPJpvmB2Zr0fUyx5W4/+yHiZlXbFysWHasEJxTd3tA8bhpsq2C0lFymv8PDHgtCJ2l+oCgGEiysQzOxdAHYu6Q==
   dependencies:
-    "@rinkkasatiainen/eslint-config.js" "^0.2.4"
+    "@rinkkasatiainen/eslint-config.js" "^0.2.5"
     "@stylistic/eslint-plugin" "^5.1.0"
     eslint "^9.26.0"
     eslint-plugin-import "^2.32.0"
@@ -721,10 +721,10 @@
   dependencies:
     "@rinkkasatiainen/cfb-observability" "^0.0.1"
 
-"@rinkkasatiainen/eslint-config.js@^0.2.4":
-  version "0.2.4"
-  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config.js/0.2.4/cad4f189f800ec293a958bfbf13a2a5b4fd4891d#cad4f189f800ec293a958bfbf13a2a5b4fd4891d"
-  integrity sha512-qWZD7q09E8r8MgLFJ6rkeRmi6qQcMr1mByMCyCKSLg7kXLHghWW91xVWGO/P6Ize7esohBjB4sdf99yEuqdn3Q==
+"@rinkkasatiainen/eslint-config.js@^0.2.5":
+  version "0.2.5"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/eslint-config.js/0.2.5/49aea12465c21b08f4278bd14495077a16ea421d#49aea12465c21b08f4278bd14495077a16ea421d"
+  integrity sha512-tGzu+RLBItzT3qnStar+fGEcPyFDVEZYbKFCQpJ7yxsbF9XlwnIUO8ZN1GUfKAYeOMyd0kP9zsV07JkNPnxvvA==
 
 "@rollup/plugin-node-resolve@^15.0.1":
   version "15.3.1"

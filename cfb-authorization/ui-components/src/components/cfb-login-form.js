@@ -1,4 +1,4 @@
-import {CognitoUserPool, AuthenticationDetails, CognitoUser} from 'amazon-cognito-identity-js'
+import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
 import authStorage from '../storage/auth-storage.js'
 
 /**
@@ -114,7 +114,7 @@ export class CfbLoginForm extends HTMLElement {
               await authStorage.saveTokens(tokens)
 
               // Dispatch login success event
-              this.dispatchEvent(new CustomEvent('cfb-login-success', {detail: {userInfo: tokens.userInfo}}))
+              this.dispatchEvent(new CustomEvent('cfb-login-success', { detail: { userInfo: tokens.userInfo } }))
 
               resolve(tokens)
             } catch (error) {
@@ -124,7 +124,7 @@ export class CfbLoginForm extends HTMLElement {
           onFailure: err => {
             reject(err)
           },
-          newPasswordRequired: (userAttributes, requiredAttributes) => {
+          newPasswordRequired: (userAttributes, _requiredAttributes) => {
             // Store username temporarily for password change page
             // We'll need the user to enter their temp password again on that page
             sessionStorage.setItem('cfb-temp-username', username)
@@ -138,7 +138,7 @@ export class CfbLoginForm extends HTMLElement {
       })
     } catch (error) {
       this.#showError(error.message || 'Login failed. Please check your credentials.')
-      this.dispatchEvent(new CustomEvent('cfb-login-error', {detail: {error}}))
+      this.dispatchEvent(new CustomEvent('cfb-login-error', { detail: { error } }))
     } finally {
       this.#isLoading = false
       loginButton.disabled = false

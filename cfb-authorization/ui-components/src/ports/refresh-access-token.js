@@ -10,7 +10,7 @@ export async function refreshAccessToken() {
   }
 
   const config = getCognitoConfig()
-  const {CognitoUserPool, CognitoUser, CognitoRefreshToken} = await import('amazon-cognito-identity-js')
+  const { CognitoUserPool, CognitoUser, CognitoRefreshToken } = await import('amazon-cognito-identity-js')
 
   const userPool = new CognitoUserPool({
     UserPoolId: config.userPoolId,
@@ -28,7 +28,7 @@ export async function refreshAccessToken() {
     Pool: userPool,
   })
 
-  const refreshToken = new CognitoRefreshToken({RefreshToken: tokens.refreshToken})
+  const refreshToken = new CognitoRefreshToken({ RefreshToken: tokens.refreshToken })
 
   return new Promise((resolve, reject) => {
     cognitoUser.refreshSession(refreshToken, (err, session) => {

@@ -1,4 +1,4 @@
-import {CognitoUserPool, CognitoUser} from 'amazon-cognito-identity-js'
+import { CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js'
 import authStorage from '../storage/auth-storage.js'
 
 /**
@@ -123,30 +123,30 @@ export class CfbChangePassword extends HTMLElement {
     submitButton.disabled = true
     submitButton.textContent = 'Processing...'
 
-      try {
-        const config = this.#getCognitoConfig()
-        const userPool = new CognitoUserPool({
-          UserPoolId: config.userPoolId,
-          ClientId: config.clientId,
-        })
+    try {
+      const config = this.#getCognitoConfig()
+      const userPool = new CognitoUserPool({
+        UserPoolId: config.userPoolId,
+        ClientId: config.clientId,
+      })
 
-        // Get username from stored tokens or sessionStorage (for new password required flow)
-        let username
-        if (this.#mode === 'new-password-required') {
-          username = sessionStorage.getItem('cfb-temp-username')
-          if (!username) {
-            throw new Error('Session expired. Please login again.')
-          }
-        } else {
-          const tokens = await authStorage.getTokens()
-          if (!tokens || !tokens.userInfo) {
-            throw new Error('Not authenticated. Please login first.')
-          }
-          username = tokens.userInfo.username
-          if (!username) {
-            throw new Error('Username not found. Please login again.')
-          }
+      // Get username from stored tokens or sessionStorage (for new password required flow)
+      let username
+      if (this.#mode === 'new-password-required') {
+        username = sessionStorage.getItem('cfb-temp-username')
+        if (!username) {
+          throw new Error('Session expired. Please login again.')
         }
+      } else {
+        const tokens = await authStorage.getTokens()
+        if (!tokens || !tokens.userInfo) {
+          throw new Error('Not authenticated. Please login first.')
+        }
+        username = tokens.userInfo.username
+        if (!username) {
+          throw new Error('Username not found. Please login again.')
+        }
+      }
 
       const cognitoUser = new CognitoUser({
         Username: username,
@@ -182,9 +182,13 @@ export class CfbChangePassword extends HTMLElement {
               sessionStorage.removeItem('cfb-temp-email')
 
               this.#showSuccess('Password set successfully! Redirecting...')
-              
+
               // Dispatch success event
-              this.dispatchEvent(new CustomEvent('cfb-password-change-success', {detail: {userInfo: newTokens.userInfo}}))
+              this.dispatchEvent(new CustomEvent('cfb-password-change-success',
+                {
+                  detail:
+                    { userInfo: newTokens.userInfo },
+                }))
 
               // Redirect after a short delay
               setTimeout(() => {
@@ -203,7 +207,7 @@ export class CfbChangePassword extends HTMLElement {
       })
     } catch (error) {
       this.#showError(error.message || 'Failed to set password. Please try again.')
-      this.dispatchEvent(new CustomEvent('cfb-password-change-error', {detail: {error}}))
+      this.dispatchEvent(new CustomEvent('cfb-password-change-error', { detail: { error } }))
     } finally {
       this.#isLoading = false
       submitButton.disabled = false
@@ -294,7 +298,7 @@ export class CfbChangePassword extends HTMLElement {
       confirmPasswordInput.value = ''
     } catch (error) {
       this.#showError(error.message || 'Failed to change password. Please check your current password and try again.')
-      this.dispatchEvent(new CustomEvent('cfb-password-change-error', {detail: {error}}))
+      this.dispatchEvent(new CustomEvent('cfb-password-change-error', { detail: { error } }))
     } finally {
       this.#isLoading = false
       submitButton.disabled = false

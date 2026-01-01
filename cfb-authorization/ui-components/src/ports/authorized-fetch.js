@@ -1,5 +1,7 @@
 import authStorage from '../storage/auth-storage.js'
-import {refreshAccessToken} from './refresh-access-token.js'
+import { refreshAccessToken } from './refresh-access-token.js'
+
+const root = 'https://cfb.rinkkasatiainen.dev'
 
 /**
  * Authorized fetch wrapper that adds Authorization header and handles token refresh on 401
@@ -18,7 +20,7 @@ export async function authorizedFetch(url, options = {}) {
   }
 
   // Make initial request
-  let response = await fetch(url, {
+  let response = await fetch(`${root}${url}`, {
     ...options,
     headers,
   })

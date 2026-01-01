@@ -1,6 +1,6 @@
-import {CfbLoginForm} from './components/cfb-login-form.js'
-import {CfbAuthStatus} from './components/cfb-auth-status.js'
-import {CfbChangePassword} from './components/cfb-change-password.js'
+import { CfbLoginForm } from './components/cfb-login-form.js'
+import { CfbAuthStatus } from './components/cfb-auth-status.js'
+import { CfbChangePassword } from './components/cfb-change-password.js'
 import authStorage from './storage/auth-storage.js'
 
 export class AuthorizationModule {
