@@ -1,0 +1,31 @@
+const noop = () => { /* noop */ }
+const todo = testName => { xit(testName, noop) }
+
+describe('AuthStorage', () => {
+  todo('Should initialize IndexedDB database on init')
+  todo('Should create object store if it does not exist')
+  todo('Should resolve immediately if already initialized')
+  todo('Should reject with error if database opening fails')
+  todo('Should save tokens to IndexedDB')
+  todo('Should save all token fields including accessToken, idToken, refreshToken, expiresAt, and userInfo')
+  todo('Should reject with error if saving tokens fails')
+  todo('Should retrieve tokens from IndexedDB')
+  todo('Should return null when no tokens are stored')
+  todo('Should reject with error if getting tokens fails')
+  todo('Should clear tokens from IndexedDB')
+  todo('Should reject with error if clearing tokens fails')
+  todo('Should return true when tokens exist and are not expired')
+  todo('Should return false when no tokens are stored')
+  todo('Should return false when access token is expired')
+  todo('Should return true when token expiration time is in the future')
+  todo('Should return true when token is expired')
+  todo('Should return true when no tokens are stored')
+  todo('Should return true when expiresAt is not set')
+  todo('Should get access token from stored tokens')
+  todo('Should return null when no tokens are stored')
+  todo('Should get refresh token from stored tokens')
+  todo('Should return null when no refresh token is stored')
+  todo('Should get user info from stored tokens')
+  todo('Should return null when no user info is stored')
+})
+

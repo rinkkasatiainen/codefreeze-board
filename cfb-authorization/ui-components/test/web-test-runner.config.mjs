@@ -2,6 +2,7 @@ import {importMapsPlugin} from '@web/dev-server-import-maps'
 
 // Define test-specific module mappings
 const testImportMappings = {
+  'amazon-cognito-identity-js': ".test/fakes/fake-cognito.js"
 }
 
 // Web server plugins configuration

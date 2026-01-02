@@ -45,7 +45,7 @@ export class CfbAuthStatus extends HTMLElement {
       `
     } else {
       // Show login form
-      this.innerHTML = '<cfb-login-form></cfb-login-form>'
+      this.innerHTML = '<a href="/login">login</a>'
     }
   }
 
