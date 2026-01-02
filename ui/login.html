@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeFreeze Board</title>
+    <title>Login - CodeFreeze Board</title>
     <link rel="stylesheet" href="styles.css">
     <script type="importmap">
         {
@@ -25,7 +25,6 @@
                 "path-to-regexp": "https://esm.sh/path-to-regexp",
 
                 "document": "this is also needed for msw mocking",
-                "@rinkkasatiainen/cfb-session-discovery/mocks/": "./node_modules/@rinkkasatiainen/cfb-session-discovery/mocks/",
                 "last": "but-not-least"
             }
         }
@@ -33,38 +32,32 @@
     <script type="importmap">
         {
             "imports": {
+                "amazon-cognito-identity-js>": "./node_modules/amazon-cognito-identity-js/dist/amazon-cognito-identity.js",
                 "amazon-cognito-identity-js": "./assets/vendor/amazon-cognito-identity-js.js",
-                "amazon-cognito-identity-js_": "./node_modules/amazon-cognito-identity-js/dist/amazon-cognito-identity.js",
                 "@rinkkasatiainen/cfb-shell": "./node_modules/@rinkkasatiainen/cfb-shell/dist/index.js",
-                "@rinkkasatiainen/cfb-session-discovery": "./node_modules/@rinkkasatiainen/cfb-session-discovery/dist/index.js",
                 "@rinkkasatiainen/cfb-authorization": "./node_modules/@rinkkasatiainen/cfb-authorization/dist/index.js",
                 "@rinkkasatiainen/cfb-observability": "./node_modules/@rinkkasatiainen/cfb-observability/dist/index.js"
             }
         }
     </script>
-    <script type="module" src="index.js"></script>
+    <script src="_assets/config.js"></script>
+
+    <script type="module" src="login.js"></script>
 </head>
 <body>
 <header>
     <nav class="cfb-navigation">
-        <cfb-auth-status></cfb-auth-status>
-        <div class="cfb-user">
-            <div class="cfb-user__avatar">EE</div>
-            <span class="cfb-user__name">Evan Example</span>
-        </div>
+        <h1>CodeFreeze Board</h1>
     </nav>
 </header>
 <main>
-    <div class="cfb-board" role="region" aria-label="Task board">
-        <cfb-schedule-orchestrator>
-            <cfb-schedule-loader data-event-id="codefreeze-2025">
-            </cfb-schedule-loader>
-            <cfb-session-loader data-event-id="codefreeze-2025" >
-            </cfb-session-loader>
-            <cfb-schedule data-event-id="codefreeze-2025" class="listens-schedule-updates">
-            </cfb-schedule>
-        </cfb-schedule-orchestrator>
+    <div class="cfb-login-page">
+        <div class="cfb-login-page__container">
+            <h2>Login</h2>
+            <cfb-auth-status></cfb-auth-status>
+        </div>
     </div>
 </main>
 </body>
 </html>
+
