@@ -10,8 +10,11 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as path from 'path';
 import {SectionsResources} from "./sections-resources.js";
+import {CfbUserPool} from "./cognito-user-pool";
+import {CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior} from "aws-cdk-lib/aws-cloudfront";
 
 export interface CodefreezeBoardStackProps extends cdk.StackProps {
     domainName?: string;
@@ -64,53 +67,40 @@ export class CodefreezeBoardStack extends cdk.Stack {
             },
         });
 
+        const x = new CfbUserPool(this, 'CfbUserPool', {
+            userPoolName: 'codefreeze-board-users',
+        })
+
         // Create /api/event/{id} endpoint
         let eventResourcePath = api.root
             .addResource('api')
             .addResource('event')
             .addResource('{id}');
 
+        const userPool = x.poolResource
+        const userPoolClient = x.userPoolClient
+
         // Create Lambda function for sections API
         const sectionsLambda = new SectionsResources(this, 'SectionsLambda', {
             capability: "cfb-session-discovery",
-            handlerName: "sectionsHandler"
+            handlerName: "sectionsHandler",
+            userPoolId: userPool.userPoolId,
+            userPoolClientId: userPoolClient.userPoolClientId,
         })
         eventResourcePath
             .addResource('sections')
             .addMethod('GET', new apigateway.LambdaIntegration(sectionsLambda.fnResource));
 
         // Create Lambda function for sessions API
-        const sessions = new SectionsResources(this, 'SectionsLambda', {
+        const sessions = new SectionsResources(this, 'SessionsLambda', {
             capability: "cfb-session-discovery",
-            handlerName: "sessionsHandler"
+            handlerName: "sessionsHandler",
+            userPoolId: userPool.userPoolId,
+            userPoolClientId: userPoolClient.userPoolClientId,
         })
         eventResourcePath
             .addResource('sessions')
             .addMethod('GET', new apigateway.LambdaIntegration(sessions.fnResource));
-        /*
-        sectionsResource.addMethod('OPTIONS', new apigateway.MockIntegration({
-          integrationResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-              'method.response.header.Access-Control-Allow-Origin': "'*'",
-              'method.response.header.Access-Control-Allow-Methods': "'GET,OPTIONS'",
-            },
-          }],
-          requestTemplates: {
-            'application/json': '{"statusCode": 200}',
-          },
-        }), {
-          methodResponses: [{
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-            },
-          }],
-        });
-        */
 
         // Certificate and domain setup
         let certificate: acm.ICertificate | undefined;
@@ -141,6 +131,27 @@ export class CodefreezeBoardStack extends cdk.Stack {
 
         // No need for custom API domain - we'll route through CloudFront
 
+        // Custom cache policy with 1 second TTL for API
+        const apiCachePolicy = new cloudfront.CachePolicy(this, 'ApiCachePolicy', {
+            cachePolicyName: 'CodefreezeBoardApiCache',
+            headerBehavior: CacheHeaderBehavior.allowList('Authorization', 'Origin', 'Referer'),
+            queryStringBehavior: CacheQueryStringBehavior.all(),
+            cookieBehavior: CacheCookieBehavior.none(),
+            minTtl: cdk.Duration.seconds(0),
+            maxTtl: cdk.Duration.seconds(1),
+            defaultTtl: cdk.Duration.seconds(1),
+            enableAcceptEncodingGzip: true,
+            enableAcceptEncodingBrotli: true,
+        });
+
+        // Custom origin request policy to forward Authorization, Origin, and Referer headers
+        const apiOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'ApiOriginRequestPolicy', {
+            originRequestPolicyName: 'CodefreezeBoardApiOriginRequest',
+            headerBehavior: cloudfront.OriginRequestHeaderBehavior.none(),
+            queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
+            cookieBehavior: cloudfront.OriginRequestCookieBehavior.none(),
+        });
+
         // CloudFront distribution with API routing
         const distribution = new cloudfront.Distribution(this, 'Distribution', {
             defaultBehavior: {
@@ -170,20 +181,14 @@ export class CodefreezeBoardStack extends cdk.Stack {
                 '/api/*': {
                     origin: new origins.RestApiOrigin(api),
                     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                    cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED, // Don't cache API responses
+                    cachePolicy: apiCachePolicy, // 1 second caching, Forward Authorization, Origin, Referer
+                    originRequestPolicy: apiOriginRequestPolicy,
                     allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
                     responseHeadersPolicy: new cloudfront.ResponseHeadersPolicy(this, 'ApiResponseHeadersPolicy', {
                         responseHeadersPolicyName: 'CodefreezeBoardApiHeaders',
-                        comment: 'Headers for CodeFreeze Board API',
-                        corsBehavior: {
-                            accessControlAllowCredentials: false,
-                            accessControlAllowHeaders: ['*'],
-                            accessControlAllowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-                            accessControlAllowOrigins: ['*'],
-                            accessControlExposeHeaders: ['*'],
-                            accessControlMaxAge: cdk.Duration.seconds(600),
-                            originOverride: true,
-                        },
+                        comment: 'Headers for CodeFreeze Board API - passes through CORS from API Gateway',
+                        // No corsBehavior - let API Gateway CORS headers pass through
+                        // No custom CORS headers - let origin handle CORS
                         securityHeadersBehavior: {
                             contentTypeOptions: {override: true},
                             frameOptions: {frameOption: cloudfront.HeadersFrameOption.DENY, override: true},
@@ -221,7 +226,7 @@ export class CodefreezeBoardStack extends cdk.Stack {
         });
 
         // Deploy the UI files to S3
-        new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+        new s3deploy.BucketDeployment(this, 'CfbWebsite', {
             sources: [s3deploy.Source.asset(path.join(__dirname, '../../build/dist'))],
             destinationBucket: websiteBucket,
             distribution,
@@ -291,6 +296,17 @@ export class CodefreezeBoardStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'CloudFrontApiEndpoint', {
             value: certificate ? `https://${props!.domainName}/api/sections` : `https://${distribution.distributionDomainName}/api/sections`,
             description: 'Sections API Endpoint (via CloudFront)',
+        });
+
+        // Output Cognito User Pool information
+        new cdk.CfnOutput(this, 'UserPoolId', {
+            value: userPool.userPoolId,
+            description: 'Cognito User Pool ID',
+        });
+
+        new cdk.CfnOutput(this, 'UserPoolClientId', {
+            value: userPoolClient.userPoolClientId,
+            description: 'Cognito User Pool Client ID',
         });
     }
 } 

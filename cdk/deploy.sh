@@ -22,6 +22,8 @@ fi
 echo "🔨 Building UI..."
 (cd ../build && yarn build)
 
+# exit -1
+
 # Build the CDK project
 echo "🔨 Building CDK project..."
 yarn build
