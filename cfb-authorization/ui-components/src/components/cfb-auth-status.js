@@ -1,10 +1,13 @@
+import { createLogger } from '@rinkkasatiainen/cfb-observability'
 import authStorage from '../storage/auth-storage.js'
+import { redirectTo } from '../lib/redirect-to.js'
 
 /**
  * Auth status component that shows login form or logged-in status with logout
  */
 export class CfbAuthStatus extends HTMLElement {
   static elementName = 'cfb-auth-status'
+  logger = createLogger('cfb-auth-status')
 
   #userInfo = null
 
@@ -69,11 +72,11 @@ export class CfbAuthStatus extends HTMLElement {
 
       // Redirect to login page if not already there
       if (window.location.pathname !== '/login.html') {
-        window.location.href = '/login.html'
+        redirectTo('/login.html')
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Logout error:', error)
+
+      this.logger.error('Logout error:', error)
     }
   }
 

@@ -1,16 +1,16 @@
-import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
+import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js'
 import authStorage from '../storage/auth-storage.js'
+import { decodesIdToken } from '../lib/decodes-id-token.js'
+import { redirectTo } from '../lib/redirect-to.js'
 
 /**
  * Login form component for Cognito authentication
  */
 export class CfbLoginForm extends HTMLElement {
   static elementName = 'cfb-login-form'
-
   #isLoading = false
 
-  constructor() {
-    super()
+  connectedCallback() {
     this.#render()
     this.#attachEventListeners()
   }
@@ -132,7 +132,7 @@ export class CfbLoginForm extends HTMLElement {
               sessionStorage.setItem('cfb-temp-email', userAttributes.email)
             }
             // Redirect to change password page
-            window.location.href = '/change-password.html?mode=new-password-required'
+            redirectTo('/change-password.html?mode=new-password-required')
           },
         })
       })
@@ -147,13 +147,7 @@ export class CfbLoginForm extends HTMLElement {
   }
 
   #decodeIdToken(token) {
-    try {
-      const payload = token.split('.')[1]
-      const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
-      return decoded
-    } catch (_error) { // eslint-disable-line no-unused-vars
-      return {}
-    }
+    return decodesIdToken(token)
   }
 
   #showError(message) {

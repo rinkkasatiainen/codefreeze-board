@@ -1,4 +1,8 @@
-# #TODO
+# Authorization module using Cognito.
 
-Authorization module for CFB. Handles authentication using AWS Cognito.
+
+## TODO
+ - Handle logout gracefully
+ - on login/logout, do not add listener to `window`, but a separate handler for that. 
+ - 
 

@@ -1,5 +1,8 @@
 const noop = () => { /* noop */ }
-const todo = testName => { xit(testName, noop) }
+const todo = testName => {
+
+  xit(testName, noop)
+}
 
 describe('refreshAccessToken', () => {
   todo('Should refresh access token using refresh token')

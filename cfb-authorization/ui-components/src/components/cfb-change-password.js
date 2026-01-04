@@ -1,5 +1,7 @@
 import { CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js'
 import authStorage from '../storage/auth-storage.js'
+import { decodesIdToken } from '../lib/decodes-id-token.js'
+import { redirectTo } from '../lib/redirect-to.js'
 
 /**
  * Change password component for Cognito
@@ -11,8 +13,7 @@ export class CfbChangePassword extends HTMLElement {
   #isLoading = false
   #mode = 'change' // 'change' or 'new-password-required'
 
-  constructor() {
-    super()
+  connectedCallback() {
     this.#render()
     this.#attachEventListeners()
   }
@@ -162,7 +163,7 @@ export class CfbChangePassword extends HTMLElement {
               const idToken = session.getIdToken().getJwtToken()
               const refreshToken = session.getRefreshToken().getToken()
 
-              const userInfo = this.#decodeIdToken(idToken)
+              const userInfo = decodesIdToken(idToken)
 
               const newTokens = {
                 accessToken,
@@ -191,9 +192,7 @@ export class CfbChangePassword extends HTMLElement {
                 }))
 
               // Redirect after a short delay
-              setTimeout(() => {
-                window.location.href = '/index.html'
-              }, 1500)
+              redirectTo('/index.html', 1500)
 
               resolve(newTokens)
             } catch (error) {

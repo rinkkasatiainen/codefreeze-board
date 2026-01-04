@@ -1,5 +1,8 @@
 const noop = () => { /* noop */ }
-const todo = testName => { xit(testName, noop) }
+const todo = testName => {
+
+  xit(testName, noop)
+}
 
 describe('authorizedFetch', () => {
   todo('Should add Authorization header with access token to requests')

@@ -1,5 +1,8 @@
 const noop = () => { /* noop */ }
-const todo = testName => { xit(testName, noop) }
+const todo = testName => {
+
+  xit(testName, noop)
+}
 
 describe('AuthStorage', () => {
   todo('Should initialize IndexedDB database on init')

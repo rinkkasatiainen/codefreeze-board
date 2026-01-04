@@ -1,5 +1,8 @@
 const noop = () => { /* noop */ }
-const todo = testName => { xit(testName, noop) }
+const todo = testName => {
+
+  xit(testName, noop)
+}
 
 describe('AuthorizationModule', () => {
   todo('Should initialize auth storage on configure')
