@@ -1,0 +1,34 @@
+{
+  "name": "@rinkkasatiainen/cfb-functional",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Functional programming utilities for CFB. Provides Maybe, Either, and Eventually monads.",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rinkkasatiainen/codefreeze-board.git"
+  },
+  "scripts": {
+    "lint": "eslint -- src test",
+    "lint:fix": "eslint --fix -- src test",
+    "test": "mocha",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test && npm run lint",
+    "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "@rinkkasatiainen/cfb-eslint": "^1.0.1",
+    "chai": "^5.2.0",
+    "sinon": "^20.0.0",
+    "sinon-chai": "^4.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
