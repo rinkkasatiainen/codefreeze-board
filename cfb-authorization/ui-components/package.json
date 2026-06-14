@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-authorization",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "type": "module",
   "description": "Authorization module for CFB. Handles authentication using AWS Cognito",
   "main": "./dist/index.js",
@@ -34,18 +34,21 @@
     "@web/test-runner-playwright": "^0.11.0",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1",
-    "msw": "^2.12.7",
+    "msw": "^2.14.6",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.1"
   },
-  "dependencies": {
-    "@aws-sdk/client-cognito-identity": "^3.958.0",
-    "amazon-cognito-identity-js": "^6.3.16"
-  },
+  "dependencies": {},
   "files": [
     "dist"
   ],
   "peerDependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.1.0 || ^1.0.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      "test",
+      ""
+    ]
   }
 }

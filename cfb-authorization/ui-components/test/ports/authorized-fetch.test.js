@@ -1,22 +1,31 @@
-const noop = () => { /* noop */ }
-const todo = testName => {
+import { expect,use  } from 'chai'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import { authorizedFetch } from '../../src/ports/authorized-fetch.js'
 
-  xit(testName, noop)
-}
+use(sinonChai)
 
 describe('authorizedFetch', () => {
-  todo('Should add Authorization header with access token to requests')
-  todo('Should use root URL from CFB_CONFIG')
-  todo('Should use default root URL when not specified in config')
-  todo('Should make fetch request with correct URL and headers')
-  todo('Should return response when request is successful')
-  todo('Should refresh token and retry request on 401 response')
-  todo('Should update Authorization header with new token on retry')
-  todo('Should clear tokens and dispatch cfb-auth-failed event when refresh fails')
-  todo('Should return original 401 response when refresh fails')
-  todo('Should not retry request when no access token is available')
-  todo('Should handle missing CFB_CONFIG gracefully')
-  todo('Should preserve original fetch options when retrying')
-  todo('Should handle fetch errors appropriately')
-})
+  afterEach(() => {
+    sinon.restore()
+  })
 
+  // TODO: Test this using MSW instead!
+
+  it('calls /api with credentials include', async () => {
+    const fetchStub = sinon.stub(globalThis, 'fetch').resolves({ status: 200 })
+    await authorizedFetch('/event/x/sections')
+    expect(fetchStub).to.have.been.calledOnce
+    const [url, options] = fetchStub.firstCall.args
+    expect(url).to.equal('/api/event/x/sections')
+    expect(options.credentials).to.equal('include')
+  })
+
+  it('dispatches cfb-auth-failed on 401', async () => {
+    sinon.stub(globalThis, 'fetch').resolves({ status: 401 })
+    const events = []
+    window.addEventListener('cfb-auth-failed', () => events.push(true))
+    await authorizedFetch('/api/event/x/sections')
+    expect(events).to.have.length(1)
+  })
+})

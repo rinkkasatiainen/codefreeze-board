@@ -1,0 +1,40 @@
+{
+  "name": "@rinkkasatiainen/cfb-authorization-functions",
+  "version": "0.2.1",
+  "type": "module",
+  "description": "Auth BFF Lambdas for CFB (Hosted UI + PKCE, session cookies)",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rinkkasatiainen/codefreeze-board.git"
+  },
+  "scripts": {
+    "lint": "eslint -- src test",
+    "lint:fix": "eslint --fix -- src test",
+    "test": "node --test 'test/**/*.test.js'",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp package.json dist/",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test && npm run lint",
+    "publish:github": "npm run build && npm publish --registry=https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "@rinkkasatiainen/cfb-eslint": "^1.0.1",
+    "chai": "^5.2.0",
+    "mocha": "^11.7.2",
+    "sinon": "^20.0.0",
+    "sinon-chai": "^4.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.700.0",
+    "@aws-sdk/lib-dynamodb": "^3.700.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.700.0"
+  }
+}

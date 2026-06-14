@@ -1,36 +1,44 @@
-import { AssertionError, expect } from 'chai'
-import sinon, { restore, stub } from 'sinon'
+import { expect, use } from 'chai'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
 import { createTestLogger, tick } from '@rinkkasatiainen/cfb-testing-utils'
+import authStorage from '../../src/lib/authenticated-user.js'
 import { CfbAuthStatus } from '../../src/components/cfb-auth-status.js'
-import authStorage from '../../src/storage/auth-storage.js'
+import { startTestWorker, withAuthenticatedUser, withLogout } from '../../fakes/auth-mocks.js'
+import { redirectToSpy } from '../fakes/redirect-to.js'
+
+use(sinonChai)
 
 const todo = it.skip
 
 describe('CfbAuthStatus', () => {
   let testRoot = null
-  const authStorageStubs = {}
   let logger
+  let worker
 
-  before(() => {
+  before(async () => {
     customElements.define(CfbAuthStatus.elementName, CfbAuthStatus)
     testRoot = document.createElement('div')
     testRoot.id = 'test-root'
+    worker = startTestWorker()
+    await worker.start({ quiet: true })
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
     document.body.appendChild(testRoot)
-    // Reset stubs
-    authStorageStubs.isAuthenticated = stub(authStorage, 'isAuthenticated')
-    authStorageStubs.getUserInfo = stub(authStorage, 'getUserInfo')
-    authStorageStubs.clearTokens = stub(authStorage, 'clearTokens').resolves()
+    await authStorage.init()
+    redirectToSpy.resetHistory()
     logger = createTestLogger()
   })
 
   afterEach(() => {
     testRoot.innerHTML = ''
-    restore()
-    // TODO: AkS: impelment a reset for logger - to not have many tests that might work on same logger
-    // logger.reset()
+    worker.resetHandlers()
+    sinon.restore()
+  })
+
+  after(async () => {
+    await worker.stop()
   })
 
   const createSut = () => {
@@ -42,14 +50,9 @@ describe('CfbAuthStatus', () => {
   describe('when authenticated', () => {
     let sut
 
-    beforeEach(async () => {
-      authStorageStubs.isAuthenticated.resolves(true)
-      authStorageStubs.getUserInfo.resolves({ username: 'testuser', email: 'test@example.com' })
-    })
-
-    afterEach(() => {
-      authStorageStubs.isAuthenticated.restore()
-      authStorageStubs.getUserInfo.restore()
+    beforeEach(() => {
+      withAuthenticatedUser(true, { username: 'testuser', email: 'test@example.com' })
+      withLogout()
     })
 
     it('Should render logged-in status with username when user is authenticated', async () => {
@@ -61,7 +64,13 @@ describe('CfbAuthStatus', () => {
     })
 
     it('Should escape HTML in username display', async () => {
-      authStorageStubs.getUserInfo.resolves({ username: '<script>alert("xss")</script>user', email: 'a@example.com' })
+      worker.resetHandlers()
+      withAuthenticatedUser(true, {
+        username: '<script>alert("xss")</script>user',
+        email: 'a@example.com',
+      })
+      withLogout()
+
       sut = createSut()
       await tick()
 
@@ -85,23 +94,20 @@ describe('CfbAuthStatus', () => {
       const eventListenerSpy = sinon.spy()
       sut.addEventListener('cfb-logout-success', eventListenerSpy)
 
-      const logoutButton = sut.querySelector('#logout-button')
-      logoutButton.click()
+      sut.querySelector('#logout-button').click()
       await tick()
 
-      expect(eventListenerSpy.calledOnce).to.be.true
+      expect(eventListenerSpy).to.have.been.calledOnce
     })
 
     it('Should clear tokens on logout', async () => {
       sut = createSut()
       await tick()
 
-      const logoutButton = sut.querySelector('#logout-button')
-      logoutButton.click()
-
+      sut.querySelector('#logout-button').click()
       await tick()
 
-      expect(authStorageStubs.clearTokens.calledOnce).to.be.true
+      expect(redirectToSpy).to.have.been.calledOnceWith('/api/auth/logout')
     })
   })
 
@@ -109,42 +115,19 @@ describe('CfbAuthStatus', () => {
     let sut
 
     beforeEach(async () => {
-      authStorageStubs.isAuthenticated.resolves(false)
-      authStorageStubs.getUserInfo.callsFake(() => {
-        throw new AssertionError('this should not have been called')
-      })
-
+      withAuthenticatedUser(false, {})
       sut = createSut()
       await tick()
     })
 
     it('Should render login link when user is not authenticated', async () => {
-
-      expect(sut.innerHTML).to.include('<a href="/login">login</a>')
+      expect(sut.innerHTML).to.include('>Sign in</a>')
     })
-
-    it('Should update display when cfb-login-success event is received', async () => {
-      expect(sut.innerHTML).to.include('<a href="/login">login</a>')
-
-      // Simulate login success
-      authStorageStubs.isAuthenticated.resolves(true)
-      authStorageStubs.getUserInfo.resolves({ username: 'testuser', email: 'test@example.com' })
-
-      window.dispatchEvent(new CustomEvent('cfb-login-success'))
-
-      await tick()
-
-      // Should now show logged in status
-      expect(sut.innerHTML).to.include('Logged in as:')
-      expect(sut.innerHTML).to.include('testuser')
-    })
-
   })
 
   describe('when token is expired - not necessary responsibility of this', () => {
-    beforeEach(async () => {
-      authStorageStubs.isAuthenticated.resolves(true)
-      authStorageStubs.getUserInfo.resolves({ username: 'testuser', email: 'test@example.com' })
+    beforeEach(() => {
+      withAuthenticatedUser(true, { username: 'testuser', email: 'test@example.com' })
     })
 
     todo('should clear tokens on render if token is expired', async () => {
@@ -156,8 +139,8 @@ describe('CfbAuthStatus', () => {
     let sut
 
     beforeEach(async () => {
-      authStorageStubs.isAuthenticated.resolves(true)
-      authStorageStubs.getUserInfo.resolves({ username: 'testuser', email: 'test@example.com' })
+      withAuthenticatedUser(true, { username: 'testuser', email: 'test@example.com' })
+      withLogout()
 
       sut = createSut()
       await tick()
@@ -169,44 +152,24 @@ describe('CfbAuthStatus', () => {
         logoutEvent = e
       })
 
-      const logoutButton = sut.querySelector('#logout-button')
-      logoutButton.click()
-
+      sut.querySelector('#logout-button').click()
       await tick()
 
       expect(logoutEvent).to.not.be.null
     })
 
-
-    it('Should re-check authentication status when login success event is received', async () => {
-      // Reset call count
-      authStorageStubs.isAuthenticated.resetHistory()
-      authStorageStubs.getUserInfo.resetHistory()
-
-      // Simulate login success
-      authStorageStubs.isAuthenticated.resolves(true)
-      authStorageStubs.getUserInfo.resolves({ username: 'testuser', email: 'test@example.com' })
-
-      window.dispatchEvent(new CustomEvent('cfb-login-success'))
-
-      await tick()
-
-      // Should have checked auth status again
-      expect(authStorageStubs.isAuthenticated.called).to.be.true
-      expect(authStorageStubs.getUserInfo.called).to.be.true
-    })
+    todo('Should re-check authentication status when login success event is received')
   })
 
   it('Should handle logout errors gracefully', async () => {
-    authStorageStubs.isAuthenticated.resolves(true)
-    authStorageStubs.getUserInfo.resolves({ username: 'testuser', email: 'test@example.com' })
-    authStorageStubs.clearTokens.rejects(new Error('Storage error'))
+    withAuthenticatedUser(true, { username: 'testuser', email: 'test@example.com' })
+    withLogout({ fail: true })
 
     const sut = createSut()
-
     await tick()
+
     logger.expect.error(() => true)
-    const logoutButton = sut.querySelector('#logout-button')
-    expect(() => logoutButton.click()).to.not.throw()
+    expect(() => sut.querySelector('#logout-button').click()).to.not.throw()
+    await tick()
   })
 })

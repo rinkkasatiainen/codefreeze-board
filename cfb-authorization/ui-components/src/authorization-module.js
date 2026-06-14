@@ -1,9 +1,10 @@
-import { CfbLoginForm } from './components/cfb-login-form.js'
+import { CfbLogin } from './components/cfb-login.js'
 import { CfbAuthStatus } from './components/cfb-auth-status.js'
-import { CfbChangePassword } from './components/cfb-change-password.js'
-import authStorage from './storage/auth-storage.js'
+import authStorage from './lib/authenticated-user.js'
 
 export class AuthorizationModule {
+  authStorage = authStorage
+
   async configure() {
     await authStorage.init()
   }
@@ -13,10 +14,8 @@ export class AuthorizationModule {
   }
 
   run() {
-    // Register custom elements
-    this.#ensureDefined(CfbLoginForm.elementName, CfbLoginForm)
+    this.#ensureDefined(CfbLogin.elementName, CfbLogin)
     this.#ensureDefined(CfbAuthStatus.elementName, CfbAuthStatus)
-    this.#ensureDefined(CfbChangePassword.elementName, CfbChangePassword)
   }
 
   #ensureDefined(elementName, element) {
@@ -25,4 +24,3 @@ export class AuthorizationModule {
     }
   }
 }
-
