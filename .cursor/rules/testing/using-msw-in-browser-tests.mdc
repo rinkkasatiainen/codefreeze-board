@@ -1,0 +1,155 @@
+---
+description: Use MSW to mock HTTP in browser tests run with @web/test-runner
+globs: **/test/**/*.test.js,**/mocks/**/*.js,**/test/fakes/**/*.js
+alwaysApply: false
+---
+
+# Using MSW in browser tests
+
+Use MSW when code under test calls `fetch` and you want realistic request/response behaviour. Do **not** stub `globalThis.fetch` with sinon in the same test — sinon wins and MSW never intercepts.
+
+Reference implementations:
+- `cfb-session-discovery/ui-components/mocks/schedules_mocks.js`
+- `cfb-session-discovery/ui-components/test/loads-sections/cfb-retrieves-schedules.test.js`
+- `cfb-authorization/ui-components/test/fakes/auth-mocks.js`
+- `cfb-authorization/ui-components/test/storage/auth-storage.test.js`
+
+## Package setup
+
+1. Add `msw` as a devDependency.
+2. Generate the service worker: `npx msw init <workerDirectory> --save`
+3. Configure `package.json`:
+
+```json
+"msw": {
+  "workerDirectory": ["test", ""]
+}
+```
+
+Place `mockServiceWorker.js` in the package root and in `test/` so web-test-runner can serve it.
+
+## web-test-runner config
+
+In `test/web-test-runner.config.mjs`:
+
+```javascript
+export default {
+  polyfills: { fetch: true },
+  experimental: { modernWeb: true },
+}
+```
+
+## Mock module pattern
+
+Create one shared worker per package. Export `startTestWorker()` and `with…()` helpers that register handlers per test.
+
+```javascript
+import { setupWorker } from 'msw/browser'
+import { http, HttpResponse } from 'msw'
+
+const testWorker = setupWorker(...[])
+
+export function startTestWorker() {
+  return testWorker
+}
+
+export function withSections(eventId, examples) {
+  testWorker.use(
+    http.get(`/api/event/${eventId}/sections`, () =>
+      HttpResponse.json({ sections: examples['/sections'] ?? [] }),
+    ),
+  )
+}
+```
+
+Reuse handler factories for Storybook (`createSectionHandlers`) and tests (`withSections`) when both need the same API shape.
+
+## Test lifecycle
+
+Every test file that uses MSW must start and stop the worker:
+
+```javascript
+describe('my feature', () => {
+  let worker
+
+  before(async () => {
+    worker = startTestWorker()
+    await worker.start({ quiet: true })
+  })
+
+  after(async () => {
+    await worker.stop()
+  })
+
+  beforeEach(() => {
+    withSections('event-123', { '/sections': [{ id: '1', name: 'Monday' }] })
+  })
+
+  afterEach(() => {
+    worker.resetHandlers()
+  })
+})
+```
+
+- `worker.start()` — required once before tests run
+- `worker.resetHandlers()` — required in `afterEach` so handlers do not leak between tests
+- `worker.use(...)` — override a handler for a single test (errors, empty responses, network failures)
+
+## HttpResponse rules
+
+Pass the JSON body directly to `HttpResponse.json`. Status and headers are the second argument.
+
+```javascript
+// ✅ GOOD — body matches what production code reads
+HttpResponse.json({ authenticated: true, userInfo: { username: 'alice' } })
+
+// ✅ GOOD — error response
+HttpResponse.json({ error: 'Not found' }, { status: 404 })
+
+// ✅ GOOD — network failure
+HttpResponse.error()
+
+// ❌ BAD — do not wrap body in { status, body }
+HttpResponse.json({ status: 200, body: JSON.stringify({ ... }) })
+```
+
+Match field names to what the production code expects (`authenticated`, not `isAuth`).
+
+## Per-test overrides
+
+Override handlers inside a test when exercising error paths:
+
+```javascript
+it('handles server error', async () => {
+  worker.use(
+    http.get('/api/event/x/sections', () =>
+      HttpResponse.json({ error: 'fail' }, { status: 500 }),
+    ),
+  )
+  // ...
+})
+```
+
+## Singleton modules
+
+When the module under test exports a singleton with cached state, re-import it in `beforeEach` so tests stay isolated:
+
+```javascript
+let authStorage
+
+beforeEach(async () => {
+  const mod = await import(`../../src/lib/authenticated-user.js?t=${Date.now()}`)
+  authStorage = mod.default
+})
+```
+
+## MSW vs sinon
+
+| Use MSW | Use sinon |
+|---------|-----------|
+| HTTP ports, fetch wrappers, session checks | Pure functions, DOM events, `window.location` redirects |
+| Contract / integration-style browser tests | Asserting `fetch` was called with specific args |
+
+## Storybook
+
+Storybook uses the same handler factories via `msw-storybook-addon`. Export `create…Handlers()` from the mock module; stories pass them through the `msw.handlers` parameter. See `storybook/.storybook/preview.js`.

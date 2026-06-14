@@ -15,7 +15,7 @@
   "scripts": {
     "lint": "eslint -- src test",
     "lint:fix": "eslint --fix -- src test",
-    "test": "mocha test/*.test.js test/**/*.test.js",
+    "test": "mocha 'test/**/*.test.js' --recursive",
     "clean": "rm -rf dist && rm -rf test/_contracts",
     "build": "npm run clean && mkdir -p dist && cp index.js dist/ && cp -r src dist/ && cp package.json dist/",
     "prepare": "npm run build",
@@ -41,5 +41,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "@rinkkasatiainen/cfb-functional": "^0.1.0"
+  }
 }

@@ -16,7 +16,7 @@ describe('ExampleStorage', () => {
     await exampleStorage.addExample(example)
 
     const retrieved = await exampleStorage.getExample('test-1')
-    expect(retrieved).to.deep.equal(example)
+    expect(retrieved).to.eql(example)
   })
 
   it('should get all examples', async () => {

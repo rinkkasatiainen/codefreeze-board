@@ -1,0 +1,229 @@
+---
+description: How to use @rinkkasatiainen/cfb-functional — Maybe, Either, and Eventually monads in CFB code.
+globs:
+  - "cfb-functional/**"
+  - "**/domain/**"
+  - "**/functions/**"
+  - "**/aws-handlers/**"
+  - "**/cfb-event-sourcing/**"
+---
+
+# Using `@rinkkasatiainen/cfb-functional`
+
+Use this rule when writing or reviewing code that imports `@rinkkasatiainen/cfb-functional`.
+
+```javascript
+import { Maybe, Either, Eventually } from '@rinkkasatiainen/cfb-functional'
+```
+
+Package: `cfb-functional/` (published as `@rinkkasatiainen/cfb-functional`). ESM only.
+
+---
+
+## Pick the right monad
+
+| Monad | Use when | Success | Failure |
+|-------|----------|---------|---------|
+| **Maybe** | Optional value — absence is normal, not an error | `Some(value)` | `None` |
+| **Either** | Sync validation / parsing — failure carries a reason | `Right(value)` | `Left(reason)` |
+| **Eventually** | Async I/O, ports, handlers — promises and thrown errors | `Resolve(value)` | `Reject(reason)` |
+
+**Rule of thumb in CFB:**
+- **Domain validation** → `Either` (e.g. `toDomainEvent` returns `Either.left(errors)` or `Either.right(event)`)
+- **Infrastructure / actions / handlers** → `Eventually` (AWS calls, stream ports, Lambda handlers)
+- **Optional lookups** → `Maybe` (safe array access, missing config)
+
+Do not use `try/catch` + raw promises in handler/action chains when `Eventually` is the project convention.
+
+---
+
+## Shared API
+
+Every monad exposes the same three operations:
+
+| Method | Purpose | Returns |
+|--------|---------|---------|
+| `map(fn)` | Transform success value; failure short-circuits | Same monad (or wrapped monad — see cross-monad) |
+| `bind(fn)` | Chain when `fn` may fail or return another monad | Flattened monad |
+| `fold(onFailure, onSuccess)` | Exit the chain — unwrap to plain value | Any type |
+
+**Constructors:**
+
+```javascript
+Maybe.of(value)      // null/undefined → None
+Maybe.none()
+
+Either.left(reason)
+Either.right(value)
+
+Eventually.resolve(value)
+Eventually.reject(reason)
+Eventually.fromPromise(promise)   // await first, then chain
+```
+
+---
+
+## Maybe
+
+```javascript
+const result = Maybe.of(userId)
+  .map(id => id.trim())
+  .bind(id => id ? Maybe.of(id) : Maybe.none())
+  .fold(() => 'anonymous', id => `Hello ${id}`)
+```
+
+- `Maybe.of(null)` and `Maybe.of(undefined)` → `None`
+- `map` that returns `null`/`undefined` → `None`
+- `bind` must return a `Maybe`; use for steps that can be absent
+- `fold(onNone, onSome)` — first arg is failure, second is success
+
+---
+
+## Either
+
+```javascript
+export function toDomainEvent(storedEvent) {
+  const storedResult = validateStoredEvent(storedEvent)
+  if (!storedResult.success) {
+    return Either.left(storedResult.errors)
+  }
+  const domainEvent = { type: storedEvent.metaData.type, payload: storedEvent.payload }
+  const domainResult = validateDomainEvent(domainEvent)
+  if (!domainResult.success) {
+    return Either.left(domainResult.errors)
+  }
+  return Either.right(domainEvent)
+}
+```
+
+- Use for **synchronous** validation and parsing
+- `Left` carries the error; `map`/`bind` on `Left` are no-ops
+- `bind` must return `Either`; use when a step can fail with a reason
+- `fold(onLeft, onRight)` — unwrap at the boundary (handler, test assertion)
+
+---
+
+## Eventually
+
+`Eventually` is async-aware. **`map` and `bind` return promises** — always `await` them.
+
+```javascript
+async function executeStatement(client, config, sql, parameters = []) {
+  return Eventually.fromPromise(client.send(command))
+}
+
+async getStreamVersion(streamId) {
+  const result = await executeStatement(client, config, sql, parameters)
+  return result.bind(data => {
+    const version = data.records?.[0]?.[0]?.longValue ?? 0
+    return Eventually.resolve(version)
+  })
+}
+```
+
+### map vs bind (critical)
+
+| | `map` | `bind` |
+|---|-------|--------|
+| `fn` throws | **throws** (do not use for fallible ops) | → `Eventually.reject(error)` |
+| `fn` returns rejected promise | **throws** | → `Eventually.reject(reason)` |
+| `fn` returns `Eventually` | wraps it (nested) | flattens it |
+| `fn` returns plain value / resolved promise | wraps in `Resolve` | wraps in `Resolve` |
+
+**Use `bind` for fallible steps.** Use `map` only for pure transforms on already-resolved values.
+
+### fold
+
+- `Reject.fold(onReject, onResolve)` — sync; `onReject` runs
+- `Resolve.fold(onReject, onResolve)` — sync; if `onResolve` throws, `onReject` catches it
+- `onResolve` may return a promise; `fold` returns it as-is
+
+### Handler exit pattern
+
+```javascript
+const result = await doSomething(appendStream)(STREAM_ID, input)
+return result.fold(toErrorResponse, toSuccessResponse)
+```
+
+### Mock stream ports (tests)
+
+Port `do` callbacks must return `Eventually`:
+
+```javascript
+do: async callback => {
+  try {
+    const result = await callback(mockStream)
+    return Eventually.resolve(result)
+  } catch (error) {
+    return Eventually.reject(error)
+  }
+}
+```
+
+---
+
+## Cross-monad chaining
+
+Monads can nest or convert via `bind`:
+
+```javascript
+// Maybe → Either
+maybe.bind(x => Either.right(x * 2))
+
+// Maybe → Eventually (await the result)
+const eventually = maybe.bind(x => Eventually.resolve(x * 2))
+const resolved = await eventually
+
+// Eventually → Either (await bind)
+const either = await eventually.bind(x => Either.right(x * 2))
+
+// Eventually → Maybe
+const maybe = await eventually.bind(x => Maybe.of(x))
+```
+
+`bind` flattens when the inner value is the same monad. When types differ, the outer type changes — caller must `await` and handle the new monad.
+
+---
+
+## Testing
+
+Use `fold` to assert outcomes — do not inspect internal classes:
+
+```javascript
+// Either
+result.fold(
+  errors => expect(errors).to.include('metaData.streamId must be a non-empty string'),
+  () => { throw new Error('expected Left') },
+)
+
+// Eventually (async)
+const result = await action(appendStream)(streamId, input)
+result.fold(
+  err => expect(err.message).to.equal('expected error'),
+  value => expect(value).to.eql({ eventCount: 1 }),
+)
+```
+
+For "should not be called" branches, throw in the unused `fold` callback (see `cfb-functional/test/*.test.js`).
+
+---
+
+## Hard rules
+
+- ✅ `Eventually.fromPromise` at the AWS/SDK boundary
+- ✅ `await` every `Eventually.map` / `Eventually.bind`
+- ✅ `bind` (not `map`) when `fn` can throw or return a rejected promise
+- ✅ `fold` at boundaries: handlers, tests, UI adapters
+- ✅ `Either` for sync validation; `Eventually` for async workflows
+
+- ❌ `map` on `Eventually` for operations that can fail
+- ❌ Raw `try/catch` + `return { statusCode }` in handlers when the action already returns `Eventually`
+- ❌ `throw` after an `Eventually` chain — propagate via `Eventually.reject` instead
+- ❌ Mixing monads without `bind`/`fold` — unwrap explicitly at layer boundaries
+
+---
+
+## Related rules
+
+- Event-sourced actions/handlers: `event-sourcing/using-event-sourcing-in-aws.mdc`
+- Testing actions with `Eventually`: `event-sourcing/testing-event-sourced-aggregates.mdc`

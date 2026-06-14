@@ -1,0 +1,557 @@
+# Event Sourcing Write Side (CQRS) Implementation Rules
+
+When implementing event sourced aggregates/entities on the write side, follow these patterns.
+
+## Core Principle: Separation of Concerns
+
+- **Domain logic** → Pure functions in the capability's `domain/` NPM package; commands return `{ type, payload }` (no stream metadata)
+- **Stream ports** → `cfb-event-sourcing/core` defines `streamId`, read-only vs append-enabled streams, and the port shape
+  `(streamId) => { do(callback) }` — these are domain/event-sourcing concepts, not AWS concepts
+- **AWS adapters** → `cfb-event-sourcing/aws` implements those ports; `createReadOnlyStream(streamOptions)` /
+  `createAppendEnabledStream(streamOptions)` return a core port function with AWS config baked in
+- **AWS handlers** → Get the port from `cfb-event-sourcing-aws` (with `streamOptions`), pass it to capability domain actions
+- **Capability actions** → Call `appendStream(streamId).do(...)` — `streamId` is domain knowledge; `streamOptions` never seen
+
+## Capability Packages
+
+Every capability splits **domain** from **AWS**. The same split applies to the shared `cfb-event-sourcing` framework
+and to each business capability that uses event sourcing.
+
+### `cfb-event-sourcing` (shared framework)
+
+```
+cfb-event-sourcing/
+├── core/                    → @rinkkasatiainen/cfb-event-sourcing-core      (domain)
+│   └── src/
+│       ├── event.js         # Event shape, factories
+│       ├── stream-ports.js  # ReadOnlyStream, AppendEnabledStream port types
+│       ├── apply-events.js  # Pure replay
+│       └── errors.js
+├── aws/                     → @rinkkasatiainen/cfb-event-sourcing-aws       (AWS)
+│   └── src/
+│       ├── streams.js       # createReadOnlyStream, createAppendEnabledStream
+│       ├── event-store.js
+│       └── event-bus.js
+└── testing/                 → @rinkkasatiainen/cfb-event-sourcing-testing    (dev/test)
+    └── src/
+        ├── mock-streams.js
+        └── mock-aws-clients.js
+```
+
+| Package | Side | Purpose | Runtime dependency? |
+|---------|------|---------|---------------------|
+| `cfb-event-sourcing-core` | Domain | Event shape, `streamId`, read/append stream ports, pure replay, errors | Production (capability `domain` + via `aws`) |
+| `cfb-event-sourcing-aws` | AWS | Port implementations (`create*Stream(streamOptions)`), RDS, EventBridge | Production (`aws-handlers` only) |
+| `cfb-event-sourcing-testing` | — | Mocks for core & AWS | **Dev/test only** |
+
+### Business capability (e.g. `cfb-npm-template`)
+
+Domain logic and Lambda handlers are **separate NPM packages**:
+
+```
+cfb-your-capability/
+├── domain/                  → @rinkkasatiainen/cfb-your-capability-domain
+│   └── src/
+│       ├── entities/
+│       │   └── entity-name.js
+│       └── actions/
+│           ├── do-something.js
+│           └── get-something.js
+├── aws-handlers/            → @rinkkasatiainen/cfb-your-capability-aws-handlers
+│   └── src/
+│       └── handlers/
+│           ├── entity-command-handler.js
+│           └── entity-query-handler.js
+└── ...                      # contracts, ui-components, etc. as needed
+```
+
+| Package | Side | Contains |
+|---------|------|----------|
+| `domain` | Domain | Entity modules, actions — uses **core stream port shape**; passes `streamId` into the port |
+| `aws-handlers` | AWS | Lambda handlers — HTTP/CORS, creates port via `cfb-event-sourcing-aws`, passes port to actions |
+
+The `aws-handlers` package depends on capability `domain` and `@rinkkasatiainen/cfb-event-sourcing-aws`.
+The `domain` package may depend on `@rinkkasatiainen/cfb-event-sourcing-core` (port types). It has **no** dependency on `cfb-event-sourcing-aws`.
+
+## Package Imports
+
+| Need | Package |
+|------|---------|
+| Entity modules, actions | `@rinkkasatiainen/cfb-your-capability-domain` |
+| Stream port types (`ReadOnlyStream`, `AppendEnabledStream`) | `@rinkkasatiainen/cfb-event-sourcing-core` (in capability `domain/`) |
+| `createReadOnlyStream` / `createAppendEnabledStream` in Lambda handlers | `@rinkkasatiainen/cfb-event-sourcing-aws` (in `aws-handlers/` only) |
+| Mock ports, stored events, AWS client fakes in tests | `@rinkkasatiainen/cfb-event-sourcing-testing` |
+
+### Testing Package (`cfb-event-sourcing-testing`)
+
+All mock/fake utilities live here — not in `core` or `aws`. Depends on `core` and `aws` as devDependencies.
+
+**Core stream mocks** (for action tests):
+
+| Export | Purpose |
+|--------|---------|
+| `createStoredEvent(type, payload, metaDataOverrides)` | Build a replayed `{ metaData, payload }` event |
+| `createDomainEvent(type, payload)` | Build an unstamped domain event |
+| `createMockReadOnlyStream(options)` | Returns a core `ReadOnlyStream` port: `(streamId) => { do }` |
+| `createMockAppendEnabledStream(options)` | Returns a core `AppendEnabledStream` port + `getAppendedEvents`, `spies` |
+
+**AWS infrastructure mocks** (for `aws` package tests and integration-style capability tests):
+
+| Export | Purpose |
+|--------|---------|
+| `createMockRdsDataClient(options)` | Fake RDS Data API responses for event-store tests |
+| `createMockEventBridgeClient(options)` | Fake EventBridge `PutEvents` for event-bus tests |
+| `createInMemoryEventStore(options)` | In-memory event store implementing the same read/append contract as RDS |
+
+Capability `domain` and `aws-handlers` packages add `@rinkkasatiainen/cfb-event-sourcing-testing` as a **devDependency** only.
+
+## Stream Ports (core — domain concepts)
+
+Defined in `cfb-event-sourcing-core`. Two port types encode least privilege:
+
+| Port type | Shape | Operations inside `.do()` |
+|-----------|-------|-------------------------|
+| `ReadOnlyStream` | `(streamId) => { do(callback) }` | `replay` only |
+| `AppendEnabledStream` | `(streamId) => { do(callback) }` | `replay`, `appendEvents`, `save` |
+
+Both are **functions of `streamId`**. The action calls `appendStream(streamId).do(...)` — `streamId` is domain knowledge (which aggregate instance).
+
+`streamId` identifies the aggregate stream (e.g. `'input-logger'`, `` `session-${sessionId}` ``). The capability action chooses or derives it.
+
+### Responsibility split
+
+```
+core          streamId, ReadOnlyStream, AppendEnabledStream port shapes
+aws           createReadOnlyStream(streamOptions) → ReadOnlyStream port
+              createAppendEnabledStream(streamOptions) → AppendEnabledStream port
+aws-handlers  calls create*Stream(streamOptions), passes port to domain action
+domain        appendStream(streamId).do(...) — knows streamId, not streamOptions
+```
+
+### `streamOptions` (AWS only — handler passes to `create*Stream`)
+
+`streamOptions` configures the AWS adapter and audit metadata. Only `cfb-event-sourcing-aws` and `aws-handlers` see it.
+
+| Option | Purpose |
+|--------|---------|
+| `capability` | Stamped on `metaData` (e.g. `'cfb-npm-template'`) |
+| `correlationId`, `userId`, … | Optional audit fields from Lambda/request context |
+| `clusterArn`, `secretArn`, … | RDS overrides (tests; production uses env vars) |
+
+```javascript
+// aws-handlers/ — creates port with AWS options, passes port to action
+const appendStream = createAppendEnabledStream({
+  capability: 'cfb-your-capability',
+  userId: event.requestContext?.authorizer?.sub,
+})
+await doSomething(appendStream)(STREAM_ID, input)
+
+// domain/ — port is a function of streamId; no streamOptions
+export const doSomething = appendStream => async (streamId, input) => {
+  return appendStream(streamId).do(async stream => { ... })
+}
+```
+
+## Entity Module Pattern (Pure Functions with Immutability)
+
+Create entity modules as plain JavaScript objects with pure functions:
+
+```javascript
+const EntityName = {
+  // Initial state factory
+  empty: () => ({
+    // ... initial state properties
+  }),
+
+  // Event handlers (reducers): (state, event) => newState
+  // Dispatch on event.metaData.type; read data from event.payload
+  eventHandlers: {
+    'event-type-name': (state, event) => ({
+      ...state,
+      // ... updated properties from event.payload
+    }),
+  },
+
+  // Domain queries - pure functions: (state) => result
+  someQuery: state => state.someProperty !== null,
+
+  // Domain commands - return events (not state changes)
+  // Pure function: (state, ...args) => events[]
+  someCommand: (state, arg1, arg2) => [
+    {
+      type: 'event-type-name',
+      payload: { /* only business data */ },
+    },
+  ],
+}
+```
+
+### Key Rules for Entity Modules:
+
+1. **`empty()`** - Factory function returning initial state
+2. **`eventHandlers`** - Object mapping event type → reducer `(state, event) => newState`
+3. **Domain queries** - Pure functions `(state, ...args) => result`
+4. **Domain commands** - Pure functions returning `[{ type, payload }]` arrays
+5. **No side effects** - All functions must be pure
+6. **Immutability** - Always return new state, never mutate
+
+## Event Structure
+
+### Domain events (commands)
+
+Domain commands return unstamped events — only business data:
+
+```javascript
+{
+  type: 'event-type-name',
+  payload: { /* business data only */ }
+}
+```
+
+### Stored / replayed events
+
+The stream stamps domain events before persistence and returns this shape on replay:
+
+```javascript
+{
+  metaData: {
+    streamId: '<stream_id>',   // required
+    version: <event_number>,   // required
+    type: '<event_type>',      // required
+    // optional audit fields:
+    timestamp: '<iso_timestamp>',
+    capability: '<capability_name>',
+    correlationId: '<id>',
+    userId: '<id>',
+  },
+  payload: {
+    // business data from domain
+  }
+}
+```
+
+**Rules:**
+
+- Domain never sets `streamId`, `version`, or stamps `metaData`
+- The stream sets `metaData.type` from the domain event's `type`
+- Event handlers receive the full `{ metaData, payload }` object
+- Handlers dispatch on `event.metaData.type` and read data from `event.payload`
+
+## Ports and Adapters Architecture
+
+Separate infrastructure (handlers) from domain logic using dependency injection. Domain and AWS live in **different NPM packages** — see [Business capability](#business-capability-eg-cfb-npm-template) above.
+
+### Domain package (`domain/`)
+
+#### Entity file (`domain/src/entities/entity-name.js`)
+
+Contains **only** the entity module - pure functions, no I/O:
+
+```javascript
+// =============================================================================
+// Entity Module - Pure Functions with Immutability
+// =============================================================================
+
+export const EntityName = {
+  empty: () => ({
+    /* initial state properties */
+  }),
+
+  eventHandlers: {
+    'event-type': (state, event) => ({
+      ...state,
+      /* updates from event.payload */
+    }),
+  },
+
+  someQuery: state => state.someProperty !== null,
+
+  // Returns only { type, payload } — the stream adds metaData
+  someCommand: (_state, input) => [
+    {
+      type: 'event-type',
+      payload: { /* business data */ },
+    },
+  ],
+}
+```
+
+#### Command action (`domain/src/actions/do-something.js`)
+
+Receives an **AppendEnabledStream port** `(streamId) => { do }` from handler or test mock. Passes `streamId` itself:
+
+```javascript
+import { EntityName } from '../entities/entity-name.js'
+
+/**
+ * @param {import('@rinkkasatiainen/cfb-event-sourcing-core').AppendEnabledStream} appendStream
+ * @returns {Function} async (streamId, input) => Eventually
+ */
+export const doSomething = appendStream => async (streamId, input) => {
+  return appendStream(streamId).do(async stream => {
+    const entity = await stream.replay(EntityName.eventHandlers, EntityName.empty())
+    const events = EntityName.someCommand(entity, input)
+
+    stream.appendEvents(events)
+    await stream.save()
+
+    return { eventCount: events.length, entity }
+  })
+}
+```
+
+#### Query action (`domain/src/actions/get-something.js`)
+
+Receives a **ReadOnlyStream port** `(streamId) => { do }`. Replay only, no append or save:
+
+```javascript
+import { EntityName } from '../entities/entity-name.js'
+
+/**
+ * @param {import('@rinkkasatiainen/cfb-event-sourcing-core').ReadOnlyStream} readOnlyStream
+ * @returns {Function} async (streamId) => Eventually
+ */
+export const getSomething = readOnlyStream => async streamId => {
+  return readOnlyStream(streamId).do(async stream => {
+    const entity = await stream.replay(EntityName.eventHandlers, EntityName.empty())
+    return { someProperty: entity.someProperty }
+  })
+}
+```
+
+### AWS handlers package (`aws-handlers/`)
+
+Lambda handlers live here — not in `domain/`. The handler is a **thin port** that only does:
+1. HTTP-level concerns (CORS, parsing)
+2. Input structure validation (not business rules)
+3. Creates stream port via `create*Stream(streamOptions)` from `cfb-event-sourcing-aws`, passes port to domain action
+4. Transforms results to HTTP responses
+
+#### Command handler (`aws-handlers/src/handlers/entity-command-handler.js`)
+
+```javascript
+import { createAppendEnabledStream } from '@rinkkasatiainen/cfb-event-sourcing-aws'
+import { doSomething } from '@rinkkasatiainen/cfb-your-capability-domain'
+
+const STREAM_ID = 'your-stream-id'
+const STREAM_OPTIONS = { capability: 'your-capability-name' } // AWS-only — not passed to domain
+
+const headers = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key',
+  'Access-Control-Allow-Methods': 'POST,OPTIONS',
+}
+
+export const handler = async (event, _context) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' }
+  }
+
+  const body = JSON.parse(event.body || '{}')
+  const input = body.input
+
+  if (!input || typeof input !== 'string') {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'Invalid input: expected string' }),
+    }
+  }
+
+  const appendStream = createAppendEnabledStream(STREAM_OPTIONS)
+  const result = await doSomething(appendStream)(STREAM_ID, input)
+
+  return result.fold(
+    error => ({
+      statusCode: error.statusCode || 500,
+      headers,
+      body: JSON.stringify({ error: error.message }),
+    }),
+    ({ eventCount }) => ({
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ success: true, eventsAppended: eventCount }),
+    }),
+  )
+}
+```
+
+#### Query handler (`aws-handlers/src/handlers/entity-query-handler.js`)
+
+```javascript
+import { createReadOnlyStream } from '@rinkkasatiainen/cfb-event-sourcing-aws'
+import { getSomething } from '@rinkkasatiainen/cfb-your-capability-domain'
+
+const STREAM_ID = 'your-stream-id'
+const STREAM_OPTIONS = { capability: 'your-capability-name' } // AWS-only
+
+const headers = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+}
+
+export const handler = async (_event, _context) => {
+  const readOnlyStream = createReadOnlyStream(STREAM_OPTIONS)
+  const result = await getSomething(readOnlyStream)(STREAM_ID)
+
+  return result.fold(
+    error => ({
+      statusCode: error.statusCode || 500,
+      headers,
+      body: JSON.stringify({ error: error.message }),
+    }),
+    data => ({
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(data),
+    }),
+  )
+}
+```
+
+### Why This Pattern?
+
+1. **Testability** - Domain actions take a core port `(streamId) => { do }`; tests use mocks from `-testing`
+2. **Package separation** - `streamId` and port shapes in core; `streamOptions` in AWS; capability `domain` knows `streamId` only
+3. **Least privilege** - Query actions get `ReadOnlyStream`; command actions get `AppendEnabledStream`
+4. **Reusability** - Any adapter can provide a core port implementation
+5. **Clear boundaries** - Entities/actions in capability `domain/`; port creation + HTTP in `aws-handlers/`
+
+### Command Action Flow:
+
+1. **Replay** - Build entity state from stored events
+2. **Command** - Execute pure domain logic, get new events
+3. **Append** - Stage events in-memory
+4. **Save** - Persist to event store (with optimistic locking)
+5. **Return** - Eventually monad with result
+
+## Testing
+
+### Testing Entity Module (Pure Functions)
+
+Tests for the domain package live under `domain/test/`:
+
+```javascript
+import { EntityName } from '../src/entities/entity-name.js'
+
+describe('EntityName', () => {
+  describe('eventHandlers', () => {
+    it('applies event to state', () => {
+      const state = EntityName.empty()
+      const event = {
+        metaData: { streamId: 'test-stream', version: 1, type: 'event-type' },
+        payload: { value: 'test' },
+      }
+
+      const newState = EntityName.eventHandlers['event-type'](state, event)
+
+      expect(newState.someProperty).to.equal('test')
+    })
+  })
+
+  describe('commands', () => {
+    it('returns events for valid input', () => {
+      const state = EntityName.empty()
+
+      const events = EntityName.someCommand(state, 'input')
+
+      expect(events).to.have.length(1)
+      expect(events[0].type).to.equal('event-type')
+      expect(events[0].payload).to.eql({ /* expected payload */ })
+    })
+  })
+})
+```
+
+### Testing Command Actions (with Mock Append-Enabled Stream)
+
+Use `createMockAppendEnabledStream` from `@rinkkasatiainen/cfb-event-sourcing-testing`:
+
+Action tests live in `domain/test/`:
+
+```javascript
+import { doSomething } from '../src/actions/do-something.js'
+import { createMockAppendEnabledStream } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+describe('doSomething action', () => {
+  it('replays, appends, and saves events', async () => {
+    const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream()
+
+    const result = await doSomething(appendStream)('test-stream', 'test-input')
+
+    await result.fold(
+      () => { throw new Error('Should not fail') },
+      ({ eventCount }) => {
+        expect(eventCount).to.equal(1)
+        expect(getAppendedEvents()[0].type).to.equal('event-type')
+        expect(getAppendedEvents()[0].payload).to.eql({ /* expected */ })
+        expect(spies.save).to.have.been.calledOnce
+      },
+    )
+  })
+})
+```
+
+### Testing Query Actions (with Mock Read-Only Stream)
+
+Use `createMockReadOnlyStream` and `createStoredEvent` from `@rinkkasatiainen/cfb-event-sourcing-testing`:
+
+```javascript
+import { getSomething } from '../src/actions/get-something.js'
+import {
+  createMockReadOnlyStream,
+  createStoredEvent,
+} from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+describe('getSomething action', () => {
+  it('replays and returns query result', async () => {
+    const existingEvents = [
+      createStoredEvent('event-type', { value: 'hello' }, { streamId: 'test-stream', version: 1 }),
+    ]
+
+    const { readOnlyStream } = createMockReadOnlyStream({ existingEvents })
+
+    const result = await getSomething(readOnlyStream)('test-stream')
+
+    await result.fold(
+      () => { throw new Error('Should not fail') },
+      data => {
+        expect(data.someProperty).to.equal('hello')
+      },
+    )
+  })
+})
+```
+
+## Don'ts
+
+- ❌ Don't use classes for entities
+- ❌ Don't mutate state in event handlers
+- ❌ Don't add `metaData` in domain commands
+- ❌ Don't use `data` on domain events — use `payload`
+- ❌ Don't use legacy `{ detail: { metadata, data } }` shape
+- ❌ Don't use `createAppendEnabledStream` in query handlers
+- ❌ Don't use `createReadOnlyStream` when you need to append events
+- ❌ Don't put entity modules or actions in `aws-handlers/` — they belong in `domain/`
+- ❌ Don't put Lambda handlers in `domain/` — they belong in `aws-handlers/`
+- ❌ Don't import `@rinkkasatiainen/cfb-event-sourcing-aws` in the `domain` package
+- ❌ Don't pass `streamOptions` into domain actions — AWS config stays in `aws-handlers`
+- ❌ Don't put `streamId` or port types in `cfb-event-sourcing-aws` — they belong in core
+- ❌ Don't put mocks in `core` or `aws` — use `cfb-event-sourcing-testing`
+- ❌ Don't add `cfb-event-sourcing-testing` as a production/runtime dependency
+- ❌ Don't make domain functions async
+- ❌ Don't access external services in domain logic
+- ❌ Don't use `this` in entity modules
+
+## Do's
+
+- ✅ Use pure functions everywhere in domain
+- ✅ Return new state objects (spread operator)
+- ✅ Keep event payload minimal (only what's needed)
+- ✅ Name events in past tense (`input-logged`, `item-created`)
+- ✅ Access handler data via `event.payload`
+- ✅ Dispatch handlers on `event.metaData.type`
+- ✅ Let the stream stamp `metaData` (`streamId`, `version`, `type`, audit fields)
+- ✅ Create port with `create*Stream(streamOptions)` in `aws-handlers/`; pass port to domain; action passes `streamId`
+- ✅ Test domain logic in isolation; use `cfb-event-sourcing-testing` for action and AWS mocks

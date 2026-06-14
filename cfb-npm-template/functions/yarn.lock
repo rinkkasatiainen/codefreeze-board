@@ -121,6 +121,11 @@
     eslint-plugin-import "^2.32.0"
     eslint-plugin-mocha "^11.0.0"
 
+"@rinkkasatiainen/cfb-functional@^0.1.0":
+  version "0.1.0"
+  resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-functional/0.1.0/19b95fde984eef8437622c1bd347dc89d23f1efd#19b95fde984eef8437622c1bd347dc89d23f1efd"
+  integrity sha512-nYFwpseNWXc9+XtUHS875K8X4TLNzmDvNTmTk1NjIrII/cDUx9ChLzFcEtUol3igP3qLpNzX9ie9OIXdCwThBg==
+
 "@rinkkasatiainen/cfb-npm-template-contracts@^0.2.1":
   version "0.2.1"
   resolved "https://npm.pkg.github.com/download/@rinkkasatiainen/cfb-npm-template-contracts/0.2.1/e70b65797809e1cc4ba87269d2a5d7a0f038234a#e70b65797809e1cc4ba87269d2a5d7a0f038234a"

@@ -1,0 +1,455 @@
+# Testing Event-Sourced Aggregates
+
+Guidelines for testing event-sourced aggregates and actions using Mocha, Chai, Sinon, and `@rinkkasatiainen/cfb-event-sourcing-testing`.
+
+See also: `planning-event-sourcing-aggregate.mdc`, `using-event-sourcing-in-aws.mdc`.
+
+## Testing Libraries
+
+**Required dependencies:**
+- `mocha` - Test runner
+- `chai` - Assertion library
+- `sinon` - Spies, stubs, and mocks
+- `sinon-chai` - Chai assertions for Sinon
+- `@rinkkasatiainen/cfb-event-sourcing-testing` - Mock ports and event factories (devDependency)
+
+**Do NOT use Jest.**
+
+```javascript
+import { expect, use } from 'chai'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+
+use(sinonChai)
+```
+
+## Where tests live
+
+| What | Location | Package |
+|------|----------|---------|
+| Entity module tests | `domain/test/` | capability `domain` |
+| Action tests | `domain/test/` | capability `domain` |
+| Lambda handler tests | `aws-handlers/test/` | capability `aws-handlers` (optional, thin) |
+
+Do **not** put mock stream factories in capability packages — use `cfb-event-sourcing-testing`.
+
+## What to Test
+
+### 1. Entity Module Tests (Pure Functions)
+
+Test entity modules in isolation under `domain/test/`:
+
+- **`empty()`** - Returns correct initial state
+- **`eventHandlers`** - Each handler transforms state using `event.metaData.type` and `event.payload`
+- **Domain queries** - Return expected values based on state
+- **Domain commands** - Return `[{ type, payload }]` with no `metaData`
+
+### 2. Command Action Tests (Mock AppendEnabledStream port)
+
+Inject `appendStream` from `createMockAppendEnabledStream()`. The port shape is `(streamId) => { do }` — same as core.
+
+Verify:
+- **Replay** - Entity state built from stored events
+- **Command** - Correct events generated from replayed state
+- **Append** - `stream.appendEvents()` called with `{ type, payload }` events
+- **Save** - `stream.save()` invoked
+- **Error handling** - Errors propagate via `Eventually`
+
+Action call shape: `doSomething(appendStream)(streamId, input)`
+
+### 3. Query Action Tests (Mock ReadOnlyStream port)
+
+Inject `readOnlyStream` from `createMockReadOnlyStream()`. Verify replay and query result.
+
+Action call shape: `getSomething(readOnlyStream)(streamId)`
+
+Query action tests should **not** assert `appendEvents` or `save` — the mock port has no append API.
+
+## Event shapes in tests
+
+**Stored event** (for `existingEvents` in mocks):
+
+```javascript
+import { createStoredEvent } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+createStoredEvent('input-logged', { value: 'hello' }, {
+  streamId: 'test-stream',
+  version: 1,
+})
+// => { metaData: { streamId, version, type, ... }, payload: { value: 'hello' } }
+```
+
+**Domain command event** (what `appendEvents` receives):
+
+```javascript
+{ type: 'input-logged', payload: { value: 'hello' } }
+```
+
+## Mock ports (`cfb-event-sourcing-testing`)
+
+Do not implement mocks in capability packages. Import from `-testing`:
+
+| Export | Returns | Use for |
+|--------|---------|---------|
+| `createStoredEvent(type, payload, metaDataOverrides)` | Stored `{ metaData, payload }` event | `existingEvents` in mock setup |
+| `createDomainEvent(type, payload)` | Unstamped `{ type, payload }` | Asserting command output |
+| `createMockAppendEnabledStream(options)` | `{ appendStream, getAppendedEvents, spies }` | Command action tests |
+| `createMockReadOnlyStream(options)` | `{ readOnlyStream }` | Query action tests |
+
+`appendStream` and `readOnlyStream` are core port functions: `(streamId) => { do(callback) }`.
+
+```javascript
+import { createMockAppendEnabledStream } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream({
+  existingEvents: [],
+})
+
+const result = await doSomething(appendStream)('test-stream', 'test-input')
+```
+
+## Test Cases for Command Actions
+
+Use a constant `STREAM_ID` in action tests — `streamId` is domain input to the port.
+
+### Test Case 1: Stream Returns No Events (Empty Aggregate)
+
+```javascript
+import { describe, it, afterEach } from 'mocha'
+import { expect, use } from 'chai'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import { createMockAppendEnabledStream } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+import { doSomething } from '../src/actions/do-something.js'
+
+use(sinonChai)
+
+const STREAM_ID = 'test-stream'
+
+describe('Action - doSomething', () => {
+  afterEach(() => sinon.restore())
+
+  describe('when stream has no events', () => {
+    it('generates events from empty state and saves', async () => {
+      const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream({
+        existingEvents: [],
+      })
+
+      const result = await doSomething(appendStream)(STREAM_ID, 'test-input')
+
+      expect(spies.replay).to.have.been.calledOnce
+      expect(spies.appendEvents).to.have.been.calledOnce
+      expect(getAppendedEvents()).to.have.length(1)
+      expect(getAppendedEvents()[0]).to.deep.include({
+        type: 'input-logged',
+        payload: { value: 'test-input' },
+      })
+      expect(spies.save).to.have.been.calledOnce
+
+      await result.fold(
+        error => { throw new Error(`Should not fail: ${error.message}`) },
+        ({ eventCount }) => expect(eventCount).to.equal(1),
+      )
+    })
+  })
+})
+```
+
+### Test Case 2: Stream Returns Only Unknown Events
+
+```javascript
+import { createMockAppendEnabledStream, createStoredEvent } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+describe('when stream has only unknown events', () => {
+  it('ignores unknown events and uses initial state', async () => {
+    const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream({
+      existingEvents: [
+        createStoredEvent('unknown-event-type', { foo: 'bar' }, { streamId: STREAM_ID, version: 1 }),
+        createStoredEvent('another-unknown-type', { baz: 'qux' }, { streamId: STREAM_ID, version: 2 }),
+      ],
+    })
+
+    const result = await doSomething(appendStream)(STREAM_ID, 'new-input')
+
+    expect(spies.replay).to.have.been.calledOnce
+    expect(getAppendedEvents()).to.have.length(1)
+    expect(getAppendedEvents()[0].type).to.equal('input-logged')
+    expect(spies.save).to.have.been.calledOnce
+
+    await result.fold(
+      error => { throw new Error(`Should not fail: ${error.message}`) },
+      ({ entity }) => {
+        expect(entity.lastInput).to.be.null
+        expect(entity.inputCount).to.equal(0)
+      },
+    )
+  })
+})
+```
+
+### Test Case 3: Stream Returns 1 Known Event
+
+```javascript
+describe('when stream has 1 known event', () => {
+  it('replays the event and builds state before command', async () => {
+    const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream({
+      existingEvents: [
+        createStoredEvent('input-logged', { value: 'previous-input' }, { streamId: STREAM_ID, version: 1 }),
+      ],
+    })
+
+    const result = await doSomething(appendStream)(STREAM_ID, 'new-input')
+
+    expect(spies.replay).to.have.been.calledOnce
+    expect(getAppendedEvents()[0]).to.deep.include({
+      type: 'input-logged',
+      payload: { value: 'new-input' },
+    })
+    expect(spies.save).to.have.been.calledOnce
+
+    await result.fold(
+      error => { throw new Error(`Should not fail: ${error.message}`) },
+      ({ entity }) => {
+        expect(entity.inputCount).to.equal(1)
+        expect(entity.lastInput).to.equal('previous-input')
+      },
+    )
+  })
+})
+```
+
+### Test Case 4: Stream Returns 2 Known Events
+
+```javascript
+describe('when stream has 2 known events', () => {
+  it('replays events in order and builds cumulative state', async () => {
+    const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream({
+      existingEvents: [
+        createStoredEvent('input-logged', { value: 'first-input' }, { streamId: STREAM_ID, version: 1 }),
+        createStoredEvent('input-logged', { value: 'second-input' }, { streamId: STREAM_ID, version: 2 }),
+      ],
+    })
+
+    const result = await doSomething(appendStream)(STREAM_ID, 'third-input')
+
+    expect(spies.replay).to.have.been.calledOnce
+    expect(getAppendedEvents()[0]).to.deep.include({
+      type: 'input-logged',
+      payload: { value: 'third-input' },
+    })
+    expect(spies.save).to.have.been.calledOnce
+
+    await result.fold(
+      error => { throw new Error(`Should not fail: ${error.message}`) },
+      ({ entity }) => {
+        expect(entity.inputCount).to.equal(2)
+        expect(entity.lastInput).to.equal('second-input')
+      },
+    )
+  })
+})
+```
+
+### Test Case 5: Mixed Known and Unknown Events
+
+```javascript
+describe('when stream has mixed known and unknown events', () => {
+  it('applies only known events and ignores unknown', async () => {
+    const { appendStream, spies } = createMockAppendEnabledStream({
+      existingEvents: [
+        createStoredEvent('input-logged', { value: 'known-1' }, { streamId: STREAM_ID, version: 1 }),
+        createStoredEvent('some-other-event', { data: 'ignored' }, { streamId: STREAM_ID, version: 2 }),
+        createStoredEvent('input-logged', { value: 'known-2' }, { streamId: STREAM_ID, version: 3 }),
+        createStoredEvent('yet-another-unknown', { data: 'also-ignored' }, { streamId: STREAM_ID, version: 4 }),
+      ],
+    })
+
+    const result = await doSomething(appendStream)(STREAM_ID, 'new-input')
+
+    expect(spies.save).to.have.been.calledOnce
+
+    await result.fold(
+      error => { throw new Error(`Should not fail: ${error.message}`) },
+      ({ entity }) => {
+        expect(entity.inputCount).to.equal(2)
+        expect(entity.lastInput).to.equal('known-2')
+      },
+    )
+  })
+})
+```
+
+## Verifying Appended Events
+
+```javascript
+describe('verifying appended events', () => {
+  it('verifies events are appended with correct structure', async () => {
+    const { appendStream, getAppendedEvents, spies } = createMockAppendEnabledStream({
+      existingEvents: [],
+    })
+
+    await doSomething(appendStream)(STREAM_ID, 'test-value')
+
+    expect(spies.appendEvents).to.have.been.calledOnce
+    expect(spies.appendEvents).to.have.been.calledWith(sinon.match.array)
+
+    const [appendedEvent] = getAppendedEvents()
+    expect(appendedEvent).to.have.property('type', 'input-logged')
+    expect(appendedEvent).to.have.property('payload')
+    expect(appendedEvent.payload).to.eql({ value: 'test-value' })
+
+    // Domain events have no metaData
+    expect(appendedEvent).to.not.have.property('metaData')
+    expect(appendedEvent).to.not.have.property('detail')
+  })
+})
+```
+
+## Verifying Save is Called
+
+```javascript
+describe('verifying save behavior', () => {
+  it('calls save after appending events', async () => {
+    const { appendStream, spies } = createMockAppendEnabledStream({ existingEvents: [] })
+
+    await doSomething(appendStream)(STREAM_ID, 'input')
+
+    expect(spies.save).to.have.been.calledOnce
+    expect(spies.appendEvents).to.have.been.calledBefore(spies.save)
+  })
+
+  it('propagates save errors', async () => {
+    const saveError = new Error('Database connection failed')
+    const { appendStream } = createMockAppendEnabledStream({
+      existingEvents: [],
+      saveError,
+    })
+
+    const result = await doSomething(appendStream)(STREAM_ID, 'input')
+
+    await result.fold(
+      error => expect(error.message).to.equal('Database connection failed'),
+      () => { throw new Error('Should have failed') },
+    )
+  })
+})
+```
+
+## Testing Query Actions
+
+```javascript
+import { getSomething } from '../src/actions/get-something.js'
+import { createMockReadOnlyStream, createStoredEvent } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+const STREAM_ID = 'test-stream'
+
+describe('getSomething action', () => {
+  it('replays and returns query result', async () => {
+    const { readOnlyStream } = createMockReadOnlyStream({
+      existingEvents: [
+        createStoredEvent('input-logged', { value: 'hello' }, { streamId: STREAM_ID, version: 1 }),
+      ],
+    })
+
+    const result = await getSomething(readOnlyStream)(STREAM_ID)
+
+    await result.fold(
+      () => { throw new Error('Should not fail') },
+      data => expect(data.lastInput).to.equal('hello'),
+    )
+  })
+})
+```
+
+## Testing Entity Modules Directly
+
+Entity tests need no stream mocks. Import `createStoredEvent` for handler fixtures:
+
+```javascript
+import { InputLogger } from '../src/entities/input-logger.js'
+import { createStoredEvent } from '@rinkkasatiainen/cfb-event-sourcing-testing'
+
+describe('InputLogger entity', () => {
+  describe('empty()', () => {
+    it('returns initial state', () => {
+      expect(InputLogger.empty()).to.eql({
+        lastInput: null,
+        inputCount: 0,
+      })
+    })
+  })
+
+  describe('eventHandlers', () => {
+    it('handles input-logged event', () => {
+      const state = InputLogger.empty()
+      const event = createStoredEvent('input-logged', { value: 'test' })
+
+      const newState = InputLogger.eventHandlers['input-logged'](state, event)
+
+      expect(newState.lastInput).to.equal('test')
+      expect(newState.inputCount).to.equal(1)
+    })
+
+    it('dispatches on event.metaData.type and reads event.payload', () => {
+      const event = {
+        metaData: { streamId: 's', version: 1, type: 'input-logged' },
+        payload: { value: 'x' },
+      }
+      const newState = InputLogger.eventHandlers['input-logged'](InputLogger.empty(), event)
+      expect(newState.lastInput).to.equal('x')
+    })
+
+    it('does not mutate original state', () => {
+      const state = InputLogger.empty()
+      const event = createStoredEvent('input-logged', { value: 'test' })
+
+      const newState = InputLogger.eventHandlers['input-logged'](state, event)
+
+      expect(state.lastInput).to.be.null
+      expect(newState.lastInput).to.equal('test')
+    })
+  })
+
+  describe('commands', () => {
+    it('logInput returns event with type and payload', () => {
+      const events = InputLogger.logInput(InputLogger.empty(), 'my-input')
+
+      expect(events).to.have.length(1)
+      expect(events[0]).to.eql({
+        type: 'input-logged',
+        payload: { value: 'my-input' },
+      })
+    })
+
+    it('commands return only type and payload (no metaData)', () => {
+      const events = InputLogger.logInput(InputLogger.empty(), 'input')
+
+      expect(events[0]).to.have.all.keys('type', 'payload')
+      expect(events[0]).to.not.have.property('metaData')
+      expect(events[0]).to.not.have.property('detail')
+    })
+  })
+})
+```
+
+## Don'ts
+
+- ❌ Don't use Jest — use Mocha, Chai, Sinon
+- ❌ Don't hand-roll mock streams in capability packages — use `cfb-event-sourcing-testing`
+- ❌ Don't use legacy `{ detail: { metadata, data } }` event shape in tests
+- ❌ Don't assert `data` on domain events — use `payload`
+- ❌ Don't pass `streamOptions` in action tests — mocks implement core ports directly
+- ❌ Don't test RDS/AWS infrastructure in capability `domain` unit tests
+- ❌ Don't use `createMockAppendEnabledStream` for query action tests
+- ❌ Don't forget `sinon.restore()` in `afterEach`
+
+## Do's
+
+- ✅ Import mocks from `@rinkkasatiainen/cfb-event-sourcing-testing`
+- ✅ Call actions as `action(appendStream)(streamId, input)` or `action(readOnlyStream)(streamId)`
+- ✅ Use `createStoredEvent` with `{ streamId, version, type }` in `metaData`
+- ✅ Verify appended events are `{ type, payload }` without `metaData`
+- ✅ Test entity modules separately from actions
+- ✅ Use `sinon-chai` for spy/stub assertions
+- ✅ Use `Eventually.fold()` to assert action results
+- ✅ Test replay order when multiple known events exist
