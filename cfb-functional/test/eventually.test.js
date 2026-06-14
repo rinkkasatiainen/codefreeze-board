@@ -58,7 +58,7 @@ describe('Eventually monad', () => {
       const reject3 = Eventually.reject(new Error('error object'))
 
       expect(reject1.fold(identity, isNotResolve)).to.equal('string error')
-      expect(reject2.fold(identity, isNotResolve)).to.deep.equal({ code: 404, message: 'Not found' })
+      expect(reject2.fold(identity, isNotResolve)).to.eql({ code: 404, message: 'Not found' })
       expect(reject3.fold(identity, isNotResolve)).to.be.instanceOf(Error)
     })
   })

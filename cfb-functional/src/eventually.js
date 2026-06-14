@@ -89,9 +89,11 @@ class Resolve {
 export const Eventually = {
   reject: reason => new Reject(reason),
   resolve: value => new Resolve(value),
-  fromPromise: promise => promise.then(
-    value => Eventually.resolve(value),
-    reason => Eventually.reject(reason),
-  ),
+  fromPromise: promise => promise
+    .then(
+      value => Eventually.resolve(value))
+    .catch(
+      reason => Eventually.reject(reason),
+    ),
 }
 

@@ -239,7 +239,7 @@ describe('Maybe monad', () => {
     it('should handle functions that return objects', () => {
       const some = Maybe.of(42)
       const result = some.fold(() => ({ error: true }), value => ({ value, success: true }))
-      expect(result).to.deep.equal({ value: 42, success: true })
+      expect(result).to.eql({ value: 42, success: true })
     })
   })
 

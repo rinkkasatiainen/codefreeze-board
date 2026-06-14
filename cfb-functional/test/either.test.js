@@ -24,7 +24,7 @@ describe('Either monad', () => {
       const left3 = Either.left(new Error('error object'))
 
       expect(left1.fold(identity, isNotRight)).to.equal('string error')
-      expect(left2.fold(identity, isNotRight)).to.deep.equal({ code: 404, message: 'Not found' })
+      expect(left2.fold(identity, isNotRight)).to.eql({ code: 404, message: 'Not found' })
       expect(left3.fold(identity, isNotRight)).to.be.instanceOf(Error)
     })
 
@@ -220,7 +220,7 @@ describe('Either monad', () => {
         error => ({ error: true, message: error }),
         value => ({ value, success: true }),
       )
-      expect(result).to.deep.equal({ value: 42, success: true })
+      expect(result).to.eql({ value: 42, success: true })
     })
   })
 
