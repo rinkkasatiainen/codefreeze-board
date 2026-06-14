@@ -37,17 +37,17 @@ describe('CfbRetrievesSchedules', () => {
 
     expect(sections).to.be.an('array')
     expect(sections).to.have.lengthOf(3)
-    expect(sections[0]).to.deep.equal({
+    expect(sections[0]).to.eql({
       name: 'Monday',
       id: 'monday-123',
       order: 0,
     })
-    expect(sections[1]).to.deep.equal({
+    expect(sections[1]).to.eql({
       name: 'Tuesday',
       id: 'tuesday-456',
       order: 1,
     })
-    expect(sections[2]).to.deep.equal({
+    expect(sections[2]).to.eql({
       name: 'Wednesday',
       id: 'wednesday-789',
       order: 2,

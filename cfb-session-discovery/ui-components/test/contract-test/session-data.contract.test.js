@@ -92,7 +92,7 @@ describe('Session Data Contract', () => {
 
       expect(sections).to.be.an('array')
       expect(sections).to.have.lengthOf(9)
-      expect(sections[0]).to.deep.equal({
+      expect(sections[0]).to.eql({
         date: '2025-01-11',
         name: 'Saturday',
         id: '00000000-0000-0000-0000-000000000000',

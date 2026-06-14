@@ -68,7 +68,7 @@ describe('CfbSessionLoader', () => {
       await tick()
 
       const storedSessions = await untilNotNull(() => cfbStorage.getAllSessionsForEvent(eventId), x => x.length > 0)
-      expect(storedSessions).to.deep.equal(sessions)
+      expect(storedSessions).to.eql(sessions)
     })
 
     it('should store empty sessions when none are retrieved', async () => {
@@ -90,7 +90,7 @@ describe('CfbSessionLoader', () => {
       await tick()
 
       const storedSessions = await untilNotNull(() => cfbStorage.getAllSessionsForEvent(eventId), x => x.length > 0)
-      expect(storedSessions).to.deep.equal(sessions)
+      expect(storedSessions).to.eql(sessions)
     })
 
     it('should update data-updated-at for all children with listens-schedule-updates class', async () => {

@@ -15,6 +15,7 @@ export class SessionDiscoveryModule {
   }
 
   async activate() {
+    // Check feature flags
   }
 
   async run() {

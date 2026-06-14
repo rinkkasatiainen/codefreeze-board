@@ -31,7 +31,7 @@ describe('CFBStorage', () => {
       await cfbStorage.addSection(testEventId, section)
 
       const retrieved = await cfbStorage.getSection(testEventId, 'test-1')
-      expect(retrieved).to.deep.equal(section)
+      expect(retrieved).to.eql(section)
     })
 
     it('should get all sections', async () => {
@@ -87,7 +87,7 @@ describe('CFBStorage', () => {
         const sessions = (await cfbStorage.getAllSessionsForEvent(testEventId))
           .filter(x => x.sectionId === session.sectionId)
         expect(sessions).to.have.lengthOf(1)
-        expect(sessions[0]).to.deep.equal(session)
+        expect(sessions[0]).to.eql(session)
       })
 
       it('Should get all sessions for a specific event and section', async () => {
@@ -203,7 +203,7 @@ describe('CFBStorage', () => {
 
         const sessions = await cfbStorage.getAllSessionsForSection(testEventId, session.sectionId)
         expect(sessions).to.have.lengthOf(1)
-        expect(sessions[0]).to.deep.equal(session)
+        expect(sessions[0]).to.eql(session)
       })
 
       it('Should get all sessions for a specific event and section', async () => {

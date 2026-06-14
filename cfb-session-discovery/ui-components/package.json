@@ -1,6 +1,6 @@
 {
   "name": "@rinkkasatiainen/cfb-session-discovery",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "description": "Session discovery module for CFB. Handles session discovery related functions",
   "main": "./dist/index.js",
@@ -46,7 +46,7 @@
   ],
   "peerDependencies": {
     "@rinkkasatiainen/cfb-observability": "^0.1.0 || ^1.0.0",
-    "@rinkkasatiainen/cfb-authorization": "^0.1.0 || ^1.0.0"
+    "@rinkkasatiainen/cfb-authorization": "^0.2.0 || ^1.0.0"
   },
   "msw": {
     "workerDirectory": [

@@ -74,7 +74,7 @@ describe('CfbScheduleLoader', () => {
     await tick()
 
     const storedSections = await untilNotNull(() => cfbStorage.getAllSections(eventId), x => x.length > 0)
-    expect(storedSections).to.deep.equal(sections)
+    expect(storedSections).to.eql(sections)
   })
 
   // TODO: This is old behavior and should be removed
